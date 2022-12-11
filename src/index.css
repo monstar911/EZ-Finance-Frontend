@@ -1,0 +1,69 @@
+* {
+    box-sizing: border-box;
+    margin: 0px;
+    padding: 0px;
+}
+
+*::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+    border-radius: 100%;
+}
+
+*::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: darkgrey;
+    outline: 1px solid slategrey;
+}
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',
+        'Droid Sans', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: #241f3e;
+    background-image: url('./asset/icons/bgImage.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+@font-face {
+    font-family: 'Square';
+    src: url('./asset/fonts/EuclidSquare-Medium.woff') format('opentype');
+}
+
+a {
+    text-decoration: none !important;
+}
+
+.Toastify__toast-container--top-right {
+    top: 75px;
+}
+
+.Toastify__progress-bar--error,
+.Toastify__progress-bar--info {
+    background-color: #fff;
+}
+
+.Toastify__toast-theme--light {
+    font-family: 'Square';
+}
+
+.MuiPopover-paper {
+    background-color: #342d55 !important;
+    color: white !important;
+    min-width: 155px !important;
+    top: 75px !important;
+}
+
+.MuiBackdrop-root{
+    background-color: rgba(0, 0, 0, 0.8) !important;
+}

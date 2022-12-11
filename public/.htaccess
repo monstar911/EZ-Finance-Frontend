@@ -1,0 +1,21 @@
+<IfModule mod_rewrite.c>
+Options -Indexes
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME} !-l
+  RewriteRule . /index.html [L]
+</IfModule>
+
+# Allow font assets to be used across domains and subdomains
+<FilesMatch "\.(ttf|otf|eot|woff)$">
+  <IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+  </IfModule>
+</FilesMatch>
+# Allow access to these theme files from https://admin.example.com
+<IfModule mod_headers.c>
+  Header set Access-Control-Allow-Origin "https://api.bitbaazi.com"
+</IfModule>
