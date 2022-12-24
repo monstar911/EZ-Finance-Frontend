@@ -199,8 +199,10 @@ function Market() {
                     display: 'flex',
                     padding: '20px',
                     //bgcolor: '#222',
-                    bgcolor: '#342D55',
-                    borderRadius: '20px',
+                    // bgcolor: '#342D55',
+                    // borderRadius: '20px',
+                    background: '#16162d', borderRadius: '24px',
+
                     boxShadow: '0px 1px 4px #ccc',
                     color: "#FFFFFF80"
                 }}

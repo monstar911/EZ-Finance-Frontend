@@ -8,7 +8,8 @@ const Back = styled(Box)({
     left: '0',
     width: '100%',
     height: '100%',
-    background: 'linear-gradient(104.45deg, #6452DE 0%, #F76CC5 73.89%, #FF6F6F 112.74%)',
+    // background: 'linear-gradient(104.45deg, #6452DE 0%, #F76CC5 73.89%, #FF6F6F 112.74%)',
+    background: 'linear-gradient(90deg,#6e42ca,#8d29c1)',
     zIndex: '-1',
     borderRadius: '13px',
 });
@@ -31,7 +32,7 @@ export default function PoolModal(props: any) {
                     },
                 }}
             >
-                <Box sx={{ background: '#342D55', padding: '30px', borderRadius: '13px' }}>
+                <Box sx={{ background: '#16162d', borderRadius: '24px', boxShadow: '0px 1px 4px #ccc', padding: '30px' }}>
                     <Typography variant="subtitle1">{title}</Typography>
                     <Box sx={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <Box
@@ -69,7 +70,7 @@ export default function PoolModal(props: any) {
                     <Typography variant="subtitle1">Positions</Typography>
                     <Typography variant="h5">{position}</Typography>
                 </Box>
-                <Back />
+                {/* <Back /> */}
             </Box>
         </Grid>
     );

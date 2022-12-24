@@ -98,6 +98,7 @@ export default function Invest() {
                         </Stack>
                         <Typography variant="subtitle1">Yield farming on LiquidSwap</Typography>
                     </Stack>
+
                     <Stack
                         direction={'row'}
                         alignItems="center"
@@ -124,6 +125,7 @@ export default function Invest() {
                         </Box>
                     </Stack>
                 </Box>
+
                 <Box className={'content'}>
                     <Box
                         sx={{
@@ -149,6 +151,7 @@ export default function Invest() {
                             nameb={coins[Number(strArr[1])].name}
                         />
                     </Box>
+
                     <Box
                         sx={{
                             flex: '2',

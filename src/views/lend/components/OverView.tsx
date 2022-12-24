@@ -105,10 +105,12 @@ function OverView() {
             <Box
                 sx={{
                     display: 'flex',
-                    bgcolor: '#342D55',
+                    // bgcolor: '#342D55',
                     color: '#FFFFFF80',
                     padding: '20px',
-                    borderRadius: '20px',
+                    // borderRadius: '20px',
+                    background: '#16162d', borderRadius: '24px',
+
                     boxShadow: '0px 1px 4px #ccc',
                     flexDirection: 'column',
                 }}

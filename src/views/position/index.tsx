@@ -34,8 +34,11 @@ const useStyles = makeStyles((theme: any) => ({
             '& > div:first-child': {
                 position: 'relative',
                 flex: '1',
-                background: '#342D55',
-                borderRadius: '13px',
+                // background: '#342D55',
+                // borderRadius: '13px',
+                background: '#16162d', borderRadius: '24px',
+                boxShadow: '0px 1px 4px #ccc',
+
                 minWidth: '600px',
                 [theme.breakpoints.down('md')]: {
                     minWidth: 'unset',
@@ -77,8 +80,11 @@ const useStyles = makeStyles((theme: any) => ({
             '& > div:last-child': {
                 position: 'relative',
                 flex: '1',
-                background: '#342D55',
-                borderRadius: '13px',
+                // background: '#342D55',
+                // borderRadius: '13px',
+                background: '#16162d', borderRadius: '24px',
+                boxShadow: '0px 1px 4px #ccc',
+
                 minWidth: '600px',
                 [theme.breakpoints.down('md')]: {
                     minWidth: 'unset',
@@ -114,9 +120,12 @@ const useStyles = makeStyles((theme: any) => ({
             },
         },
         '& .positions': {
-            borderRadius: '13px',
+            // borderRadius: '13px',
             marginTop: '50px',
-            background: '#342D55',
+            // background: '#342D55',
+            background: '#16162d', borderRadius: '24px',
+            boxShadow: '0px 1px 4px #ccc',
+
             '& h4': {
                 [theme.breakpoints.down('sm')]: {
                     fontSize: '25px',
@@ -135,7 +144,8 @@ const useStyles = makeStyles((theme: any) => ({
         left: '0',
         width: '100%',
         height: '100%',
-        background: 'linear-gradient(104.45deg, #6452DE 0%, #F76CC5 73.89%, #FF6F6F 112.74%)',
+        // background: 'linear-gradient(104.45deg, #6452DE 0%, #F76CC5 73.89%, #FF6F6F 112.74%)',
+        background: 'linear-gradient(90deg,#6e42ca,#8d29c1)',
         zIndex: '-1',
         borderRadius: '10px',
     },
@@ -162,7 +172,7 @@ export default function Position() {
                             <Typography variant="subtitle1">Pending $EZM Rewards</Typography>
                             <Typography variant="body1">~0.00 $EZM</Typography>
                         </Box>
-                        <Box className={classes.gradient__back}></Box>
+                        {/* <Box className={classes.gradient__back}></Box> */}
                     </Box>
                     <Box>
                         <Box className="header">
@@ -186,7 +196,7 @@ export default function Position() {
                                 <Typography variant="h4">$0.00</Typography>
                             </Box>
                         </Box>
-                        <Box className={classes.gradient__back}></Box>
+                        {/* <Box className={classes.gradient__back}></Box> */}
                     </Box>
                 </Box>
                 <Box className="positions">

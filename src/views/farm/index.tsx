@@ -55,11 +55,14 @@ const useStyles = makeStyles((theme: any) => ({
             flexWrap: 'wrap',
         },
         '& .Mui-selected': {
-            background: 'linear-gradient(93.41deg, #6452DE 0.68%, #F76CC5 53.61%, #FF6F6F 103.74%)',
+            // background: 'linear-gradient(93.41deg, #6452DE 0.68%, #F76CC5 53.61%, #FF6F6F 103.74%)',
+            background: 'linear-gradient(90deg,#6e42ca,#8d29c1)',
         },
         '& button': {
-            background: '#342D55',
-            borderRadius: '100px !important',
+            // background: '#342D55',
+            background: '#16162d',
+
+            borderRadius: '24px !important',
             border: 'none!important',
             padding: '18px 33px',
             color: 'white',
@@ -79,6 +82,9 @@ const useStyles = makeStyles((theme: any) => ({
             [theme.breakpoints.down('sm')]: {
                 width: '100%',
             },
+            '&:hover': {
+                background: '#483A6B',
+            }
         },
     },
 }));
@@ -168,6 +174,7 @@ function Farm() {
                     </Box>
                 </Box>
             </Box>
+
             <Box className={classes.part2}>
                 <ToggleButtonGroup
                     value={alignment}

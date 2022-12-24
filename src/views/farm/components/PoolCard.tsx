@@ -13,8 +13,11 @@ const useStyles = makeStyles((theme: any) => ({
         textAlign: 'center',
         '& > div': {
             padding: '30px',
-            borderRadius: '20px',
-            background: '#342D55',
+            // borderRadius: '20px',
+            // background: '#342D55',
+            background: '#16162d', borderRadius: '24px',
+            boxShadow: '0px 1px 4px #ccc',
+
             '& .content': {
                 display: 'flex',
                 flexDirection: 'row',
@@ -27,7 +30,8 @@ const useStyles = makeStyles((theme: any) => ({
             },
             '& .hidden_content': {
                 marginTop: '20px',
-                background: 'linear-gradient(93.57deg, #543DFB 0.71%, #F76CC5 50.59%, #FF4848 97.83%)',
+                // background: 'linear-gradient(93.57deg, #543DFB 0.71%, #F76CC5 50.59%, #FF4848 97.83%)',
+                background: 'linear-gradient(90deg,#6e42ca,#8d29c1)',
                 borderRadius: '13px',
                 padding: '10px',
                 textAlign: 'left',

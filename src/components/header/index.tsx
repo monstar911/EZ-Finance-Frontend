@@ -29,7 +29,8 @@ const useStyles = makeStyles((theme) => ({
         top: 0,
         left: 0,
         display: 'flex',
-        backgroundColor: 'rgba(52, 45, 85, 1)',
+        // backgroundColor: 'rgba(52, 45, 85, 1)',
+        backgroundColor: '#241F3E',
         width: '100%',
         padding: '15px 0',
         zIndex: 100,
@@ -54,7 +55,8 @@ const useStyles = makeStyles((theme) => ({
             borderRadius: '100px',
             padding: '0 20px',
             justifyContent: 'center',
-            background: 'linear-gradient(93.57deg, #543DFB 0.71%, #F76CC5 50.59%, #FF4848 97.83%)',
+            // background: 'linear-gradient(93.57deg, #543DFB 0.71%, #F76CC5 50.59%, #FF4848 97.83%)',
+            background: 'linear-gradient(90deg,#6e42ca,#8d29c1)',
         },
         '& .MuiOutlinedInput-input': {
             padding: '10px',
@@ -161,68 +163,6 @@ function Header({ handleDrawerToggle }: IHeader) {
         await web3?.getFaucet(token);
     }
 
-
-    // return (
-    //     <div className={classes.topBar}>
-    //         {is1200 && (
-    //             <div onClick={handleDrawerToggle} className={classes.toggleButton}>
-    //                 <Avatar
-    //                     sx={{
-    //                         bgcolor: '#FFF',
-    //                         boxShadow: '0px 1px 4px #ccc',
-    //                         mt: '3px',
-    //                     }}
-    //                 >
-    //                     <IconMenu2 color="#888" />
-    //                 </Avatar>
-    //             </div>
-    //         )}
-    //         <Box
-    //             sx={{
-    //                 justifyContent: 'flex-end',
-    //                 marginLeft: '20px',
-    //                 display: 'flex',
-    //                 flexGrow: 1,
-    //                 alignItems: 'center',
-    //                 gap: '20px',
-    //             }}
-    //         >
-    //             <Box className={classes.selectbutton}>
-    //                 <Select
-    //                     value={selectValue}
-    //                     onChange={(e: any) => setSelectValue(e.target.value)}
-    //                     IconComponent={ExpandMoreIcon}
-    //                 >
-    //                     <MenuItem value={'aptos'}>
-    //                         < Stack
-    //                             direction={'row'}
-    //                             alignItems={'center'}
-    //                             gap={1}
-    //                             sx={{ '& img': { width: '30px', height: '30px', borderRadius: '50%' } }}
-    //                         >
-    //                             <Box sx={{ display: { xs: 'none', md: 'block' } }}><img src={aptosIcon} alt="aptos" /></Box>
-    //                             <Typography >Aptos</Typography>
-    //                         </Stack>
-    //                     </MenuItem>
-    //                     <MenuItem value={'sui'}>
-    //                         <Stack
-    //                             direction={'row'}
-    //                             alignItems={'center'}
-    //                             gap={1}
-    //                             sx={{ '& img': { width: '30px', height: '30px', borderRadius: '50%' } }}
-    //                         >
-    //                             <Box sx={{ display: { xs: 'none', md: 'block' } }}><img src={suiIcon} alt="sui" /></Box>
-    //                             <Typography >Sui</Typography>
-    //                         </Stack>
-    //                     </MenuItem>
-    //                 </Select>
-    //             </Box>
-    //             <ConnectButton />
-    //         </Box>
-    //     </div >
-    // );
-
-
     return (
         <div className={classes.topBar}>
             {is1200 && (
@@ -259,7 +199,8 @@ function Header({ handleDrawerToggle }: IHeader) {
                         sx={{
                             color: 'white',
                             padding: '15px 20px',
-                            backgroundImage: 'linear-gradient(93.57deg, #543DFB 0.71%, #F76CC5 50.59%, #FF4848 97.83%)',
+                            // backgroundImage: 'linear-gradient(93.57deg, #543DFB 0.71%, #F76CC5 50.59%, #FF4848 97.83%)',
+                            background: 'linear-gradient(90deg,#6e42ca,#8d29c1)',
                             borderRadius: '200px',
                             marginRight: '-5px',
                             minWidth: '160px',

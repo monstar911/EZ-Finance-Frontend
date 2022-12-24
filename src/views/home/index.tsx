@@ -48,8 +48,12 @@ const useStyles = makeStyles((theme: any) => ({
         },
         justifyContent: 'space-between',
         width: '100%',
-        backgroundImage: 'linear-gradient(93.57deg, #543DFB 0.71%, #F76CC5 50.59%, #FF4848 97.83%)',
-        borderRadius: '10px',
+        // backgroundImage: 'linear-gradient(93.57deg, #543DFB 0.71%, #F76CC5 50.59%, #FF4848 97.83%)',
+        // background: 'linear-gradient(90deg,#6e42ca,#8d29c1)',
+        // borderRadius: '10px',
+        background: '#16162d', borderRadius: '24px',
+        boxShadow: '0px 1px 4px #ccc',
+
         marginBottom: '20px',
         '& > div:nth-child(1)': {
             display: 'flex',
@@ -139,8 +143,11 @@ const useStyles = makeStyles((theme: any) => ({
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            borderRadius: '10px',
-            backgroundColor: '#342D55',
+            // borderRadius: '10px',
+            // backgroundColor: '#342D55',
+            background: '#16162d', borderRadius: '24px',
+            boxShadow: '0px 1px 4px #ccc',
+
             '& img': {
                 borderRadius: '10px',
                 objectFit: 'cover',
@@ -176,11 +183,14 @@ const useStyles = makeStyles((theme: any) => ({
         },
         '& > div': {
             padding: '20px 10px',
-            background: '#342D55',
+            // background: '#342D55',
             display: 'flex',
             justifyContent: 'space-around',
             alignItems: 'flex-start',
-            borderRadius: '15px',
+            // borderRadius: '15px',
+            background: '#16162d', borderRadius: '24px',
+            boxShadow: '0px 1px 4px #ccc',
+
             [theme.breakpoints.down('md')]: {
                 alignItems: 'center',
                 flexDirection: 'column',
@@ -235,9 +245,12 @@ const useStyles = makeStyles((theme: any) => ({
             },
         },
         '& .slide_card': {
-            background: '#342D55',
+            // background: '#342D55',
             padding: '35px',
-            borderRadius: '15px',
+            // borderRadius: '15px',
+            background: '#16162d', borderRadius: '24px',
+            boxShadow: '0px 1px 4px #ccc',
+
             '& h6': {
                 opacity: '0.5',
                 padding: '10px 0',
@@ -269,8 +282,12 @@ const useStyles = makeStyles((theme: any) => ({
             marginBottom: '50px',
         },
         '& .card': {
-            background: 'linear-gradient(104.45deg, #6452DE 0%, #F76CC5 73.89%, #FF6F6F 112.74%)',
-            borderRadius: '10px',
+            // background: 'linear-gradient(104.45deg, #6452DE 0%, #F76CC5 73.89%, #FF6F6F 112.74%)',
+            // background: 'linear-gradient(90deg,#6e42ca,#8d29c1)',
+            // borderRadius: '10px',
+            background: '#16162d', borderRadius: '24px',
+            boxShadow: '0px 1px 4px #ccc',
+
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-around',
@@ -296,12 +313,15 @@ const useStyles = makeStyles((theme: any) => ({
     },
     part6: {
         marginTop: '80px',
-        background: '#342D55',
+        // background: '#342D55',
         width: '100%',
         padding: '20px',
         display: 'flex',
         alignItems: 'center',
-        borderRadius: '10px',
+        // borderRadius: '10px',
+        background: '#16162d', borderRadius: '24px',
+        boxShadow: '0px 1px 4px #ccc',
+
         [theme.breakpoints.down('md')]: {
             flexDirection: 'column-reverse',
             textAlign: 'center',
@@ -337,7 +357,8 @@ const useStyles = makeStyles((theme: any) => ({
         left: '0',
         width: '100%',
         height: '100%',
-        background: 'linear-gradient(104.45deg, #6452DE 0%, #F76CC5 73.89%, #FF6F6F 112.74%)',
+        // background: 'linear-gradient(104.45deg, #6452DE 0%, #F76CC5 73.89%, #FF6F6F 112.74%)',
+        background: 'linear-gradient(90deg,#6e42ca,#8d29c1)',
         zIndex: '-1',
         borderRadius: '10px',
     },
@@ -460,6 +481,7 @@ function Home() {
                         <img src={CryptoImage} alt="img" />
                     </Box>
                 </Box>
+
                 <Box className={classes.part2}>
                     <Box>
                         <Box
@@ -479,10 +501,11 @@ function Home() {
                             </Box>
                             <Common_FillButton content="View Pools Now"></Common_FillButton>
                         </Box>
+
                         <Box sx={{ position: 'absolute', bottom: 0, right: 0 }}>
                             <img src={CubeImage} alt="cube" />
                         </Box>
-                        <Box className={classes.gradient__back}></Box>
+                        {/* <Box className={classes.gradient__back}></Box> */}
                     </Box>
                     <Box>
                         <Box
@@ -505,9 +528,10 @@ function Home() {
                         <Box sx={{ position: 'absolute', bottom: 0, right: 0, zIndex: 0 }}>
                             <img src={PocketImage} alt="pocket" />
                         </Box>
-                        <Box className={classes.gradient__back}></Box>
+                        {/* <Box className={classes.gradient__back}></Box> */}
                     </Box>
                 </Box>
+
                 <Box className={classes.part3}>
                     <Typography variant="h3" sx={{ fontSize: { xs: '20px', sm: '30px', md: '30px' } }}>
                         Why Farm with EZ?

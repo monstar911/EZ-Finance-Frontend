@@ -69,7 +69,8 @@ function ConnectButton() {
                     sx={{
                         color: 'white',
                         padding: '15px 20px',
-                        backgroundImage: 'linear-gradient(93.57deg, #543DFB 0.71%, #F76CC5 50.59%, #FF4848 97.83%)',
+                        // backgroundImage: 'linear-gradient(93.57deg, #543DFB 0.71%, #F76CC5 50.59%, #FF4848 97.83%)',
+                        background: 'linear-gradient(90deg,#6e42ca,#8d29c1)',
                         borderRadius: '200px',
                         marginRight: '20px',
                         minWidth: '160px',

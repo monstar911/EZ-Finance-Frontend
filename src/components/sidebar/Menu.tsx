@@ -116,7 +116,8 @@ function MenuList() {
                                 textDecoration: 'none',
                                 backgroundImage:
                                     menu === item.param
-                                        ? 'linear-gradient(93.57deg, #543DFB 0.71%, #F76CC5 50.59%, #FF4848 97.83%)'
+                                        // ? 'linear-gradient(93.57deg, #543DFB 0.71%, #F76CC5 50.59%, #FF4848 97.83%)'
+                                        ? 'linear-gradient(90deg,#6e42ca,#8d29c1)'
                                         : 'transparent',
                             }}
                         >
@@ -140,7 +141,8 @@ function MenuList() {
                                 textDecoration: 'none',
                                 backgroundImage:
                                     menu === item.param
-                                        ? 'linear-gradient(93.57deg, #543DFB 0.71%, #F76CC5 50.59%, #FF4848 97.83%)'
+                                        // ? 'linear-gradient(93.57deg, #543DFB 0.71%, #F76CC5 50.59%, #FF4848 97.83%)'
+                                        ? 'linear-gradient(90deg,#6e42ca,#8d29c1)'
                                         : 'transparent',
                             }}
                         >
@@ -154,7 +156,7 @@ function MenuList() {
                     )
                 )}
             </Box>
-        </div>
+        </div >
     );
 }
 

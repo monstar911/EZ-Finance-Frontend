@@ -15,7 +15,9 @@
 }
 
 *::-webkit-scrollbar-thumb {
-    background-color: darkgrey;
+    /* background-color: darkgrey; */
+    background-color: '#443765';
+
     outline: 1px solid slategrey;
 }
 
