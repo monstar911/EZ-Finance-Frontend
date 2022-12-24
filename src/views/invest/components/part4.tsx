@@ -19,13 +19,20 @@ export default function Part4(props: any) {
     const classes = useStyles();
 
     return (
-        <Box className={'modal4'}>
+        <Box className={'modal4'}
+            sx={{
+                background: '#16162d', borderRadius: '24px',
+                padding: '40px',
+            }}>
+
             <Typography variant="h4" sx={{ py: 2, fontSize: '24px' }}>
                 Your Actions
             </Typography>
+
             <Box
                 sx={{
                     background: '#241F3E',
+                    // background: '#43395b',
                     display: 'flex',
                     alignItems: 'center',
                     padding: '23px 45px',
@@ -135,8 +142,10 @@ export default function Part4(props: any) {
             </Box>
             <Button
                 sx={{
-                    background: 'linear-gradient(93.57deg, #543DFB 0.71%, #F76CC5 50.59%, #FF4848 97.83%)',
-                    borderRadius: '13px',
+                    fontSize: '16px',
+                    // background: 'linear-gradient(93.57deg, #543DFB 0.71%, #F76CC5 50.59%, #FF4848 97.83%)',
+                    background: 'linear-gradient(90deg,#6e42ca,#8d29c1)',
+                    borderRadius: '15px',
                     width: '100%',
                     color: 'white',
                     padding: '20px',

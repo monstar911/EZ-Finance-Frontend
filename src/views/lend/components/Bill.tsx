@@ -74,16 +74,16 @@ function Bill() {
         {
             icon: AptosIcon,
             asset: 'APT',
-            deposit: trim(userInfo.aptos.totalDeposit, 3),
-            borrow: trim(userInfo.aptos.totalBorrow, 3),
-            balance: trim(userInfo.tokenBalance.aptos, 3),
+            deposit: 0,
+            borrow: 0,
+            balance: 0,
 
         }, {
             icon: ArcoIcon,
             asset: 'ARC',
-            deposit: trim(userInfo.arc.totalDeposit, 3),
-            borrow: trim(userInfo.arc.totalBorrow, 3),
-            balance: trim(userInfo.tokenBalance.arc, 3),
+            deposit: 0,
+            borrow: 0,
+            balance: 0,
         }
     ];
 
@@ -112,7 +112,7 @@ function Bill() {
     }
 
     const onClickRepay = async () => {
-        await web3?.repay(repayToken.asset.toLowerCase(), repayAmt);
+
     }
 
     const onSetWithdrawAmount = (e: any) => {

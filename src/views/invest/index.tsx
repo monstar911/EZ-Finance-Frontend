@@ -40,16 +40,16 @@ const useStyles = makeStyles((theme: any) => ({
             marginTop: '20px',
             flexWrap: 'wrap',
             gap: '20px',
-            '& .MuiSwitch-thumb': {
-                background: 'linear-gradient(93.41deg, #6452DE 0.68%, #F76CC5 53.61%, #FF6F6F 103.74%)',
-            },
-            '& .MuiSlider-thumbColorPrimary': {
-                display: 'none',
-            },
+            // '& .MuiSwitch-thumb': {
+            //     background: 'linear-gradient(93.41deg, #6452DE 0.68%, #F76CC5 53.61%, #FF6F6F 103.74%)',
+            // },
+            // '& .MuiSlider-thumbColorPrimary': {
+            //     display: 'none',
+            // },
             '& .modal4': {
-                padding: '40px',
-                background: '#342D55',
-                borderRadius: '15px',
+                // padding: '40px',
+                // background: '#342D55',
+                // borderRadius: '15px',
             },
         },
     },

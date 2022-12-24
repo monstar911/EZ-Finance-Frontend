@@ -133,7 +133,7 @@ function PoolCard(props: any) {
                         }}
                     >
                         <Common_FillButton
-                            content={'Farm upto ' + (Math.random() * 1 + 1).toFixed(2) + 'x'}
+                            content={'Farm up to ' + (Math.random() * 1 + 1).toFixed(2) + 'x'}
                             onClick={() => navigate(`/farm/${param}`)}
                         />
                         <Box
@@ -147,7 +147,7 @@ function PoolCard(props: any) {
                                 },
                             }}
                         >
-                            <Typography sx={{ opacity: '0.8' }}>Hide details</Typography>
+                            <Typography sx={{ opacity: '0.8' }}>Show details</Typography>
                             {dropOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                         </Box>
                     </Box>

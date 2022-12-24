@@ -61,9 +61,9 @@ a {
     background-color: #342d55 !important;
     color: white !important;
     min-width: 155px !important;
-    top: 75px !important;
+    /* top: 75px !important; */
 }
 
-.MuiBackdrop-root{
+.MuiBackdrop-root {
     background-color: rgba(0, 0, 0, 0.8) !important;
 }

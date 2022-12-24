@@ -7,8 +7,9 @@ import { Link } from '@mui/material';
 import SwapIcon from '../../asset/icons/swap.png';
 import FarmIcon from '../../asset/icons/farm.png';
 import DocsIcon from '../../asset/icons/docs.svg';
-import LendIcon from '../../asset/icons/dashboard.png';
+import HomeIcon from '../../asset/icons/home.png';
 import GovernIcon from '../../asset/icons/govern.png';
+import LendIcon from '../../asset/icons/lend2.png';
 import { Typography } from '@mui/material';
 import Logo from '../../asset/icons/Logo.png'
 
@@ -28,7 +29,7 @@ const menuList = [
     {
         title: 'Home',
         param: 'home',
-        logo: LendIcon,
+        logo: HomeIcon,
     },
     {
         title: 'Farm Pools',
@@ -44,6 +45,11 @@ const menuList = [
         title: 'Pool TVL',
         param: 'tvl',
         logo: GovernIcon,
+    },
+    {
+        title: 'Lend',
+        param: 'lend',
+        logo: LendIcon,
     },
     // {
     //     title: 'Invest',
@@ -75,6 +81,8 @@ function MenuList() {
             return 'tvl';
         } else if (path.indexOf('position') >= 0) {
             return 'position';
+        } else if (path.indexOf('lend') >= 0) {
+            return 'lend'
         }
         return '';
     }, []);

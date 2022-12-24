@@ -5,14 +5,14 @@ import PiehartIcon from '../../../asset/icons/pie-chart.svg';
 import Piehart1Icon from '../../../asset/icons/pie-chart1.svg';
 
 import { Box, Typography } from '@mui/material';
-import { Web3Context, IAptosInterface, IPoolInfo } from '../../../context/Web3Context';
+import { Web3Context, IAptosInterface } from '../../../context/Web3Context';
 import { formatValue } from '../../../helper/formatValue';
 
 function DataBoard() {
     const aptosContext = useContext(Web3Context) as IAptosInterface;
     const arcPrice = aptosContext.tokenPrice.arc;
     const aptosPrice = aptosContext.tokenPrice.aptos;
-    const poolInfo = aptosContext.poolInfo as IPoolInfo;
+    const poolInfo = aptosContext.poolInfo;
     const totalDeposit = poolInfo.aptos.totalDeposit * aptosPrice + poolInfo.arc.totalDeposit * arcPrice;
     const totalBorrow = poolInfo.aptos.totalBorrow * aptosPrice + poolInfo.arc.totalBorrow * arcPrice;
 

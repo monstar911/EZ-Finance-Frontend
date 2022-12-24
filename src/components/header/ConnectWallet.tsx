@@ -39,7 +39,7 @@ const wallets = [
 ];
 
 function ConnectButton() {
-    const isXs = useMediaQuery('(max-width:350px)');
+    const isXs = useMediaQuery('(max-width:375px)');
     const [open, setOpen] = useState(false);
     const web3 = useContext(Web3Context)
 
@@ -68,11 +68,11 @@ function ConnectButton() {
                 <Button
                     sx={{
                         color: 'white',
-                        padding: '12px 20px',
+                        padding: '15px 20px',
                         backgroundImage: 'linear-gradient(93.57deg, #543DFB 0.71%, #F76CC5 50.59%, #FF4848 97.83%)',
                         borderRadius: '200px',
                         marginRight: '20px',
-                        minWidth: '164px',
+                        minWidth: '160px',
                     }}
                     onClick={() => setOpen(!open)}
                 >

@@ -1,5 +1,5 @@
-import React, { useState, useContext } from 'react';
-import { IPoolInfo, Web3Context } from '../../../context/Web3Context';
+import React, { useState, useContext, useMemo, useEffect } from 'react';
+import { IUserInfo, Web3Context } from '../../../context/Web3Context';
 import { makeStyles } from '@mui/styles';
 import {
     Box,
@@ -13,7 +13,8 @@ import {
     Button,
     Modal,
     TextField,
-    InputAdornment
+    InputAdornment,
+    useMediaQuery
 } from '@mui/material';
 
 import ArcoIcon from '../../../asset/icons/arco.svg';
@@ -48,79 +49,99 @@ const modalStyle = {
     borderRadius: '20px'
 };
 
-const tableHeader = ['Asset', 'Deposit APY', 'Borrow APY', 'Total Deposited', 'Available', 'Operation']
+const tableHeader = ['', 'Deposit APY', 'Total Deposit', 'Deposit Balance', 'Wallet Balance', 'Action']
 
 function Market() {
 
     const emptyToken = {
         icon: '',
         asset: '',
+        symbol: '',
         depositAPY: 0,
-        borrowAPY: 0,
         totalDeposited: 0,
-        available: 0
+        depositBalance: 0,
+        walletBalance: 0
     }
-    // const isMd = useMediaQuery('(max-width:768px)');
-    const classes = useStyles();
-    const web3 = useContext(Web3Context);
-    const poolInfo = web3?.poolInfo as IPoolInfo;
-    const [supModal, setSupModal] = useState(false);
-    const [supToken, setSupToken] = useState<any | null>(emptyToken);
-    const [borrModal, setBorrModal] = useState(false);
-    const [borrToken, setBorrToken] = useState<any>(emptyToken);
-    const [depoAmt, setDepoAmt] = useState(0);
-    const [borrAmt, setBorrAmt] = useState(0);
+    // const isMd = useMediaQuery('(max-width:375px)');
+    const classes = useStyles()
+    const web3 = useContext(Web3Context)
+    const [poolInfo, setPoolInfo] = useState<any>()
+    const [userInfo, setUserInfo] = useState<IUserInfo>()
+
+    const [supModal, setSupModal] = useState(false)
+    const [supToken, setSupToken] = useState<any | null>(emptyToken)
+    const [borrModal, setBorrModal] = useState(false)
+    const [borrToken, setBorrToken] = useState<any>(emptyToken)
+    const [depoAmt, setDepoAmt] = useState(0)
+    const [borrAmt, setBorrAmt] = useState(0)
+
+    useEffect(() => {
+        console.log(web3?.userInfo)
+        const poolInfo = web3?.poolInfo
+        const userInfo = web3?.userInfo
+        setPoolInfo(poolInfo)
+        setUserInfo(userInfo)
+    }, [web3?.poolInfo, web3?.userInfo])
+
+
 
     const datas = [
         {
             icon: AptosIcon,
             asset: 'APT',
-            depositAPY: poolInfo.aptos.totalDeposit > 0 ? trim((poolInfo.aptos.totalBorrow * 0.2) / poolInfo.aptos.totalDeposit * 100, 3) : 0,
-            borrowAPY: poolInfo.aptos.totalDeposit > 0 ? (0.025 + 0.2 * (poolInfo.aptos.totalBorrow / (poolInfo.aptos.totalBorrow + poolInfo.aptos.totalDeposit))) : 0,
-            totalDeposited: trim(poolInfo.aptos.totalDeposit, 3),
-            available: trim(poolInfo.aptos.totalDeposit - poolInfo.aptos.totalBorrow, 3),
-        }, {
-            icon: ArcoIcon,
-            asset: 'ARC',
-            depositAPY: poolInfo.arc.totalDeposit > 0 ? trim((poolInfo.arc.totalBorrow * 0.2) / poolInfo.arc.totalDeposit * 100, 3) : 0,
-            borrowAPY: poolInfo.arc.totalDeposit > 0 ? (0.025 + 0.2 * (poolInfo.arc.totalBorrow / (poolInfo.arc.totalBorrow + poolInfo.arc.totalDeposit))) : 0,
-            totalDeposited: trim(poolInfo.arc.totalDeposit, 3),
-            available: trim(poolInfo.arc.totalDeposit - poolInfo.arc.totalBorrow, 3),
+            symbol: 'apt',
+            depositAPY: 1.3,
+            totalDeposited: trim(poolInfo?.apt ?? 0, 3),
+            depositBalance: trim(userInfo?.deposit['apt'] ?? 0, 3),
+            walletBalance: trim(userInfo?.tokenBalance['apt'] ?? 0, 3)
         }, {
             icon: BtcIcon,
-            asset: 'BTC',
-            depositAPY: 0,
-            borrowAPY: 0,
-            totalDeposited: 0,
-            available: 0,
+            asset: 'WBTC',
+            symbol: 'wbtc',
+            depositAPY: 2.4,
+            totalDeposited: trim(poolInfo?.wbtc ?? 0, 3),
+            depositBalance: userInfo?.deposit['wbtc'] ?? 0,
+            walletBalance: trim(userInfo?.tokenBalance['wbtc'] ?? 0, 3)
+        }, {
+            icon: UsdcIcon,
+            asset: 'ceUSDC',
+            symbol: 'ceUsdc',
+            depositAPY: 1.6,
+            totalDeposited: trim(poolInfo?.ceUsdc ?? 0, 3),
+            depositBalance: userInfo?.deposit['ceUsdc'] ?? 0,
+            walletBalance: trim(userInfo?.tokenBalance['ceUsdc'] ?? 0, 3)
         }, {
             icon: EthereumIcon,
-            asset: 'ETH',
-            depositAPY: 0,
-            borrowAPY: 0,
-            totalDeposited: 0,
-            available: 0,
+            asset: 'WETH',
+            symbol: 'weth',
+            depositAPY: 2.3,
+            totalDeposited: trim(poolInfo?.weth ?? 0, 3),
+            depositBalance: userInfo?.deposit['weth'] ?? 0,
+            walletBalance: trim(userInfo?.tokenBalance['weth'] ?? 0, 3)
         }, {
             icon: DaiIcon,
             asset: 'DAI',
-            depositAPY: 0,
-            borrowAPY: 0,
-            totalDeposited: 0,
-            available: 0,
+            symbol: 'dai',
+            depositAPY: 1.1,
+            totalDeposited: trim(poolInfo?.dai ?? 0, 3),
+            depositBalance: userInfo?.deposit['dai'] ?? 0,
+            walletBalance: trim(userInfo?.tokenBalance['dai'] ?? 0, 3)
         }, {
             icon: UsdcIcon,
             asset: 'USDC',
-            depositAPY: 0,
-            borrowAPY: 0,
-            totalDeposited: 0,
-            available: 0,
+            symbol: 'usdc',
+            depositAPY: 0.9,
+            totalDeposited: trim(poolInfo?.usdc ?? 0, 3),
+            depositBalance: userInfo?.deposit['usdc'] ?? 0,
+            walletBalance: trim(userInfo?.tokenBalance['usdc'] ?? 0, 3)
         }, {
             icon: UsdtIcon,
             asset: 'USDT',
-            depositAPY: 0,
-            borrowAPY: 0,
-            totalDeposited: 0,
-            available: 0,
+            symbol: 'usdt',
+            depositAPY: 1.0,
+            totalDeposited: trim(poolInfo?.usdt ?? 0, 3),
+            depositBalance: userInfo?.deposit['usdt'] ?? 0,
+            walletBalance: trim(userInfo?.tokenBalance['usdt'] ?? 0, 3)
         }
     ];
 
@@ -145,11 +166,11 @@ function Market() {
     }
 
     const onClickSupply = async () => {
-        await web3?.deposit(supToken.asset.toLowerCase(), depoAmt);
+        await web3?.deposit(supToken.symbol, depoAmt);
     }
 
-    const onClickBorrow = async () => {
-        await web3?.borrow(borrToken.asset.toLowerCase(), borrAmt);
+    const onClickWithdraw = async () => {
+        await web3?.withdraw(borrToken.symbol, borrAmt);
     }
 
     const onSetDepositAmount = (e: any) => {
@@ -165,26 +186,29 @@ function Market() {
         <div className={classes.marketView}>
             <Typography
                 sx={{
-                    color: '#333',
-                    fontSize: '18px',
+                    fontSize: '24px',
+                    fontWeight: 'bold',
                     pl: '20px',
-                    mb: 1
+                    my: 2,
+                    color: '#FFFFFF',
                 }}>
-                Market
+                Lending
             </Typography>
             <Box
                 sx={{
                     display: 'flex',
                     padding: '20px',
-                    bgcolor: '#FFF',
+                    //bgcolor: '#222',
+                    bgcolor: '#342D55',
                     borderRadius: '20px',
-                    boxShadow: '0px 1px 4px #ccc'
+                    boxShadow: '0px 1px 4px #ccc',
+                    color: "#FFFFFF80"
                 }}
             >
                 <TableContainer>
-                    <Table sx={{ '& .MuiTableCell-root': { textAlign: 'center' }, '& .assetfield': { textAlign: 'right' } }}>
+                    <Table sx={{ '& .MuiTableCell-root': { textAlign: 'center' } }}>
                         <TableHead>
-                            <TableRow>
+                            <TableRow sx={{ '.MuiTableCell-root': { color: '#FFFFFF80' } }}>
                                 {tableHeader.map((item, index) => (
                                     <TableCell key={index}>{item}</TableCell>
                                 ))}
@@ -194,53 +218,59 @@ function Market() {
                             {datas.map((item, index) => (
                                 <TableRow
                                     key={index}
-                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                    sx={{ '&:last-child td, &:last-child th': { border: 0 }, '.MuiTableCell-root': { color: '#fff' } }}
                                 >
-                                    <TableCell component="th" scope="row" className='assetfield'>
+                                    <TableCell>
                                         <Box sx={{ display: 'flex', ml: '30px' }}>
                                             <Box sx={{ display: 'flex', justifyContent: 'flex-start', width: '40px' }}>
-                                                <img src={item.icon} alt='logo' style={{ width: '24px', height: '24px', marginRight: '10px' }} />
+                                                <img src={item.icon} alt='logo' style={{ width: '24px', height: '24px', marginRight: '3px' }} />
                                             </Box>
                                             <Typography component='span' >{item.asset}</Typography>
                                         </Box>
                                     </TableCell>
                                     <TableCell>{item.depositAPY}%</TableCell>
-                                    <TableCell>{trim(item.borrowAPY * 100, 3)}%</TableCell>
                                     <TableCell>{item.totalDeposited}</TableCell>
-                                    <TableCell>{item.available}</TableCell>
-                                    <TableCell sx={{ display: 'flex', justifyContent: 'center' }}>
-                                        <Button
-                                            sx={{
-                                                bgcolor: '#5361DC10',
-                                                color: '#5361DC',
-                                                borderRadius: '20px',
-                                                mx: '3px',
-                                                '&:hover': {
-                                                    bgcolor: '#5361DC',
-                                                    color: '#FFF'
-                                                }
-                                            }}
-                                            disabled={index > 1 ? true : false}
-                                            onClick={() => onSupModalOpen(index)}
-                                        >
-                                            Deposit
-                                        </Button>
-                                        <Button
-                                            sx={{
-                                                bgcolor: '#5361DC10',
-                                                color: '#5361DC',
-                                                borderRadius: '20px',
-                                                mx: '3px',
-                                                '&:hover': {
-                                                    bgcolor: '#5361DC',
-                                                    color: '#FFF'
-                                                }
-                                            }}
-                                            disabled={index > 1 ? true : false}
-                                            onClick={() => onBorrModalOpen(index)}
-                                        >
-                                            Borrow
-                                        </Button>
+                                    <TableCell>{item.depositBalance}</TableCell>
+                                    <TableCell>{item.walletBalance}</TableCell>
+                                    <TableCell >
+                                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+                                            <Button
+                                                sx={{
+                                                    minWidth: '120px',
+                                                    border: '1px solid #fff',
+                                                    bgcolor: '#5361DC10',
+                                                    color: '#fff',
+                                                    borderRadius: '20px',
+                                                    mx: '3px',
+                                                    '&:hover': {
+                                                        bgcolor: '#5361DC10',
+                                                        color: '#FFF'
+                                                    }
+                                                }}
+                                                //disabled={index > 1 ? true : false}
+                                                onClick={() => onSupModalOpen(index)}
+                                            >
+                                                Deposit
+                                            </Button>
+                                            <Button
+                                                sx={{
+                                                    minWidth: '120px',
+                                                    border: '1px solid #fff',
+                                                    bgcolor: '#5361DC10',
+                                                    color: '#fff',
+                                                    borderRadius: '20px',
+                                                    mx: '3px',
+                                                    '&:hover': {
+                                                        bgcolor: '#5361DC10',
+                                                        color: '#FFFFFF'
+                                                    }
+                                                }}
+                                                //disabled={index > 1 ? true : false}
+                                                onClick={() => onBorrModalOpen(index)}
+                                            >
+                                                Withdraw
+                                            </Button>
+                                        </Box>
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -251,7 +281,7 @@ function Market() {
                     open={supModal}
                     onClose={onSupModalClose}
                 >
-                    <Box sx={{ ...modalStyle, width: { xs: '95%', md: '400px' } }}>
+                    <Box sx={{ ...modalStyle, width: { xs: '95%', md: '400px' }, color: 'white', background: '#342D55' }}>
                         <Box
                             sx={{
                                 display: 'flex',
@@ -260,7 +290,6 @@ function Market() {
                                 cursor: 'pointer',
                                 mb: 1
                             }}
-
                         >
                             <Typography
                                 variant="h5"
@@ -268,67 +297,83 @@ function Market() {
                                 sx={{
                                     textAlign: 'center',
                                     mb: 1,
-                                    color: '#333'
+                                    //color: '#333'
                                 }}
                             >
-                                {`Supply ${supToken.asset}`}
+                                {`Deposit ${supToken.asset}`}
                             </Typography>
                             <IconX onClick={() => onSupModalClose()} />
                         </Box>
                         <Box sx={{}}>
-                            <Typography sx={{ color: '#333', ml: 2, mb: 1 }}>Amount</Typography>
+                            <Typography sx={{ color: '#fff', ml: 2, mb: 1 }}>Amount</Typography>
                             <TextField
                                 fullWidth
                                 type="number"
                                 sx={{
                                     "& .MuiOutlinedInput-root": {
+                                        color: "white",
                                         borderRadius: '20px',
+                                        borderColor: '#888',
                                         "&.Mui-focused fieldset": {
-                                            borderColor: "#ccc"
-                                        }
+                                            borderColor: '#888'
+                                        },
+                                        '& fieldset': {
+                                            borderColor: '#888',
+                                        },
                                     },
                                     "& .MuiOutlinedInput-root:hover": {
                                         "& > fieldset": {
-                                            borderColor: "#ccc"
+                                            borderColor: "#888"
                                         }
                                     }
                                 }}
                                 InputProps={{
                                     inputProps: { min: 0 },
                                     endAdornment:
-                                        <InputAdornment position="end">
-                                            <img src={supToken.icon} alt='logo' style={{ width: '24px', height: '24px', marginRight: '10px' }} />{supToken.asset}
+                                        <InputAdornment position="end" sx={{ color: "white" }} >
+                                            <img src={supToken.icon} alt='logo' style={{ width: '24px', height: '24px', marginRight: '10px', color: "#fff" }} />{supToken.asset}
                                         </InputAdornment>,
                                 }}
                                 onChange={onSetDepositAmount}
                             />
                         </Box>
                         <Box sx={{ mt: 2 }}>
-                            <Typography sx={{ color: '#333', ml: 2, mb: 1 }}>Transaction Overview</Typography>
+                            <Typography sx={{ color: '#fff', ml: 2, mb: 1 }}>Transaction Overview</Typography>
                             <Box sx={{
                                 width: '100%',
-                                bgcolor: '#FFF',
-                                boxShadow: '0px 1px 4px #ccc',
+                                background: '#42396B',
+                                boxShadow: '0px 0px 4px #5361DC60',
                                 padding: '10px 20px',
+                                borderColor: 'gray',
+                                border: '1px gray solid',
                                 borderRadius: '15px',
                                 cursor: 'pointer',
                                 '&:hover': {
-                                    boxShadow: '0px 1px 4px #5361DC60',
+                                    boxShadow: '0px 0px 4px #5361DC60',
                                 },
                                 '& .MuiTypography-root': {
-                                    color: '#333'
+                                    color: '#fff'
                                 },
                                 '& .enableText': {
                                     color: '#5361DC'
+                                },
+                                '& .MuiBox-root': {
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    my: 1
                                 }
                             }}>
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                                    <Typography>Supply APY</Typography>
-                                    <Typography>{supToken.depositAPY}%</Typography>
+                                <Box >
+                                    <Typography>Wallet Balance </Typography>
+                                    <Typography>{supToken.walletBalance}</Typography>
                                 </Box>
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                    <Typography>Collateralization</Typography>
-                                    <Typography className='enableText'>Enabled</Typography>
+                                <Box >
+                                    <Typography>Deposit Balance</Typography>
+                                    <Typography>{supToken.depositBalance}</Typography>
+                                </Box>
+                                <Box>
+                                    <Typography>Deposit APY</Typography>
+                                    <Typography>1.45 %</Typography>
                                 </Box>
                             </Box>
                         </Box>
@@ -337,17 +382,20 @@ function Market() {
                                 mt: 3,
                                 display: 'flex',
                                 width: '100%',
-                                backgroundColor: '#5361DC',
+                                background: '#42396B',
+                                boxShadow: '0px 0px 4px #5361DC60',
+                                borderColor: 'gray',
+                                border: '1px gray solid',
                                 borderRadius: '20px',
                                 py: 2,
                                 '&:hover': {
-                                    backgroundColor: '#5361DC'
+                                    boxShadow: '0px 0px 4px #5361DC60',
                                 }
 
                             }}
                             onClick={onClickSupply}
                         >
-                            <Typography sx={{ textAlign: 'center', color: '#FFF' }}>Supply</Typography>
+                            <Typography sx={{ textAlign: 'center', color: '#FFF' }}>Deposit</Typography>
                         </Button>
                     </Box>
                 </Modal>
@@ -355,7 +403,7 @@ function Market() {
                     open={borrModal}
                     onClose={onBorrModalClose}
                 >
-                    <Box sx={{ ...modalStyle, width: { xs: '95%', md: '400px' } }}>
+                    <Box sx={{ ...modalStyle, width: { xs: '95%', md: '400px' }, color: 'white', background: '#342D55' }}>
                         <Box
                             sx={{
                                 display: 'flex',
@@ -364,7 +412,6 @@ function Market() {
                                 cursor: 'pointer',
                                 mb: 1
                             }}
-
                         >
                             <Typography
                                 variant="h5"
@@ -372,66 +419,83 @@ function Market() {
                                 sx={{
                                     textAlign: 'center',
                                     mb: 1,
-                                    color: '#333'
+                                    //color: '#fff'
                                 }}
                             >
-                                {`Borrow ${borrToken.asset}`}
+                                {`Withdraw ${borrToken.asset}`}
                             </Typography>
                             <IconX onClick={() => onBorrModalClose()} />
                         </Box>
                         <Box sx={{}}>
-                            <Typography sx={{ color: '#333', ml: 2, mb: 1 }}>Amount</Typography>
+                            <Typography sx={{ color: '#fff', ml: 2, mb: 1 }}>Amount</Typography>
                             <TextField
                                 fullWidth
                                 type="number"
                                 sx={{
                                     "& .MuiOutlinedInput-root": {
+                                        color: "white",
                                         borderRadius: '20px',
+                                        borderColor: '#888',
                                         "&.Mui-focused fieldset": {
-                                            borderColor: "#ccc"
-                                        }
+                                            borderColor: "#888"
+                                        },
+                                        '& fieldset': {
+                                            borderColor: '#888',
+                                        },
                                     },
                                     "& .MuiOutlinedInput-root:hover": {
                                         "& > fieldset": {
-                                            borderColor: "#ccc"
+                                            borderColor: "#888"
                                         }
                                     }
                                 }}
                                 InputProps={{
                                     inputProps: { min: 0 },
                                     endAdornment:
-                                        <InputAdornment position="end">
-                                            <img src={borrToken.icon} alt='logo' style={{ width: '24px', height: '24px', marginRight: '10px' }} />{borrToken.asset}
+                                        <InputAdornment position="end" sx={{ color: "white" }} >
+                                            <img src={borrToken.icon} alt='logo' style={{ width: '24px', height: '24px', marginRight: '10px', color: "#fff" }} />{borrToken.asset}
                                         </InputAdornment>,
                                 }}
                                 onChange={onSetBorrowAmount}
                             />
                         </Box>
                         <Box sx={{ mt: 2 }}>
-                            <Typography sx={{ color: '#333', ml: 2, mb: 1 }}>Transaction Overview</Typography>
+                            <Typography sx={{ color: '#fff', ml: 2, mb: 1 }}>Transaction Overview</Typography>
                             <Box sx={{
                                 width: '100%',
-                                bgcolor: '#FFF',
-                                boxShadow: '0px 1px 4px #ccc',
+                                background: '#42396B',
+                                boxShadow: '0px 0px 4px #5361DC60',
                                 padding: '10px 20px',
+                                borderColor: 'gray',
+                                border: '1px gray solid',
                                 borderRadius: '15px',
                                 cursor: 'pointer',
                                 '&:hover': {
-                                    boxShadow: '0px 1px 4px #5361DC60',
+                                    boxShadow: '0px 0px 4px #5361DC60',
                                 },
                                 '& .MuiTypography-root': {
-                                    color: '#333'
+                                    color: '#fff'
                                 },
                                 '& .enableText': {
                                     color: '#5361DC'
+                                },
+                                '& .MuiBox-root': {
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    my: 1
                                 }
                             }}>
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                                    <Typography>Health Factor</Typography>
-                                    <Typography>1.78</Typography>
+                                <Box >
+                                    <Typography>Wallet Balance</Typography>
+                                    <Typography>{borrToken.walletBalance}</Typography>
                                 </Box>
-                                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                    <Typography className='enableText'>{'Liquidation at < 1.0'}</Typography>
+                                <Box >
+                                    <Typography>Supply Balance</Typography>
+                                    <Typography>{borrToken.depositBalance}</Typography>
+                                </Box>
+                                <Box >
+                                    <Typography>APY</Typography>
+                                    <Typography>1.38%</Typography>
                                 </Box>
                             </Box>
                         </Box>
@@ -440,21 +504,26 @@ function Market() {
                                 mt: 3,
                                 display: 'flex',
                                 width: '100%',
-                                backgroundColor: '#5361DC',
+                                //backgroundColor: '#5361DC',
+                                background: '#42396B',
+                                boxShadow: '0px 0px 4px #5361DC60',
+                                borderColor: 'gray',
+                                border: '1px gray solid',
                                 borderRadius: '20px',
                                 py: 2,
                                 '&:hover': {
-                                    backgroundColor: '#5361DC'
+                                    //backgroundColor: '#5361DC'
+                                    boxShadow: '0px 0px 4px #5361DC60',
                                 }
                             }}
-                            onClick={onClickBorrow}
+                            onClick={onClickWithdraw}
                         >
-                            <Typography sx={{ textAlign: 'center', color: '#FFF' }}>Borrow</Typography>
+                            <Typography sx={{ textAlign: 'center', color: '#FFF' }}>Withdraw</Typography>
                         </Button>
                     </Box>
                 </Modal>
             </Box>
-        </div>
+        </div >
     )
 }
 

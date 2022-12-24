@@ -32,7 +32,7 @@ function ConnectView() {
                 </Box>
             </Box>
         </div>
-    );
+    )
 }
 
 export default ConnectView;

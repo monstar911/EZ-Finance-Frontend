@@ -1,10 +1,11 @@
 import React from 'react';
 import { Box, Typography, Stack, Slider, Switch } from '@mui/material';
 import { styled } from '@mui/system';
+import { trim } from "../../../helper/trim";
 
 const StyledSwitch = styled(Switch)(({ theme }) => ({
-    width: 42,
-    height: 26,
+    width: 40,
+    height: 24,
     padding: 0,
     '& .MuiSwitch-switchBase': {
         padding: 0,
@@ -27,10 +28,15 @@ const StyledSwitch = styled(Switch)(({ theme }) => ({
         },
     },
     '& .MuiSwitch-thumb': {
+        // background: 'linear-gradient(93.41deg, #6452DE 0.68%, #F76CC5 53.61%, #FF6F6F 103.74%)',
+        background: 'linear-gradient(90deg,#6e42ca,#8d29c1)',
         boxSizing: 'border-box',
-        width: 22,
-        height: 22,
+        width: 20,
+        height: 20,
     },
+    // '& .MuiSlider-thumbColorPrimary': {
+    //     display: 'none',
+    // },
     '& .MuiSwitch-track': {
         borderRadius: 26 / 2,
         backgroundColor: theme.palette.mode === 'light' ? '#241F3E' : '#39393D',
@@ -41,6 +47,16 @@ const StyledSwitch = styled(Switch)(({ theme }) => ({
 export default function Part2() {
     function slideValue(value: number) {
         return `${value}`;
+    }
+
+    function tokenMaxLeverage() {
+        const borrowFactor = 1.3;
+        const collateralFactor = 0.8;
+        const cappedDebtRatio = 0.95;
+
+        const maxLeverage = Number(trim(borrowFactor / (borrowFactor - (collateralFactor * cappedDebtRatio)), 2));
+        marks.push({ value: maxLeverage, label: maxLeverage + 'x' })
+        return maxLeverage;
     }
 
     const marks = [
@@ -67,7 +83,12 @@ export default function Part2() {
     ];
 
     return (
-        <Box sx={{ marginBottom: '20px', padding: '40px', background: '#342D55', borderRadius: '15px' }}>
+        <Box
+            sx={{
+                background: '#16162d', borderRadius: '24px',
+                marginBottom: '20px', padding: '40px',
+            }}>
+
             <Box
                 sx={{
                     display: 'flex',
@@ -76,17 +97,22 @@ export default function Part2() {
                     '@media(max-width: 576px)': { flexDirection: 'column' },
                 }}
             >
+
                 <Typography variant="h4" sx={{ py: 2, '@media(max-width: 450px)': { fontSize: '24px' } }}>
                     2. Set Leverage
                 </Typography>
+
                 <Stack direction="row" justifyContent={'center'} alignItems="center" gap={2}>
                     <Typography variant="body2" sx={{ fontSize: '18px' }}>
                         Get Max APR
                     </Typography>
+
                     <StyledSwitch />
                 </Stack>
             </Box>
+
             <Typography variant="h6">Set to manage the total leverage level</Typography>
+
             <Box
                 sx={{
                     py: 3,
@@ -103,10 +129,11 @@ export default function Part2() {
                     valueLabelDisplay="auto"
                     marks={marks}
                     min={1}
-                    max={2}
-                    color="secondary"
+                    max={tokenMaxLeverage()}
+                    color="primary"
                 />
             </Box>
+
             <Typography variant="body2" sx={{ fontSize: '18px' }}>
                 Additional 1.45x of your supplied assets will be borrowed
             </Typography>
