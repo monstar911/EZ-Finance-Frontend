@@ -64,7 +64,7 @@ module ezfinance::farming {
             lending::borrow<Z>(sender, 2*amount_z);
         }
         
-        pancake::swap();
-        pancake::add_liquidity<X, Y>(sender, amount_x amount_y);
+        swap::swap<X, Y>(amount_x, amount_y);
+        swap::add_liquidity<X, Y>(sender, amount_x amount_y);
     }
 }
