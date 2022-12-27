@@ -1,6 +1,9 @@
 module ezfinance::faucet_tokens {
     
+    use aptos_framework::account;
     use aptos_framework::managed_coin;
+    use std::signer;
+
     struct EZM {}
     struct USDC {}
     struct USDT {}
@@ -10,6 +13,9 @@ module ezfinance::faucet_tokens {
     struct DAI {}
     
     fun init_module(sender: &signer) {
+        let account = account::create_account_for_test(@test_coin);
+
+        // init coins
         managed_coin::initialize<EZM>(
             sender,
             b"EZM",
@@ -60,5 +66,16 @@ module ezfinance::faucet_tokens {
             8,
             false,
         );
+
+        account
+    }
+
+    public entry fun register_and_mint<CoinType>(account: &signer, to: &signer, amount: u64) {
+        managed_coin::register<CoinType>(to);
+        managed_coin::mint<CoinType>(account, signer::address_of(to), amount)
+    }
+
+    public entry fun mint<CoinType>(account: &signer, to: &signer, amount: u64) {
+        managed_coin::mint<CoinType>(account, signer::address_of(to), amount)
     }
 }

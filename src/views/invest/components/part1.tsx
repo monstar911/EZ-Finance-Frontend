@@ -245,7 +245,7 @@ export default function Part1(props: any) {
                 <StyledInput
                     value={value}
                     placeholder="e.g 1.83"
-                    // onChange={(e: any) => setValue(e.target.value)}
+                    onChange={(e: any) => setValue(e.target.value)}
                     endAdornment={<InputAdornment position="end"></InputAdornment>}
                     sx={{ width: '100%' }}
                 />
