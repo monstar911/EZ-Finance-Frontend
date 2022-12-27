@@ -49,11 +49,13 @@ function ViewBase({ children }: IViewBaseProps) {
     return (
         <div style={{ backgroundImage: BgImage }}>
             <Header handleDrawerToggle={handleDrawerToggle} title="lend" />
+
             {isUpMd ? (
                 <Sidebar drawerOpen={true} drawerToggle={handleDrawerToggle} />
             ) : (
                 <Sidebar drawerOpen={mobileOpen} drawerToggle={handleDrawerToggle} />
             )}
+
             {/* main content */}
             <main
                 className={clsx([

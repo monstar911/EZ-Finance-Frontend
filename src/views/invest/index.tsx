@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Typography, Stack } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { makeStyles } from '@mui/styles';
@@ -64,6 +64,9 @@ const useStyles = makeStyles((theme: any) => ({
 export default function Invest() {
     const { poolid } = useParams();
     const classes = useStyles();
+
+    const [token, setToken] = useState('DAI');
+    const [amount, setAmount] = useState(0);
 
     const coins = {
         0: { img: BTCIcon, name: 'WBTC' },
@@ -142,6 +145,10 @@ export default function Invest() {
                             imgb={coins[Number(strArr[1])].img}
                             namea={coins[Number(strArr[0])].name}
                             nameb={coins[Number(strArr[1])].name}
+                            token={token}
+                            amount={amount}
+                            setToken={setToken}
+                            setAmount={setAmount}
                         />
                         <Part2 />
                         <Part3
@@ -167,6 +174,8 @@ export default function Invest() {
                             imgb={coins[Number(strArr[1])].img}
                             namea={coins[Number(strArr[0])].name}
                             nameb={coins[Number(strArr[1])].name}
+                            token={token}
+                            amount={amount}
                         />
                     </Box>
                 </Box>

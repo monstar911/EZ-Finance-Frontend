@@ -124,17 +124,13 @@ const StyledInput = styled(OutlinedInput)({
     },
 });
 
-const onGetFaucet = async (token: string) => {
-    // await web3?.getFaucet(token);
-}
-
 export default function Part1(props: any) {
-    const { imga, imgb, namea, nameb } = props;
+    const { imga, imgb, namea, nameb, token, amount, setToken, setAmount } = props;
     const classes = useStyles();
     const [selectValue, setSelectValue] = React.useState('dai');
     const [value, setValue] = React.useState('');
     const [alignment, setAlignment] = React.useState<string>('1');
-    const [token, setToken] = React.useState('');
+    // const [token, setToken] = React.useState('');
     const [supplyVal, setSupplyVal] = React.useState('100');
 
 
@@ -152,12 +148,16 @@ export default function Part1(props: any) {
 
         if (amount === '25') {
             setValue('' + trim(balance / 4, precision));
+            setAmount('' + trim(balance / 8, precision));
         } else if (amount === '50') {
             setValue('' + trim(balance / 2, precision));
+            setAmount('' + trim(balance / 4, precision));
         } else if (amount === '75') {
             setValue('' + trim(3 * balance / 4, precision));
+            setAmount('' + trim(3 * balance / 8, precision));
         } else if (amount === '100') {
             setValue('' + trim(balance, precision));
+            setAmount('' + trim(balance / 2, precision));
         }
     }
 
@@ -224,7 +224,7 @@ export default function Part1(props: any) {
                     >
                         {
                             faucetItems.map((item, index) => (
-                                <MenuItem key={index} value={item.value} onClick={() => onGetFaucet(item.value)} >
+                                <MenuItem key={index} value={item.value} onClick={() => setToken(item.tokenName)} >
                                     < Stack
                                         color={'#FFF'}
                                         // boder={'0'}

@@ -13,7 +13,6 @@ export interface IUserInfo {
     totalRewards: number;
 }
 
-
 export interface IAptosInterface {
     arcTotalSupply: number;
     poolInfo: any;
@@ -27,6 +26,7 @@ export interface IAptosInterface {
     deposit: Function;
     withdraw: Function;
     getFaucet: Function;
+    leverage_yield_farming: Function;
 }
 
 interface Props {
@@ -60,13 +60,11 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
             window?.martian.account().then((data: any) => {
                 setAddress(data.address);
             });
-        }
-        else if (isConnected && wallet === 'pontem') {
+        } else if (isConnected && wallet === 'pontem') {
             window?.pontem.account().then((data: any) => {
                 setAddress(data);
             });
-        }
-        else {
+        } else {
             setAddress(null);
         }
     }, [isConnected, wallet]);
@@ -77,7 +75,6 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
     }, [wallet]);
 
     // get pull information
-
     const getPoolInfo = async () => {
 
         const resOfPool = await client.getAccountResources(ezfinance);
@@ -90,15 +87,14 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
                     [symbol]: tokenData.deposited_amount / Math.pow(10, 8)
                 }))
             }
-
         })
     };
+
     useEffect(() => {
         getPoolInfo();
     }, []);
 
     // get user information
-
     const getUserInfo = async () => {
         if (address) {
             const resOfUser = await client.getAccountResources(address)
@@ -259,9 +255,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         await sleep(2)
         await getUserInfo();
         await getPoolInfo();
-
     };
-
 
     const withdraw = async (symbol: string, amount: number) => {
         if (wallet === '' || !isConnected) return;
@@ -291,7 +285,6 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
             // transaction = await window.pontem.generateTransaction(sender, payload);
         }
 
-
         if (isConnected && wallet === 'petra') {
             await window.aptos.signAndSubmitTransaction(transaction);
         } else if (isConnected && wallet === 'martian') {
@@ -303,7 +296,6 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         await sleep(2)
         await getUserInfo();
         await getPoolInfo();
-
     };
 
     const getFaucet = async (symbol: string) => {
@@ -333,6 +325,45 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
             // transaction = await window.pontem.generateTransaction(sender, payload);
         }
 
+        if (isConnected && wallet === 'petra') {
+            await window.aptos.signAndSubmitTransaction(transaction);
+        } else if (isConnected && wallet === 'martian') {
+            await window.martian.signAndSubmitTransaction(transaction);
+        } else if (isConnected && wallet === 'pontem') {
+            await window.pontem.signAndSubmit(payload);
+        }
+
+        await sleep(2)
+        await getUserInfo();
+        await getPoolInfo();
+    }
+
+    const leverage_yield_farming = async (symbol: string) => {
+
+        if (wallet === '' || !isConnected) return;
+        const tokenType = tokens[symbol];
+        const petraTransaction = {
+            arguments: [ezfinance],
+            function: ezfinance + '::faucet_provider::request',
+            type: 'entry_function_payload',
+            type_arguments: [tokenType],
+        };
+
+        const sender = address;
+        const payload = {
+            function: ezfinance + '::faucet_provider::request',
+            arguments: [ezfinance],
+            type_arguments: [tokenType],
+        };
+
+        let transaction;
+        if (wallet === 'petra') {
+            transaction = petraTransaction;
+        } else if (wallet === 'martian') {
+            transaction = await window.martian.generateTransaction(sender, payload);
+        } else if (wallet === 'pontem') {
+            // transaction = await window.pontem.generateTransaction(sender, payload);
+        }
 
         if (isConnected && wallet === 'petra') {
             await window.aptos.signAndSubmitTransaction(transaction);
@@ -345,10 +376,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         await sleep(2)
         await getUserInfo();
         await getPoolInfo();
-
     }
-
-
 
     const contextValue: IAptosInterface = {
         arcTotalSupply: 100000,
@@ -362,7 +390,8 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         claim,
         deposit,
         withdraw,
-        getFaucet
+        getFaucet,
+        leverage_yield_farming
     };
 
     return <Web3Context.Provider value={contextValue}> {children} </Web3Context.Provider>;

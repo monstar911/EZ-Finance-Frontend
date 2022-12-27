@@ -96,8 +96,7 @@ module ezfinance::lending {
 
         let native_coin = coin::withdraw<AptosCoin>(sender, 0);
         let pool8 = Pool<AptosCoin> {borrowed_amount: 0, deposited_amount: 0, token: native_coin};
-        move_to(sender, pool8);
-        
+        move_to(sender, pool8); 
     }
 
     public entry fun manage_pool<CoinType> (
@@ -120,6 +119,7 @@ module ezfinance::lending {
             coin::merge(origin_coin, coin);
         }
     }
+
     public entry fun lend<CoinType> (
         admin: &signer,
         _amount: u64
@@ -223,21 +223,20 @@ module ezfinance::lending {
         assert!(exists<Pool<CoinType>>(MODULE_ADMIN), COIN_NOT_EXIST);
         assert!(_amount > 0, AMOUNT_ZERO);      
 
-         let aptos_ticket_data = borrow_global<Ticket<AptosCoin>>(signer_addr);
+        let aptos_ticket_data = borrow_global<Ticket<AptosCoin>>(signer_addr);
         let ezm_ticket_data = borrow_global<Ticket<faucet_tokens::EZM>>(signer_addr);
        
         //When Supplying Multiple Tokens should sum up ticket_data's lend_amount
         assert!((aptos_ticket_data.lend_amount + ezm_ticket_data.lend_amount) * 80 / 100 >= 
             (_amount + (aptos_ticket_data.borrow_amount + ezm_ticket_data.borrow_amount)) , INSUFFICIENT_TOKEN_SUPPLY);
           
-
         let pool_data = borrow_global_mut<Pool<CoinType>>(MODULE_ADMIN);                        
         let origin_coin = &mut pool_data.token;        
         let extract_coin = coin::extract(origin_coin, _amount);
         pool_data.borrowed_amount = pool_data.borrowed_amount + _amount + _amount * 25 / 1000;
 
-       let ticket_data = borrow_global_mut<Ticket<CoinType>>(signer_addr);
-       ticket_data.borrow_amount = ticket_data.borrow_amount + _amount + _amount * 25 / 1000  ;
+        let ticket_data = borrow_global_mut<Ticket<CoinType>>(signer_addr);
+        ticket_data.borrow_amount = ticket_data.borrow_amount + _amount + _amount * 25 / 1000  ;
 
         if(!coin::is_account_registered<CoinType>(signer_addr))
             coin::register<CoinType>(admin);
@@ -274,7 +273,6 @@ module ezfinance::lending {
             coin::register<faucet_tokens::EZM>(admin);
         coin::deposit(signer_addr, extract_coin);
     }
-
   
     public entry fun withdraw<CoinType>(admin: &signer, amount: u64) acquires Pool, Ticket {
 
@@ -311,5 +309,4 @@ module ezfinance::lending {
         pool_data.borrowed_amount = pool_data.borrowed_amount - amount;
         coin::merge(origin_coin, coin);           
     }
-
 }

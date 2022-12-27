@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Stack, Slider, Switch } from '@mui/material';
+import { Box, Typography, Stack, Slider, Switch, Input } from '@mui/material';
 import { styled } from '@mui/system';
 import { trim } from "../../../helper/trim";
 
@@ -48,6 +48,26 @@ export default function Part2() {
     function slideValue(value: number) {
         return `${value}`;
     }
+
+    const [value, setValue] = React.useState<number | string | Array<number | string>>(
+        30,
+    );
+
+    const handleSliderChange = (event: Event, newValue: number | number[]) => {
+        setValue(newValue);
+    };
+
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setValue(event.target.value === '' ? '' : Number(event.target.value));
+    };
+
+    const handleBlur = () => {
+        if (value < 0) {
+            setValue(0);
+        } else if (value > 100) {
+            setValue(100);
+        }
+    };
 
     function tokenMaxLeverage() {
         const borrowFactor = 1.3;
@@ -131,12 +151,26 @@ export default function Part2() {
                     min={1}
                     max={tokenMaxLeverage()}
                     color="primary"
+                    value={typeof value === 'number' ? value : 0}
+                    onChange={handleSliderChange}
+                    aria-labelledby="input-slider"
                 />
+
+                {/* <Input
+                    value={value}
+                    size="small"
+                    onChange={handleInputChange}
+                    // onBlur={handleBlur}
+                    sx={{
+                        color: '#FFF'
+                    }}
+                /> */}
             </Box>
 
             <Typography variant="body2" sx={{ fontSize: '18px' }}>
-                Additional 1.45x of your supplied assets will be borrowed
+                Additional {value}x of your supplied assets will be borrowed
             </Typography>
         </Box>
     );
 }
+

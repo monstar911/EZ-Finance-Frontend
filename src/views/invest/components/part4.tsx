@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { IUserInfo, Web3Context } from '../../../context/Web3Context';
+
 import { Box, Typography, Stack, Button } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 
@@ -15,8 +17,19 @@ const useStyles = makeStyles((theme: any) => ({
 }));
 
 export default function Part4(props: any) {
-    const { imga, imgb, namea, nameb } = props;
+    const { imga, imgb, namea, nameb, token, amount } = props;
     const classes = useStyles();
+
+    const web3 = useContext(Web3Context)
+
+    const onClickProceedtoSummary = async () => {
+        console.log(namea);
+        console.log(nameb);
+        console.log(token);
+        console.log(amount);
+
+        await web3?.leverage_yield_farming(namea, nameb, token, amount);
+    }
 
     return (
         <Box className={'modal4'}
@@ -48,11 +61,13 @@ export default function Part4(props: any) {
                     <Typography variant="h6">Estimated APR</Typography>
                     <Typography variant="h5">9.79%</Typography>
                 </Box>
+
                 <Box sx={{ flex: '1' }}>
                     <Typography variant="h6">Your leverage</Typography>
                     <Typography variant="h5">2.27x</Typography>
                 </Box>
             </Box>
+
             <Box
                 sx={{
                     display: 'flex',
@@ -64,15 +79,18 @@ export default function Part4(props: any) {
                     <Typography variant="h5" sx={{ fontSize: '18px', py: 2 }}>
                         Total Supply
                     </Typography>
+
                     <Stack direction={'row'} alignItems="center" gap={1}>
                         <img src={imga} alt="" width={25} height={25} style={{ borderRadius: '50%' }} />
                         <Typography variant={'h6'}>0.056432 {namea}</Typography>
                     </Stack>
+
                     <Stack direction={'row'} alignItems="center" gap={1}>
                         <img src={imgb} alt="" width={25} height={25} style={{ borderRadius: '50%' }} />
                         <Typography variant={'h6'}>0 {nameb}</Typography>
                     </Stack>
                 </Box>
+
                 <Box sx={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: 1 }}>
                     <Typography variant="h5" sx={{ fontSize: '18px', py: 2 }}>
                         -$90.21
@@ -82,7 +100,9 @@ export default function Part4(props: any) {
                     <Typography variant="h6">$0.00</Typography>
                 </Box>
             </Box>
+
             <Box className={classes.devideLine} />
+
             <Box
                 sx={{
                     display: 'flex',
@@ -94,15 +114,18 @@ export default function Part4(props: any) {
                     <Typography variant="h5" sx={{ fontSize: '18px', py: 2 }}>
                         Total Debt
                     </Typography>
+
                     <Stack direction={'row'} alignItems="center" gap={1}>
                         <img src={imga} alt="" width={25} height={25} style={{ borderRadius: '50%' }} />
                         <Typography variant={'h6'}>0.056432 {namea}</Typography>
                     </Stack>
+
                     <Stack direction={'row'} alignItems="center" gap={1}>
                         <img src={imgb} alt="" width={25} height={25} style={{ borderRadius: '50%' }} />
                         <Typography variant={'h6'}>0 {nameb}</Typography>
                     </Stack>
                 </Box>
+
                 <Box sx={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: 1 }}>
                     <Typography variant="h5" sx={{ fontSize: '18px', py: 2 }}>
                         -$90.21
@@ -111,7 +134,9 @@ export default function Part4(props: any) {
                     <Typography variant="h6">$0.00</Typography>
                 </Box>
             </Box>
+
             <Box className={classes.devideLine} />
+
             <Box
                 sx={{
                     display: 'flex',
@@ -123,15 +148,18 @@ export default function Part4(props: any) {
                     <Typography variant="h5" sx={{ fontSize: '18px', py: 2 }}>
                         Position Value (after swap)
                     </Typography>
+
                     <Stack direction={'row'} alignItems="center" gap={1}>
                         <img src={imga} alt="" width={25} height={25} style={{ borderRadius: '50%' }} />
                         <Typography variant={'h6'}>0.056432 {namea}</Typography>
                     </Stack>
+
                     <Stack direction={'row'} alignItems="center" gap={1}>
                         <img src={imgb} alt="" width={25} height={25} style={{ borderRadius: '50%' }} />
                         <Typography variant={'h6'}>0 {nameb}</Typography>
                     </Stack>
                 </Box>
+
                 <Box sx={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: 1 }}>
                     <Typography variant="h5" sx={{ fontSize: '18px', py: 2 }}>
                         -$90.21
@@ -140,6 +168,7 @@ export default function Part4(props: any) {
                     <Typography variant="h6">$0.00</Typography>
                 </Box>
             </Box>
+
             <Button
                 sx={{
                     fontSize: '16px',
@@ -151,6 +180,7 @@ export default function Part4(props: any) {
                     padding: '20px',
                     mt: 3,
                 }}
+                onClick={onClickProceedtoSummary}
             >
                 Proceed to Summary
             </Button>
