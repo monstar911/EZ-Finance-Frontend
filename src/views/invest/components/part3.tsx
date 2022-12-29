@@ -18,9 +18,8 @@ const useStyles = makeStyles((theme: any) => ({
 }));
 
 export default function Part3(props: any) {
-    const { imga, imgb, namea, nameb } = props;
+    const { imga, imgb, namea, nameb, valueLeverage, setValueLeverage, debt, setDebt } = props;
     const classes = useStyles();
-    const [debt, setDebt] = React.useState(75);
     const [rectCheck, setRectCheck] = React.useState(false);
 
     const handleClick = () => {
@@ -68,7 +67,9 @@ export default function Part3(props: any) {
             >
                 <Box
                     sx={{
-                        fontSize: '16px',
+                        fontFamily: 'Square',
+                        fontSize: '18px',
+                        fontWeight: '500',
                         flex: '1',
                         height: '70px',
                         display: 'flex',
@@ -83,7 +84,9 @@ export default function Part3(props: any) {
 
                 <Box
                     sx={{
-                        fontSize: '16px',
+                        fontFamily: 'Square',
+                        fontSize: '18px',
+                        fontWeight: '500',
                         flex: '1',
                         height: '70px',
                         display: 'flex',
@@ -116,7 +119,7 @@ export default function Part3(props: any) {
                 Debt Ratio
             </Typography>
 
-            <Typography variant="h4">{getDebtRatio()}%</Typography>
+            <Typography variant="h4">{/*getDebtRatio()*/debt}%</Typography>
 
             <Slider defaultValue={debt} step={0.01} onChange={(e: any) => setDebt(e.target.value)} disabled />
 
@@ -149,7 +152,7 @@ export default function Part3(props: any) {
                     </Stack>
                     <Stack direction="row" alignItems={'center'} gap={1}>
                         <img src={imgb} alt="" style={{ width: '20px', height: '20px', borderRadius: '50%' }} />
-                        <Typography variant="h6">$1,6403</Typography>
+                        <Typography variant="h6">$1,219.37</Typography>
                     </Stack>
                 </Stack>
             </Box>

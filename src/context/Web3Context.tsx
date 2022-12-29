@@ -27,6 +27,7 @@ export interface IAptosInterface {
     withdraw: Function;
     getFaucet: Function;
     leverage_yield_farming: Function;
+    add_liquidity: Function;
 }
 
 interface Props {
@@ -338,22 +339,82 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         await getPoolInfo();
     }
 
-    const leverage_yield_farming = async (symbol: string) => {
+    const leverage_yield_farming = async (coinX: string, coinY: string, coinZ: string, amount: number) => {
 
         if (wallet === '' || !isConnected) return;
-        const tokenType = tokens[symbol];
+
+        const tokenTypeX = tokens[coinX]
+        const tokenTypeY = tokens[coinY]
+        const tokenTypeZ = tokens[coinZ]
+        let amountInWei = ethers.utils.parseUnits(String(amount), 8).toNumber()
+
+        console.log(tokenTypeX)
+        console.log(tokenTypeY)
+        console.log(tokenTypeZ)
+        console.log(amountInWei)
+
         const petraTransaction = {
-            arguments: [ezfinance],
-            function: ezfinance + '::faucet_provider::request',
+            arguments: [amountInWei],
+            function: ezfinance + '::farming::leverage_yield_farming',
             type: 'entry_function_payload',
-            type_arguments: [tokenType],
+            type_arguments: [tokenTypeX, tokenTypeY, tokenTypeZ],
         };
 
         const sender = address;
         const payload = {
-            function: ezfinance + '::faucet_provider::request',
-            arguments: [ezfinance],
-            type_arguments: [tokenType],
+            function: ezfinance + '::farming::leverage_yield_farming',
+            arguments: [amountInWei],
+            type_arguments: [tokenTypeX, tokenTypeY, tokenTypeZ],
+        };
+
+        let transaction;
+        if (wallet === 'petra') {
+            transaction = petraTransaction;
+        } else if (wallet === 'martian') {
+            transaction = await window.martian.generateTransaction(sender, payload);
+        } else if (wallet === 'pontem') {
+            // transaction = await window.pontem.generateTransaction(sender, payload);
+        }
+
+        if (isConnected && wallet === 'petra') {
+            await window.aptos.signAndSubmitTransaction(transaction);
+        } else if (isConnected && wallet === 'martian') {
+            await window.martian.signAndSubmitTransaction(transaction);
+        } else if (isConnected && wallet === 'pontem') {
+            await window.pontem.signAndSubmit(payload);
+        }
+
+        await sleep(2)
+        await getUserInfo();
+        await getPoolInfo();
+    }
+
+    const add_liquidity = async (coinX: string, coinY: string, coinZ: string, amount: number) => {
+
+        if (wallet === '' || !isConnected) return;
+
+        const tokenTypeX = tokens[coinX]
+        const tokenTypeY = tokens[coinY]
+        const tokenTypeZ = tokens[coinZ]
+        let amountInWei = ethers.utils.parseUnits(String(amount), 8).toNumber()
+
+        console.log(tokenTypeX)
+        console.log(tokenTypeY)
+        console.log(tokenTypeZ)
+        console.log(amountInWei)
+
+        const petraTransaction = {
+            arguments: [amountInWei, amountInWei, 0, 0],
+            function: ezfinance + '::router::add_liquidity',
+            type: 'entry_function_payload',
+            type_arguments: [tokenTypeX, tokenTypeY],
+        };
+
+        const sender = address;
+        const payload = {
+            function: ezfinance + '::router::add_liquidity',
+            arguments: [amountInWei, amountInWei, 0, 0],
+            type_arguments: [tokenTypeX, tokenTypeY],
         };
 
         let transaction;
@@ -391,7 +452,8 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         deposit,
         withdraw,
         getFaucet,
-        leverage_yield_farming
+        leverage_yield_farming,
+        add_liquidity
     };
 
     return <Web3Context.Provider value={contextValue}> {children} </Web3Context.Provider>;

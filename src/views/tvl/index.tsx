@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme: any) => ({
 export default function TVL() {
     const classes = useStyles();
 
-    const protocolData = ['LiquidSwap pools TVL', 'Pancakeswap TVL', 'AUX Exchange TVL'];
+    const protocolData = ['LiquidSwap pools TVL', 'PancakeSwap TVL', 'AUX Exchange TVL'];
     const coins = [
         {
             name: 'WBTC',

@@ -160,6 +160,8 @@ function Header({ handleDrawerToggle }: IHeader) {
     ]
 
     const onGetFaucet = async (token: string) => {
+        console.log('onGetFaucet: ', token);
+
         await web3?.getFaucet(token);
     }
 

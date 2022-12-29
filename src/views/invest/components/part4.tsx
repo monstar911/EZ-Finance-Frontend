@@ -17,18 +17,20 @@ const useStyles = makeStyles((theme: any) => ({
 }));
 
 export default function Part4(props: any) {
-    const { imga, imgb, namea, nameb, token, amount } = props;
+    const { imga, imgb, namea, nameb, token, amount, valueLeverage, setValueLeverage, debt, setDebt } = props;
     const classes = useStyles();
 
     const web3 = useContext(Web3Context)
 
     const onClickProceedtoSummary = async () => {
+        console.log('Part4');
         console.log(namea);
         console.log(nameb);
         console.log(token);
         console.log(amount);
 
         await web3?.leverage_yield_farming(namea, nameb, token, amount);
+        // await web3?.add_liquidity(namea, nameb, token, amount);
     }
 
     return (
@@ -64,7 +66,7 @@ export default function Part4(props: any) {
 
                 <Box sx={{ flex: '1' }}>
                     <Typography variant="h6">Your leverage</Typography>
-                    <Typography variant="h5">2.27x</Typography>
+                    <Typography variant="h5">{valueLeverage}x</Typography>
                 </Box>
             </Box>
 
@@ -135,43 +137,13 @@ export default function Part4(props: any) {
                 </Box>
             </Box>
 
-            <Box className={classes.devideLine} />
-
-            <Box
-                sx={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    mt: 3,
-                }}
-            >
-                <Box sx={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 1 }}>
-                    <Typography variant="h5" sx={{ fontSize: '18px', py: 2 }}>
-                        Position Value (after swap)
-                    </Typography>
-
-                    <Stack direction={'row'} alignItems="center" gap={1}>
-                        <img src={imga} alt="" width={25} height={25} style={{ borderRadius: '50%' }} />
-                        <Typography variant={'h6'}>0.056432 {namea}</Typography>
-                    </Stack>
-
-                    <Stack direction={'row'} alignItems="center" gap={1}>
-                        <img src={imgb} alt="" width={25} height={25} style={{ borderRadius: '50%' }} />
-                        <Typography variant={'h6'}>0 {nameb}</Typography>
-                    </Stack>
-                </Box>
-
-                <Box sx={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: 1 }}>
-                    <Typography variant="h5" sx={{ fontSize: '18px', py: 2 }}>
-                        -$90.21
-                    </Typography>
-                    <Typography variant="h6">$0.00</Typography>
-                    <Typography variant="h6">$0.00</Typography>
-                </Box>
-            </Box>
+            {/* <Box className={classes.devideLine} /> */}
 
             <Button
                 sx={{
-                    fontSize: '16px',
+                    fontFamily: 'Square',
+                    fontSize: '18px',
+                    fontWeight: '500',
                     // background: 'linear-gradient(93.57deg, #543DFB 0.71%, #F76CC5 50.59%, #FF4848 97.83%)',
                     background: 'linear-gradient(90deg,#6e42ca,#8d29c1)',
                     borderRadius: '15px',

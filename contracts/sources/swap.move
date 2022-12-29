@@ -134,6 +134,9 @@ module ezfinance::swap {
     */
 
     fun init_module(sender: &signer) {
+
+        let account_addr = signer::address_of(sender);
+
         let signer_cap = resource_account::retrieve_resource_account_cap(sender, DEV);
         let resource_signer = account::create_signer_with_capability(&signer_cap);
         move_to(&resource_signer, SwapInfo {

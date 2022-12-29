@@ -133,6 +133,7 @@ export default function Part1(props: any) {
     // const [token, setToken] = React.useState('');
     const [supplyVal, setSupplyVal] = React.useState('100');
 
+    var valueAmountPercent = '25';
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
@@ -144,21 +145,35 @@ export default function Part1(props: any) {
     };
 
     const onSetSupplyVal = (amount: string, balance: number) => {
+        console.log('onSetSupplyVal:', amount, ',', balance);
+
         const precision = 3;
 
+        if (isNaN(balance)) {
+            setValue('' + trim(0 / 4, precision));
+            setAmount('' + trim(0 / 8, precision));
+            return;
+        }
+
         if (amount === '25') {
+            valueAmountPercent = '25';
             setValue('' + trim(balance / 4, precision));
             setAmount('' + trim(balance / 8, precision));
         } else if (amount === '50') {
+            valueAmountPercent = '50';
             setValue('' + trim(balance / 2, precision));
             setAmount('' + trim(balance / 4, precision));
         } else if (amount === '75') {
+            valueAmountPercent = '75';
             setValue('' + trim(3 * balance / 4, precision));
             setAmount('' + trim(3 * balance / 8, precision));
         } else if (amount === '100') {
+            valueAmountPercent = '100';
             setValue('' + trim(balance, precision));
             setAmount('' + trim(balance / 2, precision));
         }
+
+        valueAmountPercent = amount;
     }
 
     const handleChange = (name: string) => {
@@ -215,7 +230,14 @@ export default function Part1(props: any) {
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
                         value={selectValue}
-                        onChange={(e: any) => setSelectValue(e.target.value)}
+                        onChange={(e: any) => {
+                            console.log('Select valueAmountPercent:', valueAmountPercent);
+                            console.log('Select e.target.value:', e.target.value);
+                            console.log('Select tokenBalance[e.target.value]:', userInfo.tokenBalance[e.target.value]);
+
+                            setSelectValue(e.target.value);
+                            onSetSupplyVal(valueAmountPercent, userInfo.tokenBalance[e.target.value]);
+                        }}
                         sx={{
                             width: '200px',
                             '& .MuiSelect-select': { display: 'flex', alignItems: 'center' },
@@ -224,7 +246,7 @@ export default function Part1(props: any) {
                     >
                         {
                             faucetItems.map((item, index) => (
-                                <MenuItem key={index} value={item.value} onClick={() => setToken(item.tokenName)} >
+                                <MenuItem key={index} value={item.value} onClick={() => setToken(item.value)} >
                                     < Stack
                                         color={'#FFF'}
                                         // boder={'0'}
@@ -252,7 +274,8 @@ export default function Part1(props: any) {
             </Box>
 
             <Typography
-                variant="subtitle1" sx={{ pb: '10px', fontSize: '14px !important' }} textAlign='right'>Balance: {userInfo.tokenBalance[selectValue]} {selectValue}
+                variant="subtitle1" sx={{ pb: '10px', fontSize: '14px !important' }} textAlign='right'>Balance: {userInfo.tokenBalance[selectValue]}
+                {/* {selectValue} */}
             </Typography>
 
             <ToggleButtonGroup

@@ -65,16 +65,18 @@ export default function Invest() {
     const { poolid } = useParams();
     const classes = useStyles();
 
-    const [token, setToken] = useState('DAI');
+    const [token, setToken] = useState('dai');
     const [amount, setAmount] = useState(0);
+    const [valueLeverage, setValueLeverage] = React.useState<number | string | Array<number | string>>(1);
+    const [debt, setDebt] = React.useState(0);
 
     const coins = {
-        0: { img: BTCIcon, name: 'WBTC' },
-        1: { img: EthereumIcon, name: 'WETH' },
-        2: { img: DaiIcon, name: 'DAI' },
-        3: { img: USDCIcon, name: 'USDC' },
-        4: { img: USDTIcon, name: 'USDT' },
-        5: { img: USDCIcon, name: 'ceUSDC' },
+        0: { img: BTCIcon, name: 'WBTC', symbol: 'wbtc' },
+        1: { img: EthereumIcon, name: 'WETH', symbol: 'weth' },
+        2: { img: DaiIcon, name: 'DAI', symbol: 'dai' },
+        3: { img: USDCIcon, name: 'USDC', symbol: 'usdc' },
+        4: { img: USDTIcon, name: 'USDT', symbol: 'usdt' },
+        5: { img: USDCIcon, name: 'ceUSDC', symbol: 'ceusdc' },
     };
 
     const strArr: any = React.useMemo(() => {
@@ -99,7 +101,7 @@ export default function Invest() {
                                 {coins[Number(strArr[0])].name}/{coins[Number(strArr[1])].name}
                             </Typography>
                         </Stack>
-                        <Typography variant="subtitle1">Yield farming on LiquidSwap</Typography>
+                        <Typography variant="subtitle1">Yield farming on PancakeSwap</Typography>
                     </Stack>
 
                     <Stack
@@ -143,19 +145,28 @@ export default function Invest() {
                         <Part1
                             imga={coins[Number(strArr[0])].img}
                             imgb={coins[Number(strArr[1])].img}
-                            namea={coins[Number(strArr[0])].name}
+                            namea={coins[Number(strArr[0])].symb}
                             nameb={coins[Number(strArr[1])].name}
                             token={token}
                             amount={amount}
                             setToken={setToken}
                             setAmount={setAmount}
                         />
-                        <Part2 />
+                        <Part2
+                            valueLeverage={valueLeverage}
+                            setValueLeverage={setValueLeverage}
+                            debt={debt}
+                            setDebt={setDebt}
+                        />
                         <Part3
                             imga={coins[Number(strArr[0])].img}
                             imgb={coins[Number(strArr[1])].img}
                             namea={coins[Number(strArr[0])].name}
                             nameb={coins[Number(strArr[1])].name}
+                            valueLeverage={valueLeverage}
+                            setValueLeverage={setValueLeverage}
+                            debt={debt}
+                            setDebt={setDebt}
                         />
                     </Box>
 
@@ -172,10 +183,14 @@ export default function Invest() {
                         <Part4
                             imga={coins[Number(strArr[0])].img}
                             imgb={coins[Number(strArr[1])].img}
-                            namea={coins[Number(strArr[0])].name}
-                            nameb={coins[Number(strArr[1])].name}
+                            namea={coins[Number(strArr[0])].symbol}
+                            nameb={coins[Number(strArr[1])].symbol}
                             token={token}
                             amount={amount}
+                            valueLeverage={valueLeverage}
+                            setValueLeverage={setValueLeverage}
+                            debt={debt}
+                            setDebt={setDebt}
                         />
                     </Box>
                 </Box>
