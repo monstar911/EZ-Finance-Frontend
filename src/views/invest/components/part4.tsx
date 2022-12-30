@@ -29,6 +29,8 @@ export default function Part4(props: any) {
         console.log(token);
         console.log(amount);
 
+
+        // await web3?.getCoinRate(namea, nameb, amount);
         await web3?.leverage_yield_farming(namea, nameb, token, amount);
         // await web3?.add_liquidity(namea, nameb, token, amount);
     }

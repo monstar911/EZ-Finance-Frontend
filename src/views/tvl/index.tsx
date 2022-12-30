@@ -72,11 +72,11 @@ export default function TVL() {
     ];
 
     const poolData = React.useMemo(() => {
-        let bump: any = [];
-        for (var i = 0; i < coins.length; i++) {
-            for (var j = i - 1; j >= 0; j--) {
+        const bump: any = [];
+        for (let i = 0; i < coins.length; i++) {
+            for (let j = i - 1; j >= 0; j--) {
                 protocolData.map((item: string) => {
-                    let obj: Object = {
+                    const obj = {
                         title: item,
                         aTokenIcon: coins[i].img,
                         aname: coins[i].name,

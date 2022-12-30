@@ -23,7 +23,9 @@ declare global {
 }
 
 declare module '@mui/styles/defaultTheme' {
-    interface DefaultTheme extends Theme {}
+    interface DefaultTheme extends Theme {
+        borderRadius: '4px',
+    }
 }
 
 const root = ReactDOM.createRoot(document.getElementById('root') as Element);

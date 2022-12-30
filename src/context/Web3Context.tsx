@@ -1,10 +1,26 @@
 import React, { ReactNode, useEffect, useState, createContext } from 'react';
-import { AptosClient } from 'aptos';
+import { AptosClient, CoinClient } from 'aptos';
 import { ezfinance, TokenPrice, tokens } from './constant'
 import { sleep } from '../helper/sleep';
 import { ethers } from 'ethers'
 
 const client = new AptosClient('https://fullnode.testnet.aptoslabs.com/v1');
+const coinClient = new CoinClient(client);
+
+import { MODULES_ACCOUNT, RESOURCES_ACCOUNT, TOKENS_MAPPING } from '../constants';
+import SDK from '../main';
+
+
+const sdk = new SDK({
+    nodeUrl: 'https://fullnode.testnet.aptoslabs.com/v1',
+    networkOptions: {
+        resourceAccount: RESOURCES_ACCOUNT,
+        moduleAccount: MODULES_ACCOUNT
+    }
+});
+
+const curves = sdk.curves;
+
 
 export interface IUserInfo {
     tokenBalance: Record<string, number>;
@@ -20,14 +36,16 @@ export interface IAptosInterface {
     tokenPrice: Record<string, number>;
     address: string | null;
     isConnected: boolean;
-    connect: Function;
-    disconnect: Function;
-    claim: Function;
-    deposit: Function;
-    withdraw: Function;
-    getFaucet: Function;
-    leverage_yield_farming: Function;
-    add_liquidity: Function;
+    connect: any;
+    disconnect: any;
+    claim: any;
+    deposit: any;
+    withdraw: any;
+    getFaucet: any;
+    checkBalance: any;
+    getCoinRate: any;
+    leverage_yield_farming: any;
+    add_liquidity: any;
 }
 
 interface Props {
@@ -221,7 +239,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         if (wallet === '' || !isConnected) return;
         const tokenType = tokens[symbol]
 
-        let amountInWei = ethers.utils.parseUnits(String(amount), 8).toNumber()
+        const amountInWei = ethers.utils.parseUnits(String(amount), 8).toNumber()
 
         const petraTransaction = {
             arguments: [amountInWei],
@@ -261,7 +279,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
     const withdraw = async (symbol: string, amount: number) => {
         if (wallet === '' || !isConnected) return;
         const tokenType = tokens[symbol]
-        let amountInWei = ethers.utils.parseUnits(String(amount), 8).toNumber()
+        const amountInWei = ethers.utils.parseUnits(String(amount), 8).toNumber()
 
         const petraTransaction = {
             arguments: [amountInWei],
@@ -339,6 +357,76 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         await getPoolInfo();
     }
 
+    const checkBalance = async () => {
+        const sender = address;
+
+        if (isConnected && wallet === 'petra') {
+            console.log(`Account balance: ${await coinClient.checkBalance(window?.aptos.account())}`);
+        } else if (isConnected && wallet === 'martian') {
+            console.log(`Account balance: ${await coinClient.checkBalance(window?.martian.account())}`);
+        } else if (isConnected && wallet === 'pontem') {
+            console.log(`Account balance: ${await coinClient.checkBalance(window?.pontem.account())}`);
+        } else {
+            console.log(`Account balance: 0`);
+        }
+    }
+
+    const getCoinRate = async (tokenFrom: string, tokenTo: string, amountFrom: number) => {
+        const sender = address;
+
+        // Register account with coin
+        // try {
+        //     const coinRegisterPayload = {
+        //         type: 'entry_function_payload',
+        //         function: '0x1::managed_coin::register',
+        //         type_arguments: [TOKENS_MAPPING.APTOS],
+        //         arguments: [],
+        //     }
+
+        //     if (isConnected && wallet === 'petra') {
+        //         const rawTxn = await window.aptos.generateTransaction(coinRegisterPayload);
+        //         const bcsTxn = await window.aptos.signTransaction(rawTxn);
+        //         const { hash } = await window.aptos.submitTransaction(bcsTxn);
+        //         await window.aptos.waitForTransaction(hash);
+        //     } else if (isConnected && wallet === 'martian') {
+        //         const rawTxn = await window.martian.generateTransaction(coinRegisterPayload);
+        //         const bcsTxn = await window.martian.signTransaction(rawTxn);
+        //         const { hash } = await window.martian.submitTransaction(bcsTxn);
+        //         await window.martian.waitForTransaction(hash);
+        //     } else if (isConnected && wallet === 'pontem') {
+        //         const rawTxn = await window.pontem.generateTransaction(coinRegisterPayload);
+        //         const bcsTxn = await window.pontem.signTransaction(rawTxn);
+        //         const { hash } = await window.pontem.submitTransaction(bcsTxn);
+        //         await window.pontem.waitForTransaction(hash);
+        //     }
+
+        //     // const rawTxn = await client.generateTransaction(sender.address(), coinRegisterPayload);
+        //     // const bcsTxn = await client.signTransaction(alice, rawTxn);
+        //     // const { hash } = await client.submitTransaction(bcsTxn);
+        //     // await client.waitForTransaction(hash);
+
+        //     console.log(`Coin ${tokenTo} successfully Registered to Alice account`);
+        //     // console.log(`Check on explorer: https://explorer.aptoslabs.com/txn/${hash}?network=${NETWORKS_MAPPING.TESTNET}`);
+        // } catch (e) {
+        //     console.log("Coin register error: ", e);
+        // }
+
+        // get Rate for USDT coin.
+        const usdtRate = await sdk.Swap.calculateRates({
+            fromToken: TOKENS_MAPPING.USDT,
+            toToken: TOKENS_MAPPING.APTOS,
+            amount: amountFrom,
+            curveType: 'uncorrelated',
+            interactiveToken: 'from',
+        });
+
+        console.log('SsdtRate: ', usdtRate);
+    }
+
+    // const getMinimumReceivedLP = async (tokenX: string, tokenY: string, amount: number) => {
+
+    // }
+
     const leverage_yield_farming = async (coinX: string, coinY: string, coinZ: string, amount: number) => {
 
         if (wallet === '' || !isConnected) return;
@@ -346,30 +434,78 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         const tokenTypeX = tokens[coinX]
         const tokenTypeY = tokens[coinY]
         const tokenTypeZ = tokens[coinZ]
-        let amountInWei = ethers.utils.parseUnits(String(amount), 8).toNumber()
+        const amountInWei = ethers.utils.parseUnits(String(amount), 8).toNumber()
 
         console.log(tokenTypeX)
         console.log(tokenTypeY)
         console.log(tokenTypeZ)
         console.log(amountInWei)
 
-        const petraTransaction = {
-            arguments: [amountInWei],
-            function: ezfinance + '::farming::leverage_yield_farming',
-            type: 'entry_function_payload',
-            type_arguments: [tokenTypeX, tokenTypeY, tokenTypeZ],
-        };
+
+        // const payload = await sdk.Liquidity.createAddLiquidityPayload({
+        //     fromToken: TOKENS_MAPPING.APTOS,
+        //     toToken: TOKENS_MAPPING.USDC,
+        //     fromAmount: 400, // 0.000004 APTOS
+        //     toAmount: 19, // 0.000019 USDC
+        //     interactiveToken: 'from',
+        //     slippage: 0.005,
+        //     curveType: 'uncorrelated',
+        // });
+
+
+        //get USDC amount
+        // const { rate, receiveLp } = await sdk.Liquidity.calculateRateAndMinReceivedLP({
+        //     fromToken: TOKENS_MAPPING.APTOS,
+        //     toToken: TOKENS_MAPPING.USDC,
+        //     amount: 100000000, // 1 APTOS
+        //     curveType: 'uncorrelated',
+        //     interactiveToken: 'from',
+        //     slippage: 0.005,
+        // });
+        // console.log(rate) // '4472498' ('4.472498' USDC)
+        // console.log(receiveLp) // '19703137' ('19.703137' Minimum Received LP)
+
+        // const payload = await sdk.Liquidity.createAddLiquidityPayload({
+        //     fromToken: TOKENS_MAPPING.APTOS,
+        //     toToken: TOKENS_MAPPING.USDC,
+        //     fromAmount: 100000000, // 1 APTOS
+        //     toAmount: 4472498, // '4.472498' USDC)
+        //     interactiveToken: 'from',
+        //     slippage: 0.005,
+        //     // stableSwapType: 'normal',
+        //     curveType: 'uncorrelated',
+        // })
+
+        // console.log(payload);
+
+        // console.log('sdk.Liquidity.createAddLiquidityPayload: ', payload);
+
+
+        // const payload = await sdk.Liquidity.createAddLiquidityPayload({
+        //     fromToken: TOKENS_MAPPING.APTOS,
+        //     toToken: TOKENS_MAPPING.USDT,
+        //     fromAmount: 100000000, // 0.1 APTOS
+        //     toAmount: Number(6980), // USDT
+        //     interactiveToken: 'from',
+        //     slippage: 0.005,
+        //     curveType: 'uncorrelated',
+        // });
+        // console.log('Add liquidity pool payload', payload);
 
         const sender = address;
         const payload = {
-            function: ezfinance + '::farming::leverage_yield_farming',
-            arguments: [amountInWei],
-            type_arguments: [tokenTypeX, tokenTypeY, tokenTypeZ],
+            arguments: [10100000, 101000, 10100000, 101000],
+            function: '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::add_liquidity',
+            type: 'entry_function_payload',
+            type_arguments: [TOKENS_MAPPING.USDT, '0x1::aptos_coin::AptosCoin', '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::curves::Uncorrelated'],
         };
+
+        console.log(payload);
 
         let transaction;
         if (wallet === 'petra') {
-            transaction = petraTransaction;
+            // transaction = await window.martian.generateTransaction(sender, payload);
+            // transaction = petraTransaction;
         } else if (wallet === 'martian') {
             transaction = await window.martian.generateTransaction(sender, payload);
         } else if (wallet === 'pontem') {
@@ -377,12 +513,38 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         }
 
         if (isConnected && wallet === 'petra') {
-            await window.aptos.signAndSubmitTransaction(transaction);
+            await window.aptos.signAndSubmitTransaction(payload);
         } else if (isConnected && wallet === 'martian') {
-            await window.martian.signAndSubmitTransaction(transaction);
+            // await window.martian.signAndSubmitTransaction(transaction);
+            const addLiquidityBcsTxn = await window.martian.signTransaction(transaction);
+            const { hash: addLiquidityHash } = await window.martian.submitTransaction(addLiquidityBcsTxn);
+            await client.waitForTransaction(addLiquidityHash);
+            console.log(`Add liquidity transaction with hash ${addLiquidityHash} is submitted`);
+            // console.log(`Check on explorer: https://explorer.aptoslabs.com/txn/${addLiquidityHash}?network=${NETWORKS_MAPPING.DEVNET}`);    
         } else if (isConnected && wallet === 'pontem') {
             await window.pontem.signAndSubmit(payload);
         }
+
+        // const addLiquidityRawTxn = await client.generateTransaction(alice.address(), addLiquidityPoolPayload);
+        // const addLiquidityBcsTxn = await client.signTransaction(alice, addLiquidityRawTxn);
+        // const { hash: addLiquidityHash } = await client.submitTransaction(addLiquidityBcsTxn);
+        // await client.waitForTransaction(addLiquidityHash);
+        // console.log(`Add liquidity transaction with hash ${addLiquidityHash} is submitted`);
+        // console.log(`Check on explorer: https://explorer.aptoslabs.com/txn/${addLiquidityHash}?network=${NETWORKS_MAPPING.DEVNET}`);
+
+
+
+        // const addLiquidityRawTxn = await client.generateTransaction(sender, addLiquidityPoolPayload);
+        // const addLiquidityBcsTxn = await client.signTransaction(alice, addLiquidityRawTxn);
+        // const { hash: addLiquidityHash } = await client.submitTransaction(addLiquidityBcsTxn);
+        // await client.waitForTransaction(addLiquidityHash);
+        // console.log(`Add liquidity transaction with hash ${addLiquidityHash} is submitted`);
+        // console.log(`Check on explorer: https://explorer.aptoslabs.com/txn/${addLiquidityHash}?network=${NETWORKS_MAPPING.DEVNET}`);
+
+
+
+
+
 
         await sleep(2)
         await getUserInfo();
@@ -396,7 +558,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         const tokenTypeX = tokens[coinX]
         const tokenTypeY = tokens[coinY]
         const tokenTypeZ = tokens[coinZ]
-        let amountInWei = ethers.utils.parseUnits(String(amount), 8).toNumber()
+        const amountInWei = ethers.utils.parseUnits(String(amount), 8).toNumber()
 
         console.log(tokenTypeX)
         console.log(tokenTypeY)
@@ -452,6 +614,8 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         deposit,
         withdraw,
         getFaucet,
+        checkBalance,
+        getCoinRate,
         leverage_yield_farming,
         add_liquidity
     };

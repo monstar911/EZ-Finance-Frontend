@@ -442,10 +442,10 @@ function Home() {
     ];
 
     const poolData = React.useMemo(() => {
-        let bump: any = [];
-        for (var i = 0; i < coins.length; i++) {
-            for (var j = i - 1; j >= 0; j--) {
-                let obj: Object = {
+        const bump: any = [];
+        for (let i = 0; i < coins.length; i++) {
+            for (let j = i - 1; j >= 0; j--) {
+                const obj = {
                     aTokenIcon: coins[i].img,
                     bTokenIcon: coins[j].img,
                     aname: coins[i].name,

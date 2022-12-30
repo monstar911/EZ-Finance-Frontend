@@ -133,7 +133,7 @@ export default function Part1(props: any) {
     // const [token, setToken] = React.useState('');
     const [supplyVal, setSupplyVal] = React.useState('100');
 
-    var valueAmountPercent = '25';
+    let valueAmountPercent = '25';
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
