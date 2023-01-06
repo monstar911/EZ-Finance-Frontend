@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Box, Typography, Stack, Slider, Switch, Input } from '@mui/material';
 import { styled } from '@mui/system';
 import { trim } from "../../../helper/trim";
+import { IUserInfo, Web3Context } from '../../../context/Web3Context';
 
 const StyledSwitch = styled(Switch)(({ theme }) => ({
     width: 40,
@@ -45,10 +46,35 @@ const StyledSwitch = styled(Switch)(({ theme }) => ({
 }));
 
 export default function Part2(props: any) {
-    const { valueLeverage, setValueLeverage, debt, setDebt } = props;
+    const { selectValue, setSelectValue, valueLeverage, setValueLeverage, token, amount, setToken, setAmount, debt, setDebt, estimatiedAPR, setAPR } = props;
+
+    const getDebtRatio = (balance: number, amountSupply: number, leverage: number) => {
+        console.log('getDebtRatio: balance, amountSupply, leverage', balance, amountSupply, leverage);
+
+        const total_debt_amount = balance + amountSupply * (leverage - 1);
+        const total_LP_amount = balance;
+        const borrow_factor = 1.3;
+        const collateral_factor = 0.8;
+        const borrow_credit = total_debt_amount * 0.8 * (leverage - 1) / 1.6; //0.8;
+        const collateral_credit = total_LP_amount * 1.05;
+        console.log('getDebtRatio: borrow, collateral', borrow_credit, collateral_credit, 100 * borrow_credit / collateral_credit);
+        return trim(100 * borrow_credit / collateral_credit, 2);
+        // setDebt(borrow_credit / collateral_credit);
+    }
+
+    const getEstimatedAPR = (leverage: number) => {
+        return trim(4.64 - (4.64 + 4.57) / 1.41 * (leverage - 1), 2);
+    }
+
+    const web3 = useContext(Web3Context)
+    const userInfo = web3?.userInfo as IUserInfo
+
     const handleSliderChange = (event: Event, newValue: number | number[]) => {
         setValueLeverage(newValue);
-        setDebt(newValue);
+
+        console.log('handleSliderChange: ', selectValue);
+        setDebt(getDebtRatio(userInfo.tokenBalance[selectValue], amount, newValue));
+        setAPR(getEstimatedAPR(newValue));
     };
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,6 +83,34 @@ export default function Part2(props: any) {
 
     function slideValue(value: number) {
         return `${value}`;
+    }
+
+    const [checked, setChecked] = React.useState(true);
+
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setChecked(event.target.checked);
+
+        if (checked == false) {
+            setValueLeverage(getMaxAPR()[0]);
+            setAPR(getMaxAPR()[1]);
+        }
+    };
+
+    function getMaxAPR() {
+        let maxIndex = -1;
+        let maxRatio = -100000;
+
+        for (let i = 1; i < +tokenMaxLeverage(); i += 0.01) {
+            const estAPR = +getEstimatedAPR(i);
+            console.log('getMaxAPR i: ', i, maxIndex, maxRatio, estAPR);
+
+            if (maxRatio < estAPR) {
+                maxIndex = i;
+                maxRatio = estAPR;
+            }
+        }
+        console.log('getMaxAPR: ', maxRatio);
+        return [maxIndex, maxRatio];
     }
 
     function tokenMaxLeverage() {
@@ -117,7 +171,11 @@ export default function Part2(props: any) {
                         Get Max APR
                     </Typography>
 
-                    <StyledSwitch />
+                    <StyledSwitch
+                        checked={checked}
+                        onChange={handleChange}
+                        inputProps={{ 'aria-label': 'controlled' }}
+                    />
                 </Stack>
             </Box>
 
@@ -140,6 +198,7 @@ export default function Part2(props: any) {
                     marks={marks}
                     min={1}
                     max={tokenMaxLeverage()}
+                    disabled={checked}
                     color="primary"
                     value={typeof valueLeverage === 'number' ? valueLeverage : 0}
                     onChange={handleSliderChange}

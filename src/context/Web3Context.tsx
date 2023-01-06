@@ -29,10 +29,19 @@ export interface IUserInfo {
     totalRewards: number;
 }
 
+export interface ICoinRate {
+    APTOS: number;
+    USDT: number;
+    BTC: number;
+    WETH: number;
+    USDC: number;
+}
+
 export interface IAptosInterface {
     arcTotalSupply: number;
     poolInfo: any;
     userInfo: IUserInfo;
+    coinRate: ICoinRate;
     tokenPrice: Record<string, number>;
     address: string | null;
     isConnected: boolean;
@@ -65,6 +74,14 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         deposit: {},
         claimable: false,
         totalRewards: 0,
+    });
+
+    const [coinRate, setCoinRate] = useState<ICoinRate>({
+        APTOS: 1,
+        USDT: 1,
+        BTC: 1,
+        WETH: 1,
+        USDC: 1,
     });
 
     const [poolInfo, setPoolInfo] = useState({});
@@ -150,6 +167,94 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
 
     useEffect(() => {
         getUserInfo();
+    }, [address]);
+
+    const getCoinRate = async () => {
+        const sender = address;
+
+        // Register account with coin
+        // try {
+        //     const coinRegisterPayload = {
+        //         type: 'entry_function_payload',
+        //         function: '0x1::managed_coin::register',
+        //         type_arguments: [TOKENS_MAPPING.APTOS],
+        //         arguments: [],
+        //     }
+
+        //     if (isConnected && wallet === 'petra') {
+        //         const rawTxn = await window.aptos.generateTransaction(coinRegisterPayload);
+        //         const bcsTxn = await window.aptos.signTransaction(rawTxn);
+        //         const { hash } = await window.aptos.submitTransaction(bcsTxn);
+        //         await window.aptos.waitForTransaction(hash);
+        //     } else if (isConnected && wallet === 'martian') {
+        //         const rawTxn = await window.martian.generateTransaction(coinRegisterPayload);
+        //         const bcsTxn = await window.martian.signTransaction(rawTxn);
+        //         const { hash } = await window.martian.submitTransaction(bcsTxn);
+        //         await window.martian.waitForTransaction(hash);
+        //     } else if (isConnected && wallet === 'pontem') {
+        //         const rawTxn = await window.pontem.generateTransaction(coinRegisterPayload);
+        //         const bcsTxn = await window.pontem.signTransaction(rawTxn);
+        //         const { hash } = await window.pontem.submitTransaction(bcsTxn);
+        //         await window.pontem.waitForTransaction(hash);
+        //     }
+
+        //     // const rawTxn = await client.generateTransaction(sender.address(), coinRegisterPayload);
+        //     // const bcsTxn = await client.signTransaction(alice, rawTxn);
+        //     // const { hash } = await client.submitTransaction(bcsTxn);
+        //     // await client.waitForTransaction(hash);
+
+        //     console.log(`Coin ${tokenTo} successfully Registered to Alice account`);
+        //     // console.log(`Check on explorer: https://explorer.aptoslabs.com/txn/${hash}?network=${NETWORKS_MAPPING.TESTNET}`);
+        // } catch (e) {
+        //     console.log("Coin register error: ", e);
+        // }
+
+
+        // get Rate for USDT coin.
+        const usdtRate = await sdk.Swap.calculateRates({
+            fromToken: TOKENS_MAPPING.USDT,
+            toToken: TOKENS_MAPPING.APTOS,
+            amount: 100000000,
+            curveType: 'uncorrelated',
+            interactiveToken: 'from',
+        });
+        console.log('usdtRate: ', usdtRate);
+
+        // get Rate for BTC coin.
+        const btcRate = await sdk.Swap.calculateRates({
+            fromToken: TOKENS_MAPPING.BTC,
+            toToken: TOKENS_MAPPING.APTOS,
+            amount: 100000000,
+            curveType: 'uncorrelated',
+            interactiveToken: 'from',
+        });
+        console.log('btcRate: ', btcRate);
+
+        // get Rate for USDC coin.
+        const usdcRate = await sdk.Swap.calculateRates({
+            fromToken: TOKENS_MAPPING.USDC,
+            toToken: TOKENS_MAPPING.APTOS,
+            amount: 100000000,
+            curveType: 'uncorrelated',
+            interactiveToken: 'from',
+        });
+        console.log('usdcRate: ', usdcRate);
+
+        // get Rate for WETH coin.
+        const wethRate = await sdk.Swap.calculateRates({
+            fromToken: TOKENS_MAPPING.WETH,
+            toToken: TOKENS_MAPPING.APTOS,
+            amount: 100000000,
+            curveType: 'uncorrelated',
+            interactiveToken: 'from',
+        });
+        console.log('wethRate: ', wethRate);
+
+        setCoinRate(usdtRate, btcRate, wethRate, usdcRate);
+    }
+
+    useEffect(() => {
+        getCoinRate();
     }, [address]);
 
     const connect = async (wallet: string) => {
@@ -371,58 +476,6 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         }
     }
 
-    const getCoinRate = async (tokenFrom: string, tokenTo: string, amountFrom: number) => {
-        const sender = address;
-
-        // Register account with coin
-        // try {
-        //     const coinRegisterPayload = {
-        //         type: 'entry_function_payload',
-        //         function: '0x1::managed_coin::register',
-        //         type_arguments: [TOKENS_MAPPING.APTOS],
-        //         arguments: [],
-        //     }
-
-        //     if (isConnected && wallet === 'petra') {
-        //         const rawTxn = await window.aptos.generateTransaction(coinRegisterPayload);
-        //         const bcsTxn = await window.aptos.signTransaction(rawTxn);
-        //         const { hash } = await window.aptos.submitTransaction(bcsTxn);
-        //         await window.aptos.waitForTransaction(hash);
-        //     } else if (isConnected && wallet === 'martian') {
-        //         const rawTxn = await window.martian.generateTransaction(coinRegisterPayload);
-        //         const bcsTxn = await window.martian.signTransaction(rawTxn);
-        //         const { hash } = await window.martian.submitTransaction(bcsTxn);
-        //         await window.martian.waitForTransaction(hash);
-        //     } else if (isConnected && wallet === 'pontem') {
-        //         const rawTxn = await window.pontem.generateTransaction(coinRegisterPayload);
-        //         const bcsTxn = await window.pontem.signTransaction(rawTxn);
-        //         const { hash } = await window.pontem.submitTransaction(bcsTxn);
-        //         await window.pontem.waitForTransaction(hash);
-        //     }
-
-        //     // const rawTxn = await client.generateTransaction(sender.address(), coinRegisterPayload);
-        //     // const bcsTxn = await client.signTransaction(alice, rawTxn);
-        //     // const { hash } = await client.submitTransaction(bcsTxn);
-        //     // await client.waitForTransaction(hash);
-
-        //     console.log(`Coin ${tokenTo} successfully Registered to Alice account`);
-        //     // console.log(`Check on explorer: https://explorer.aptoslabs.com/txn/${hash}?network=${NETWORKS_MAPPING.TESTNET}`);
-        // } catch (e) {
-        //     console.log("Coin register error: ", e);
-        // }
-
-        // get Rate for USDT coin.
-        const usdtRate = await sdk.Swap.calculateRates({
-            fromToken: TOKENS_MAPPING.USDT,
-            toToken: TOKENS_MAPPING.APTOS,
-            amount: amountFrom,
-            curveType: 'uncorrelated',
-            interactiveToken: 'from',
-        });
-
-        console.log('SsdtRate: ', usdtRate);
-    }
-
     // const getMinimumReceivedLP = async (tokenX: string, tokenY: string, amount: number) => {
 
     // }
@@ -434,7 +487,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         const tokenTypeX = tokens[coinX]
         const tokenTypeY = tokens[coinY]
         const tokenTypeZ = tokens[coinZ]
-        const amountInWei = ethers.utils.parseUnits(String(amount), 8).toNumber()
+        const amountInWei = ethers.utils.parseUnits(String(amount), 7).toNumber()
 
         console.log(tokenTypeX)
         console.log(tokenTypeY)
@@ -494,7 +547,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
 
         const sender = address;
         const payload = {
-            arguments: [10100000, 101000, 10100000, 101000],
+            arguments: [amountInWei, 100000, amountInWei, 100000],
             function: '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::add_liquidity',
             type: 'entry_function_payload',
             type_arguments: [TOKENS_MAPPING.USDT, '0x1::aptos_coin::AptosCoin', '0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::curves::Uncorrelated'],
@@ -558,7 +611,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         const tokenTypeX = tokens[coinX]
         const tokenTypeY = tokens[coinY]
         const tokenTypeZ = tokens[coinZ]
-        const amountInWei = ethers.utils.parseUnits(String(amount), 8).toNumber()
+        const amountInWei = ethers.utils.parseUnits(String(10), 8).toNumber()
 
         console.log(tokenTypeX)
         console.log(tokenTypeY)
@@ -605,6 +658,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         arcTotalSupply: 100000,
         poolInfo,
         userInfo,
+        coinRate,
         tokenPrice: TokenPrice,
         address,
         isConnected,

@@ -65,10 +65,17 @@ export default function Invest() {
     const { poolid } = useParams();
     const classes = useStyles();
 
+    const [selectValue, setSelectValue] = useState('dai');
+
+    const [index, setIndex] = useState(0);
     const [token, setToken] = useState('dai');
+    const [valueAPT, setValueAPT] = useState('0');
+    const [valueToken, setValueToken] = useState('0');
+
     const [amount, setAmount] = useState(0);
-    const [valueLeverage, setValueLeverage] = React.useState<number | string | Array<number | string>>(1);
-    const [debt, setDebt] = React.useState(0);
+    const [valueLeverage, setValueLeverage] = useState<number | string | Array<number | string>>(1);
+    const [debt, setDebt] = useState<number | string | Array<number | string>>(0);
+    const [estimatiedAPR, setAPR] = useState(0)
 
     const coins = {
         0: { img: BTCIcon, name: 'WBTC', symbol: 'wbtc' },
@@ -101,7 +108,7 @@ export default function Invest() {
                                 {coins[Number(strArr[0])].name}/{coins[Number(strArr[1])].name}
                             </Typography>
                         </Stack>
-                        <Typography variant="subtitle1">Yield farming on PancakeSwap</Typography>
+                        <Typography variant="subtitle1">Yield farming on LiquidSwap</Typography>
                     </Stack>
 
                     <Stack
@@ -147,22 +154,41 @@ export default function Invest() {
                             imgb={coins[Number(strArr[1])].img}
                             namea={coins[Number(strArr[0])].symb}
                             nameb={coins[Number(strArr[1])].name}
+                            selectValue={selectValue}
+                            setSelectValue={setSelectValue}
+                            index={index}
+                            setIndex={setIndex}
+                            token={token}
+                            setToken={setToken}
+                            amount={amount}
+                            setAmount={setAmount}
+                            valueAPT={valueAPT}
+                            setValueAPT={setValueAPT}
+                            valueToken={valueToken}
+                            setValueToken={setValueToken}
+                        />
+                        <Part2
+                            selectValue={selectValue}
+                            setSelectValue={setSelectValue}
+                            valueLeverage={valueLeverage}
+                            setValueLeverage={setValueLeverage}
                             token={token}
                             amount={amount}
                             setToken={setToken}
                             setAmount={setAmount}
-                        />
-                        <Part2
-                            valueLeverage={valueLeverage}
-                            setValueLeverage={setValueLeverage}
                             debt={debt}
                             setDebt={setDebt}
+                            estimatiedAPR={estimatiedAPR}
+                            setAPR={setAPR}
                         />
                         <Part3
                             imga={coins[Number(strArr[0])].img}
                             imgb={coins[Number(strArr[1])].img}
                             namea={coins[Number(strArr[0])].name}
                             nameb={coins[Number(strArr[1])].name}
+                            index={index}
+                            setIndex={setIndex}
+                            amount={amount}
                             valueLeverage={valueLeverage}
                             setValueLeverage={setValueLeverage}
                             debt={debt}
@@ -185,12 +211,20 @@ export default function Invest() {
                             imgb={coins[Number(strArr[1])].img}
                             namea={coins[Number(strArr[0])].symbol}
                             nameb={coins[Number(strArr[1])].symbol}
+                            index={index}
+                            setIndex={setIndex}
                             token={token}
                             amount={amount}
                             valueLeverage={valueLeverage}
                             setValueLeverage={setValueLeverage}
                             debt={debt}
                             setDebt={setDebt}
+                            estimatiedAPR={estimatiedAPR}
+                            setAPR={setAPR}
+                            valueAPT={valueAPT}
+                            setValueAPT={setValueAPT}
+                            valueToken={valueToken}
+                            setValueToken={setValueToken}
                         />
                     </Box>
                 </Box>

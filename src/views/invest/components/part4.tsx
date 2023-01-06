@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { IUserInfo, Web3Context } from '../../../context/Web3Context';
 
 import { Box, Typography, Stack, Button } from '@mui/material';
@@ -6,6 +6,17 @@ import { makeStyles } from '@mui/styles';
 
 import a from '../../../asset/icons/Aptos.png';
 import b from '../../../asset/icons/crypto-usdc.png';
+
+import LpIcon from '../../../asset/icons/LpToken.png'
+import EzmIcon from '../../../asset/icons/EZM.png'
+import AptosIcon from '../../../asset/icons/Aptos.png'
+import BtcIcon from '../../../asset/icons/crypto-btc.svg'
+import UsdcIcon from '../../../asset/icons/crypto-usdc.png'
+import UsdtIcon from '../../../asset/icons/crypto-usdt.png'
+import EthereumIcon from '../../../asset/icons/crypto-ethereum.png'
+import DaiIcon from '../../../asset/icons/crypto-dai.svg'
+import { trim } from '../../../helper/trim';
+
 
 const useStyles = makeStyles((theme: any) => ({
     devideLine: {
@@ -17,12 +28,13 @@ const useStyles = makeStyles((theme: any) => ({
 }));
 
 export default function Part4(props: any) {
-    const { imga, imgb, namea, nameb, token, amount, valueLeverage, setValueLeverage, debt, setDebt } = props;
+    const { imga, imgb, namea, nameb, index, setIndex, token, amount, valueLeverage, setValueLeverage, debt, setDebt,
+        estimatiedAPR, setAPR, valueAPT, setValueAPT, valueToken, setValueToken } = props;
     const classes = useStyles();
 
     const web3 = useContext(Web3Context)
 
-    const onClickProceedtoSummary = async () => {
+    const onClickConfirm = async () => {
         console.log('Part4');
         console.log(namea);
         console.log(nameb);
@@ -30,10 +42,37 @@ export default function Part4(props: any) {
         console.log(amount);
 
 
-        // await web3?.getCoinRate(namea, nameb, amount);
-        await web3?.leverage_yield_farming(namea, nameb, token, amount);
-        // await web3?.add_liquidity(namea, nameb, token, amount);
+        // await web3?.leverage_yield_farming(namea, nameb, token, amount);
+        await web3?.add_liquidity(namea, nameb, token, amount);
     }
+
+    const faucetItems = [
+        {
+            value: 'dai',
+            logo: DaiIcon,
+            tokenName: 'DAI'
+        }, {
+            value: 'usdc',
+            logo: UsdcIcon,
+            tokenName: 'USDC'
+        }, {
+            value: 'usdt',
+            logo: UsdtIcon,
+            tokenName: 'USDT'
+        }, {
+            value: 'ceUsdc',
+            logo: UsdcIcon,
+            tokenName: 'ceUSDC'
+        }, {
+            value: 'wbtc',
+            logo: BtcIcon,
+            tokenName: 'WBTC'
+        }, {
+            value: 'weth',
+            logo: EthereumIcon,
+            tokenName: 'WETH'
+        }
+    ]
 
     return (
         <Box className={'modal4'}
@@ -63,7 +102,7 @@ export default function Part4(props: any) {
             >
                 <Box sx={{ flex: '1' }}>
                     <Typography variant="h6">Estimated APR</Typography>
-                    <Typography variant="h5">9.79%</Typography>
+                    <Typography variant="h5">{estimatiedAPR}%</Typography>
                 </Box>
 
                 <Box sx={{ flex: '1' }}>
@@ -85,14 +124,24 @@ export default function Part4(props: any) {
                     </Typography>
 
                     <Stack direction={'row'} alignItems="center" gap={1}>
-                        <img src={imga} alt="" width={25} height={25} style={{ borderRadius: '50%' }} />
-                        <Typography variant={'h6'}>0.056432 {namea}</Typography>
+                        <img src={EzmIcon} alt="ezm" width={25} height={25} style={{ borderRadius: '50%' }} />
+                        <Typography variant={'h6'}> {valueAPT} {'EZM'}</Typography>
                     </Stack>
 
                     <Stack direction={'row'} alignItems="center" gap={1}>
+                        <img src={AptosIcon} alt="Aptos" width={25} height={25} style={{ borderRadius: '50%' }} />
+                        <Typography variant={'h6'}> {valueAPT} {'APT'}</Typography>
+                    </Stack>
+
+                    <Stack direction={'row'} alignItems="center" gap={1}>
+                        <img src={LpIcon} alt="lp" width={25} height={25} style={{ borderRadius: '50%' }} />
+                        <Typography variant={'h6'}> {valueAPT} {'LP'}</Typography>
+                    </Stack>
+
+                    {/* <Stack direction={'row'} alignItems="center" gap={1}>
                         <img src={imgb} alt="" width={25} height={25} style={{ borderRadius: '50%' }} />
                         <Typography variant={'h6'}>0 {nameb}</Typography>
-                    </Stack>
+                    </Stack> */}
                 </Box>
 
                 <Box sx={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -126,13 +175,13 @@ export default function Part4(props: any) {
 
                     <Stack direction={'row'} alignItems="center" gap={1}>
                         <img src={imgb} alt="" width={25} height={25} style={{ borderRadius: '50%' }} />
-                        <Typography variant={'h6'}>0 {nameb}</Typography>
+                        <Typography variant={'h6'}>0.056432 {nameb}</Typography>
                     </Stack>
                 </Box>
 
                 <Box sx={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: 1 }}>
                     <Typography variant="h5" sx={{ fontSize: '18px', py: 2 }}>
-                        -$90.21
+                        ~$90.21
                     </Typography>
                     <Typography variant="h6">$0.00</Typography>
                     <Typography variant="h6">$0.00</Typography>
@@ -154,9 +203,9 @@ export default function Part4(props: any) {
                     padding: '20px',
                     mt: 3,
                 }}
-                onClick={onClickProceedtoSummary}
+                onClick={onClickConfirm}
             >
-                Proceed to Summary
+                Confirm
             </Button>
         </Box>
     );

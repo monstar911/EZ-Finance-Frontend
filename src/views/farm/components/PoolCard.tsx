@@ -137,7 +137,7 @@ function PoolCard(props: any) {
                         }}
                     >
                         <Common_FillButton
-                            content={'Farm up to ' + (Math.random() * 1 + 1).toFixed(2) + 'x'}
+                            content={'Farm up to ' + /*(Math.random() * 1 + 1).toFixed(2) +*/ '1.00x'}
                             onClick={() => navigate(`/farm/${param}`)}
                         />
                         <Box

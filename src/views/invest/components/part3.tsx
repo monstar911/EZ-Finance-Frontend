@@ -6,6 +6,15 @@ import a from '../../../asset/icons/Aptos.png';
 import b from '../../../asset/icons/crypto-usdc.png';
 import { trim } from '../../../helper/trim';
 
+import LpIcon from '../../../asset/icons/LpToken.png'
+import EzmIcon from '../../../asset/icons/EZM.png'
+import AptosIcon from '../../../asset/icons/Aptos.png'
+import BtcIcon from '../../../asset/icons/crypto-btc.svg'
+import UsdcIcon from '../../../asset/icons/crypto-usdc.png'
+import UsdtIcon from '../../../asset/icons/crypto-usdt.png'
+import EthereumIcon from '../../../asset/icons/crypto-ethereum.png'
+import DaiIcon from '../../../asset/icons/crypto-dai.svg'
+
 const useStyles = makeStyles((theme: any) => ({
     left: {
         left: '5px',
@@ -18,7 +27,7 @@ const useStyles = makeStyles((theme: any) => ({
 }));
 
 export default function Part3(props: any) {
-    const { imga, imgb, namea, nameb, valueLeverage, setValueLeverage, debt, setDebt } = props;
+    const { imga, imgb, namea, nameb, index, setIndex, amount, valueLeverage, setValueLeverage, debt, setDebt } = props;
     const classes = useStyles();
     const [rectCheck, setRectCheck] = React.useState(false);
 
@@ -26,16 +35,33 @@ export default function Part3(props: any) {
         setRectCheck(!rectCheck);
     };
 
-    const getDebtRatio = () => {
-        const total_debt_amount = 300;
-        const total_LP_amount = 200;
-        const borrow_factor = 1.3;
-        const collateral_factor = 0.8;
-        const borrow_credit = total_debt_amount * borrow_factor;
-        const collateral_credit = total_LP_amount * collateral_factor;
-        return trim(borrow_credit / collateral_credit, 2);
-        // setDebt(borrow_credit / collateral_credit);
-    }
+    const faucetItems = [
+        {
+            value: 'dai',
+            logo: DaiIcon,
+            tokenName: 'DAI'
+        }, {
+            value: 'usdc',
+            logo: UsdcIcon,
+            tokenName: 'USDC'
+        }, {
+            value: 'usdt',
+            logo: UsdtIcon,
+            tokenName: 'USDT'
+        }, {
+            value: 'ceUsdc',
+            logo: UsdcIcon,
+            tokenName: 'ceUSDC'
+        }, {
+            value: 'wbtc',
+            logo: BtcIcon,
+            tokenName: 'WBTC'
+        }, {
+            value: 'weth',
+            logo: EthereumIcon,
+            tokenName: 'WETH'
+        }
+    ]
 
     return (
         <Box
@@ -48,80 +74,20 @@ export default function Part3(props: any) {
                 3. Borrow Assets
             </Typography>
 
-            <Typography variant="h6">Select your option to borrow assets in order to open a new position</Typography>
-
-            <Box
-                onClick={handleClick}
-                sx={{
-                    // background: '#241F3E',
-                    background: '#43395b',
-                    borderRadius: '15px',
-                    height: '80px',
-                    mt: 2,
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    position: 'relative',
-                    '@media(max-width: 500px)': { textAlign: 'center' },
-                }}
-            >
-                <Box
-                    sx={{
-                        fontFamily: 'Square',
-                        fontSize: '18px',
-                        fontWeight: '500',
-                        flex: '1',
-                        height: '70px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        zIndex: 1,
-                        userSelect: 'none',
-                    }}
-                >
-                    Minimize Price Impact
-                </Box>
-
-                <Box
-                    sx={{
-                        fontFamily: 'Square',
-                        fontSize: '18px',
-                        fontWeight: '500',
-                        flex: '1',
-                        height: '70px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        zIndex: 1,
-                        userSelect: 'none',
-                    }}
-                >
-                    Custom
-                </Box>
-
-                <Box
-                    sx={{
-                        // background: 'linear-gradient(93.57deg, #543DFB 0.71%, #F76CC5 50.59%, #FF4848 97.83%)',
-                        background: 'linear-gradient(90deg,#6e42ca,#8d29c1)',
-                        width: '50%',
-                        height: '70px',
-                        position: 'absolute',
-                        top: '50%',
-                        transform: 'translateY(-50%)',
-                        borderRadius: '13px',
-                        zIndex: 0,
-                    }}
-                    className={rectCheck ? classes.right : classes.left}
-                ></Box>
-            </Box>
-
-            <Typography variant="h6" sx={{ my: 3 }}>
+            <Typography variant="h6" sx={{ mb: 3 }}>
                 Debt Ratio
             </Typography>
 
             <Typography variant="h4">{/*getDebtRatio()*/debt}%</Typography>
 
-            <Slider defaultValue={debt} step={0.01} onChange={(e: any) => setDebt(e.target.value)} disabled />
+            <Slider
+                debt={typeof debt === 'number' ? debt : 0}
+                step={0.01}
+                onChange={(e: any) => setDebt(e.target.value)}
+                disabled
+                aria-labelledby="input-slider"
+                value={debt}
+            />
 
             <Box sx={{ p: 4, border: '1px solid rgba(255,255,255,.3)', borderRadius: '13px', mt: 3 }}>
                 <Typography variant="body1" sx={{ fontSize: '21px' }}>
@@ -156,6 +122,7 @@ export default function Part3(props: any) {
                     </Stack>
                 </Stack>
             </Box>
+
             <Typography variant="body1" sx={{ fontSize: '18px', my: 2 }}>
                 Borrow Assets
             </Typography>
@@ -179,21 +146,20 @@ export default function Part3(props: any) {
                 }}
             >
                 <Stack direction={'row'} alignItems="center" gap={2}>
-                    <img src={imga} alt="" style={{ width: '50px', height: '50px', borderRadius: '50%' }} />
+                    <img src={imga} alt="" style={{ width: '40px', height: '40px', borderRadius: '50%' }} />
                     <Stack direction={'column'}>
                         <Typography variant="h5" sx={{ fontSize: '22px', fontWeight: 700 }}>
-                            102.19 {namea}
+                            {trim(2 * (valueLeverage - 1) * amount, 3)} {namea}
                         </Typography>
-                        <Typography variant="h6">-$102.45</Typography>
+                        <Typography variant="h6">~${ }</Typography>
                     </Stack>
-                </Stack>
-                <Stack direction={'row'} alignItems="center" gap={2}>
-                    <img src={imgb} alt="" style={{ width: '50px', height: '50px', borderRadius: '50%' }} />
+
+                    <img src={imgb} alt="" style={{ width: '40px', height: '40px', borderRadius: '50%' }} />
                     <Stack direction={'column'}>
                         <Typography variant="h5" sx={{ fontSize: '22px', fontWeight: 700 }}>
-                            102.19 {nameb}
+                            {trim(2 * (valueLeverage - 1) * amount, 3)} {nameb}
                         </Typography>
-                        <Typography variant="h6">-$102.45</Typography>
+                        <Typography variant="h6">~${ }</Typography>
                     </Stack>
                 </Stack>
             </Box>

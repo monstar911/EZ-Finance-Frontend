@@ -17,17 +17,19 @@ import {
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { styled } from '@mui/system';
+import { IUserInfo, Web3Context } from '../../../context/Web3Context';
+import { trim } from '../../../helper/trim';
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
+import LpIcon from '../../../asset/icons/LpToken.png'
+import EzmIcon from '../../../asset/icons/EZM.png'
 import AptosIcon from '../../../asset/icons/Aptos.png'
 import BtcIcon from '../../../asset/icons/crypto-btc.svg'
 import UsdcIcon from '../../../asset/icons/crypto-usdc.png'
 import UsdtIcon from '../../../asset/icons/crypto-usdt.png'
 import EthereumIcon from '../../../asset/icons/crypto-ethereum.png'
 import DaiIcon from '../../../asset/icons/crypto-dai.svg'
-import { IUserInfo, Web3Context } from '../../../context/Web3Context';
-import { trim } from '../../../helper/trim';
 
 const faucetItems = [
     {
@@ -125,10 +127,10 @@ const StyledInput = styled(OutlinedInput)({
 });
 
 export default function Part1(props: any) {
-    const { imga, imgb, namea, nameb, token, amount, setToken, setAmount } = props;
+    const { imga, imgb, namea, nameb, selectValue, setSelectValue, index, setIndex, token, setToken,
+        amount, setAmount, valueAPT, setValueAPT, valueToken, setValueToken } = props;
+
     const classes = useStyles();
-    const [selectValue, setSelectValue] = React.useState('dai');
-    const [value, setValue] = React.useState('');
     const [alignment, setAlignment] = React.useState<string>('1');
     // const [token, setToken] = React.useState('');
     const [supplyVal, setSupplyVal] = React.useState('100');
@@ -150,26 +152,26 @@ export default function Part1(props: any) {
         const precision = 3;
 
         if (isNaN(balance)) {
-            setValue('' + trim(0 / 4, precision));
+            setValueToken('' + trim(0 / 4, precision));
             setAmount('' + trim(0 / 8, precision));
             return;
         }
 
         if (amount === '25') {
             valueAmountPercent = '25';
-            setValue('' + trim(balance / 4, precision));
+            setValueToken('' + trim(balance / 4, precision));
             setAmount('' + trim(balance / 8, precision));
         } else if (amount === '50') {
             valueAmountPercent = '50';
-            setValue('' + trim(balance / 2, precision));
+            setValueToken('' + trim(balance / 2, precision));
             setAmount('' + trim(balance / 4, precision));
         } else if (amount === '75') {
             valueAmountPercent = '75';
-            setValue('' + trim(3 * balance / 4, precision));
+            setValueToken('' + trim(3 * balance / 4, precision));
             setAmount('' + trim(3 * balance / 8, precision));
         } else if (amount === '100') {
             valueAmountPercent = '100';
-            setValue('' + trim(balance, precision));
+            setValueToken('' + trim(balance, precision));
             setAmount('' + trim(balance / 2, precision));
         }
 
@@ -220,65 +222,46 @@ export default function Part1(props: any) {
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    pt: 2,
+                    // pt: 2,
                     '@media(max-width: 450px)': { flexDirection: 'column' },
                 }}
             >
 
-                <Box sx={{ '& .MuiOutlinedInput-notchedOutline': { border: 'none' } }}>
-                    <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        value={selectValue}
-                        onChange={(e: any) => {
-                            console.log('Select valueAmountPercent:', valueAmountPercent);
-                            console.log('Select e.target.value:', e.target.value);
-                            console.log('Select tokenBalance[e.target.value]:', userInfo.tokenBalance[e.target.value]);
-
-                            setSelectValue(e.target.value);
-                            onSetSupplyVal(valueAmountPercent, userInfo.tokenBalance[e.target.value]);
-                        }}
-                        sx={{
-                            width: '200px',
-                            '& .MuiSelect-select': { display: 'flex', alignItems: 'center' },
-                            '& svg': { fill: '#FFF' }
-                        }}
+                <Box sx={{ width: '200px', '& .MuiOutlinedInput-notchedOutline': { border: 'none' } }}>
+                    < Stack
+                        color={'#FFF'}
+                        // boder={'0'}
+                        direction={'row'}
+                        alignItems={'center'}
+                        gap={1}
+                        sx={{ padding: '16.5px 14px', '& img': { width: '30px', height: '30px', borderRadius: '50%' } }}
                     >
-                        {
-                            faucetItems.map((item, index) => (
-                                <MenuItem key={index} value={item.value} onClick={() => setToken(item.value)} >
-                                    < Stack
-                                        color={'#FFF'}
-                                        // boder={'0'}
-                                        direction={'row'}
-                                        alignItems={'center'}
-                                        gap={1}
-                                        sx={{ '& img': { width: '30px', height: '30px', borderRadius: '50%' } }}
-                                    >
-                                        <Box sx={{ display: { xs: 'none', md: 'block' } }}><img src={item.logo} alt="aptos" /></Box>
-                                        <Typography >{item.tokenName}</Typography>
-                                    </Stack>
-                                </MenuItem>
-                            ))
-                        }
-                    </Select>
+                        <Box sx={{ display: { xs: 'none', md: 'block' } }}><img src={EzmIcon} alt="ezm" /></Box>
+                        <Typography >{'EZM'}</Typography>
+                    </Stack>
                 </Box>
 
+                <Typography
+                    variant="subtitle1" sx={{ fontSize: '14px !important' }} textAlign='right'>Balance: {userInfo?.tokenBalance['ezm']?.toFixed(4) ?? 0}
+                </Typography>
+
                 <StyledInput
-                    value={value}
+                    value={valueAPT}
                     placeholder="e.g 1.83"
-                    onChange={(e: any) => setValue(e.target.value)}
+                    onChange={(e: any) => setValueAPT(e.target.value)}
                     endAdornment={<InputAdornment position="end"></InputAdornment>}
                     sx={{ width: '100%' }}
                 />
             </Box>
 
-            <Typography
-                variant="subtitle1" sx={{ pb: '10px', fontSize: '14px !important' }} textAlign='right'>Balance: {userInfo.tokenBalance[selectValue]}
-                {/* {selectValue} */}
-            </Typography>
+            {/* <Typography
+                variant="subtitle1" sx={{ pb: '10px', fontSize: '14px !important' }} textAlign='right'>Balance: {userInfo.tokenBalance['apt'].toFixed(4)}
+            </Typography> */}
+            {/* <Typography
+                variant="subtitle1" sx={{ fontSize: '14px !important' }} textAlign='right'>Balance: {userInfo.tokenBalance['apt'].toFixed(4)}
+            </Typography> */}
 
-            <ToggleButtonGroup
+            {/* <ToggleButtonGroup
                 className={classes.buttons}
                 value={alignment}
                 exclusive
@@ -289,7 +272,94 @@ export default function Part1(props: any) {
                 <ToggleButton value="2" onClick={() => onSetSupplyVal('50', userInfo.tokenBalance[selectValue])}>50%</ToggleButton>
                 <ToggleButton value="3" onClick={() => onSetSupplyVal('75', userInfo.tokenBalance[selectValue])}>75%</ToggleButton>
                 <ToggleButton value="4" onClick={() => onSetSupplyVal('100', userInfo.tokenBalance[selectValue])}>100%</ToggleButton>
-            </ToggleButtonGroup>
+            </ToggleButtonGroup> */}
+
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    // pt: 2,
+                    '@media(max-width: 450px)': { flexDirection: 'column' },
+                }}
+            >
+
+                <Box sx={{ width: '200px', '& .MuiOutlinedInput-notchedOutline': { border: 'none' } }}>
+                    < Stack
+                        color={'#FFF'}
+                        // boder={'0'}
+                        direction={'row'}
+                        alignItems={'center'}
+                        gap={1}
+                        sx={{ padding: '16.5px 14px', '& img': { width: '30px', height: '30px', borderRadius: '50%' } }}
+                    >
+                        <Box sx={{ display: { xs: 'none', md: 'block' } }}><img src={AptosIcon} alt="aptos" /></Box>
+                        <Typography >{'APT'}</Typography>
+                    </Stack>
+                </Box>
+
+                <Typography
+                    variant="subtitle1" sx={{ fontSize: '14px !important' }} textAlign='right'>Balance: {userInfo?.tokenBalance['apt']?.toFixed(4) ?? 0}
+                </Typography>
+
+                <StyledInput
+                    value={valueToken}
+                    placeholder="e.g 1.83"
+                    onChange={(e: any) => setValueToken(e.target.value)}
+                    endAdornment={<InputAdornment position="end"></InputAdornment>}
+                    sx={{ width: '100%' }}
+                />
+            </Box>
+
+            {/* <ToggleButtonGroup
+                className={classes.buttons}
+                value={alignment}
+                exclusive
+                onChange={(e: any) => setAlignment(e.target.value)}
+                sx={{ marginTop: '20px' }}
+            >
+                <ToggleButton value="1" onClick={() => onSetSupplyVal('25', userInfo.tokenBalance[selectValue])}>25%</ToggleButton>
+                <ToggleButton value="2" onClick={() => onSetSupplyVal('50', userInfo.tokenBalance[selectValue])}>50%</ToggleButton>
+                <ToggleButton value="3" onClick={() => onSetSupplyVal('75', userInfo.tokenBalance[selectValue])}>75%</ToggleButton>
+                <ToggleButton value="4" onClick={() => onSetSupplyVal('100', userInfo.tokenBalance[selectValue])}>100%</ToggleButton>
+            </ToggleButtonGroup> */}
+
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    // pt: 2,
+                    '@media(max-width: 450px)': { flexDirection: 'column' },
+                }}
+            >
+
+                <Box sx={{ width: '200px', '& .MuiOutlinedInput-notchedOutline': { border: 'none' } }}>
+                    < Stack
+                        color={'#FFF'}
+                        // boder={'0'}
+                        direction={'row'}
+                        alignItems={'center'}
+                        gap={1}
+                        sx={{ padding: '16.5px 14px', '& img': { width: '30px', height: '30px', borderRadius: '50%' } }}
+                    >
+                        <Box sx={{ display: { xs: 'none', md: 'block' } }}><img src={LpIcon} alt="lp" /></Box>
+                        <Typography >{'LP'}</Typography>
+                    </Stack>
+                </Box>
+
+                <Typography
+                    variant="subtitle1" sx={{ fontSize: '14px !important' }} textAlign='right'>Balance: {userInfo?.tokenBalance['apt']?.toFixed(4) ?? 0}
+                </Typography>
+
+                <StyledInput
+                    value={valueToken}
+                    placeholder="e.g 1.83"
+                    onChange={(e: any) => setValueToken(e.target.value)}
+                    endAdornment={<InputAdornment position="end"></InputAdornment>}
+                    sx={{ width: '100%' }}
+                />
+            </Box>
         </Box >
     );
 }

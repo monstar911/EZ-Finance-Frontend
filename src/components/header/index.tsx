@@ -9,6 +9,8 @@ import ConnectButton from './ConnectWallet'
 import aptosIcon from '../../asset/icons/Aptos.png'
 import suiIcon from '../../asset/icons/sui.png'
 
+import LpIcon from '../../asset/icons/LpToken.png'
+import EzmIcon from '../../asset/icons/EZM.png'
 import AptosIcon from '../../asset/icons/Aptos.png'
 import BtcIcon from '../../asset/icons/crypto-btc.svg'
 import UsdcIcon from '../../asset/icons/crypto-usdc.png'
@@ -133,6 +135,10 @@ function Header({ handleDrawerToggle }: IHeader) {
 
     const faucetItems = [
         {
+            value: 'ezm',
+            logo: EzmIcon,
+            tokenName: 'EZM'
+        }, {
             value: 'dai',
             logo: DaiIcon,
             tokenName: 'DAI'
