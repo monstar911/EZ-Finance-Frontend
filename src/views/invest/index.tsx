@@ -69,8 +69,18 @@ export default function Invest() {
 
     const [index, setIndex] = useState(0);
     const [token, setToken] = useState('dai');
+    const [valueEZM, setValueEZM] = useState('0');
     const [valueAPT, setValueAPT] = useState('0');
-    const [valueToken, setValueToken] = useState('0');
+    const [valueLP, setValueLP] = useState('0');
+    const [valueDolarEZM, setValueDolarEZM] = useState(0);
+    const [valueDolarAPT, setValueDolarAPT] = useState(0);
+    const [valueDolarLP, setValueDolarLP] = useState(0);
+    const [valueTotalSupply, setValueTotalSupply] = useState(0);
+    const [valueDebtA, setValueDebtA] = useState(0.056432);
+    const [valueDebtB, setValueDebtB] = useState(0.056432);
+    const [valueDolarDebtA, setValueDolarDebtA] = useState(0);
+    const [valueDolarDebtB, setValueDolarDebtB] = useState(0);
+    const [valueTotalDebt, setValueTotalDebt] = useState(0);
 
     const [amount, setAmount] = useState(0);
     const [valueLeverage, setValueLeverage] = useState<number | string | Array<number | string>>(1);
@@ -162,10 +172,20 @@ export default function Invest() {
                             setToken={setToken}
                             amount={amount}
                             setAmount={setAmount}
+                            valueEZM={valueEZM}
+                            setValueEZM={setValueEZM}
                             valueAPT={valueAPT}
                             setValueAPT={setValueAPT}
-                            valueToken={valueToken}
-                            setValueToken={setValueToken}
+                            valueLP={valueLP}
+                            setValueLP={setValueLP}
+                            valueDolarEZM={valueDolarEZM}
+                            setValueDolarEZM={setValueDolarEZM}
+                            valueDolarAPT={valueDolarAPT}
+                            setValueDolarAPT={setValueDolarAPT}
+                            valueDolarLP={valueDolarLP}
+                            setValueDolarLP={setValueDolarLP}
+                            valueTotalSupply={valueTotalSupply}
+                            setValueTotalSupply={setValueTotalSupply}
                         />
                         <Part2
                             selectValue={selectValue}
@@ -180,6 +200,16 @@ export default function Invest() {
                             setDebt={setDebt}
                             estimatiedAPR={estimatiedAPR}
                             setAPR={setAPR}
+                            valueDebtA={valueDebtA}
+                            setValueDebtA={setValueDebtA}
+                            valueDebtB={valueDebtB}
+                            setValueDebtB={setValueDebtB}
+                            valueDolarDebtA={valueDolarDebtA}
+                            setValueDolarDebtA={setValueDolarDebtA}
+                            valueDolarDebtB={valueDolarDebtB}
+                            setValueDolarDebtB={setValueDolarDebtB}
+                            valueTotalDebt={valueTotalDebt}
+                            setValueTotalDebt={setValueTotalDebt}
                         />
                         <Part3
                             imga={coins[Number(strArr[0])].img}
@@ -221,10 +251,30 @@ export default function Invest() {
                             setDebt={setDebt}
                             estimatiedAPR={estimatiedAPR}
                             setAPR={setAPR}
+                            valueEZM={valueEZM}
+                            setValueEZM={setValueEZM}
                             valueAPT={valueAPT}
                             setValueAPT={setValueAPT}
-                            valueToken={valueToken}
-                            setValueToken={setValueToken}
+                            valueLP={valueLP}
+                            setValueLP={setValueLP}
+                            valueDolarEZM={valueDolarEZM}
+                            setValueDolarEZM={setValueDolarEZM}
+                            valueDolarAPT={valueDolarAPT}
+                            setValueDolarAPT={setValueDolarAPT}
+                            valueDolarLP={valueDolarLP}
+                            setValueDolarLP={setValueDolarLP}
+                            valueTotalSupply={valueTotalSupply}
+                            setValueTotalSupply={setValueTotalSupply}
+                            valueDebtA={valueDebtA}
+                            setValueDebtA={setValueDebtA}
+                            valueDebtB={valueDebtB}
+                            setValueDebtB={setValueDebtB}
+                            valueDolarDebtA={valueDolarDebtA}
+                            setValueDolarDebtA={setValueDolarDebtA}
+                            valueDolarDebtB={valueDolarDebtB}
+                            setValueDolarDebtB={setValueDolarDebtB}
+                            valueTotalDebt={valueTotalDebt}
+                            setValueTotalDebt={setValueTotalDebt}
                         />
                     </Box>
                 </Box>

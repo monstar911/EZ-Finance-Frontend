@@ -16,62 +16,6 @@ module ezfinance::faucet_tokens {
         // let account = account::create_account_for_test(@test_coin);
 
         // init coins
-        init_coins();
-        // managed_coin::initialize<EZM>(
-        //     sender,
-        //     b"EZM",
-        //     b"EZM",
-        //     8,
-        //     false,
-        // );
-        //  managed_coin::initialize<USDC>(
-        //     sender,
-        //     b"USDC",
-        //     b"USDC",
-        //     8,
-        //     false,
-        // );
-        //  managed_coin::initialize<USDT>(
-        //     sender,
-        //     b"USDT",
-        //     b"USDT",
-        //     8,
-        //     false,
-        // );
-        //  managed_coin::initialize<WETH>(
-        //     sender,
-        //     b"WETH",
-        //     b"WETH",
-        //     8,
-        //     false,
-        // );
-        //  managed_coin::initialize<WBTC>(
-        //     sender,
-        //     b"WBTC",
-        //     b"WBTC",
-        //     8,
-        //     false,
-        // );
-        // managed_coin::initialize<CEUSDC>(
-        //     sender,
-        //     b"ceUSDC",
-        //     b"ceUSDC",
-        //     8,
-        //     false,
-        // );
-
-        // managed_coin::initialize<DAI>(
-        //     sender,
-        //     b"DAI",
-        //     b"DAI",
-        //     8,
-        //     false,
-        // );
-
-        // account
-    }
-
-    public entry fun init_coins(): signer {
         managed_coin::initialize<EZM>(
             sender,
             b"EZM",
@@ -79,28 +23,28 @@ module ezfinance::faucet_tokens {
             8,
             false,
         );
-        managed_coin::initialize<USDC>(
+         managed_coin::initialize<USDC>(
             sender,
             b"USDC",
             b"USDC",
             8,
             false,
         );
-        managed_coin::initialize<USDT>(
+         managed_coin::initialize<USDT>(
             sender,
             b"USDT",
             b"USDT",
             8,
             false,
         );
-        managed_coin::initialize<WETH>(
+         managed_coin::initialize<WETH>(
             sender,
             b"WETH",
             b"WETH",
             8,
             false,
         );
-        managed_coin::initialize<WBTC>(
+         managed_coin::initialize<WBTC>(
             sender,
             b"WBTC",
             b"WBTC",
@@ -122,6 +66,8 @@ module ezfinance::faucet_tokens {
             8,
             false,
         );
+
+        // account
     }
 
     public entry fun register_and_mint<CoinType>(account: &signer, to: &signer, amount: u64) {

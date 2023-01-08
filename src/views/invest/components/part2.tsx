@@ -3,6 +3,7 @@ import { Box, Typography, Stack, Slider, Switch, Input } from '@mui/material';
 import { styled } from '@mui/system';
 import { trim } from "../../../helper/trim";
 import { IUserInfo, Web3Context } from '../../../context/Web3Context';
+import { TokenPrice } from '../../../context/constant';
 
 const StyledSwitch = styled(Switch)(({ theme }) => ({
     width: 40,
@@ -29,15 +30,11 @@ const StyledSwitch = styled(Switch)(({ theme }) => ({
         },
     },
     '& .MuiSwitch-thumb': {
-        // background: 'linear-gradient(93.41deg, #6452DE 0.68%, #F76CC5 53.61%, #FF6F6F 103.74%)',
         background: 'linear-gradient(90deg,#6e42ca,#8d29c1)',
         boxSizing: 'border-box',
         width: 20,
         height: 20,
     },
-    // '& .MuiSlider-thumbColorPrimary': {
-    //     display: 'none',
-    // },
     '& .MuiSwitch-track': {
         borderRadius: 26 / 2,
         backgroundColor: theme.palette.mode === 'light' ? '#241F3E' : '#39393D',
@@ -46,7 +43,11 @@ const StyledSwitch = styled(Switch)(({ theme }) => ({
 }));
 
 export default function Part2(props: any) {
-    const { selectValue, setSelectValue, valueLeverage, setValueLeverage, token, amount, setToken, setAmount, debt, setDebt, estimatiedAPR, setAPR } = props;
+    const { selectValue, setSelectValue, valueLeverage, setValueLeverage, token, amount, setToken, setAmount,
+        debt, setDebt, estimatiedAPR, setAPR,
+        valueDebtA, setValueDebtA, valueDebtB, setValueDebtB, valueDolarDebtA, setValueDolarDebtA,
+        valueDolarDebtB, setValueDolarDebtB, valueTotalDebt, setValueTotalDebt } = props;
+
 
     const getDebtRatio = (balance: number, amountSupply: number, leverage: number) => {
         console.log('getDebtRatio: balance, amountSupply, leverage', balance, amountSupply, leverage);
@@ -59,7 +60,6 @@ export default function Part2(props: any) {
         const collateral_credit = total_LP_amount * 1.05;
         console.log('getDebtRatio: borrow, collateral', borrow_credit, collateral_credit, 100 * borrow_credit / collateral_credit);
         return trim(100 * borrow_credit / collateral_credit, 2);
-        // setDebt(borrow_credit / collateral_credit);
     }
 
     const getEstimatedAPR = (leverage: number) => {
@@ -75,6 +75,12 @@ export default function Part2(props: any) {
         console.log('handleSliderChange: ', selectValue);
         setDebt(getDebtRatio(userInfo.tokenBalance[selectValue], amount, newValue));
         setAPR(getEstimatedAPR(newValue));
+
+        // setValueDebtA();
+        // setValueDebtB();
+        setValueDolarDebtA(TokenPrice.wbtc * valueDebtA);
+        setValueDolarDebtB(TokenPrice.wbtc * valueDebtA);
+        setValueTotalDebt(valueDolarDebtA + valueDolarDebtB);
     };
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {

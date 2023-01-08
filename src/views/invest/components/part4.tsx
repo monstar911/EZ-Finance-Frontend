@@ -4,18 +4,7 @@ import { IUserInfo, Web3Context } from '../../../context/Web3Context';
 import { Box, Typography, Stack, Button } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 
-import a from '../../../asset/icons/Aptos.png';
-import b from '../../../asset/icons/crypto-usdc.png';
-
-import LpIcon from '../../../asset/icons/LpToken.png'
-import EzmIcon from '../../../asset/icons/EZM.png'
-import AptosIcon from '../../../asset/icons/Aptos.png'
-import BtcIcon from '../../../asset/icons/crypto-btc.svg'
-import UsdcIcon from '../../../asset/icons/crypto-usdc.png'
-import UsdtIcon from '../../../asset/icons/crypto-usdt.png'
-import EthereumIcon from '../../../asset/icons/crypto-ethereum.png'
-import DaiIcon from '../../../asset/icons/crypto-dai.svg'
-import { trim } from '../../../helper/trim';
+import { TokenIcon } from '../../../context/constant';
 
 
 const useStyles = makeStyles((theme: any) => ({
@@ -29,9 +18,13 @@ const useStyles = makeStyles((theme: any) => ({
 
 export default function Part4(props: any) {
     const { imga, imgb, namea, nameb, index, setIndex, token, amount, valueLeverage, setValueLeverage, debt, setDebt,
-        estimatiedAPR, setAPR, valueAPT, setValueAPT, valueToken, setValueToken } = props;
-    const classes = useStyles();
+        estimatiedAPR, setAPR, valueEZM, setValueEZM, valueAPT, setValueAPT, valueLP, setValueLP,
+        valueDolarEZM, setValueDolarEZM, valueDolarAPT, setValueDolarAPT, valueDolarLP, setValueDolarLP,
+        valueTotalSupply, setValueTotalSupply,
+        valueDebtA, setValueDebtA, valueDebtB, setValueDebtB, valueDolarDebtA, setValueDolarDebtA,
+        valueDolarDebtB, setValueDolarDebtB, valueTotalDebt, setValueTotalDebt } = props;
 
+    const classes = useStyles();
     const web3 = useContext(Web3Context)
 
     const onClickConfirm = async () => {
@@ -41,38 +34,9 @@ export default function Part4(props: any) {
         console.log(token);
         console.log(amount);
 
-
         // await web3?.leverage_yield_farming(namea, nameb, token, amount);
         await web3?.add_liquidity(namea, nameb, token, amount);
     }
-
-    const faucetItems = [
-        {
-            value: 'dai',
-            logo: DaiIcon,
-            tokenName: 'DAI'
-        }, {
-            value: 'usdc',
-            logo: UsdcIcon,
-            tokenName: 'USDC'
-        }, {
-            value: 'usdt',
-            logo: UsdtIcon,
-            tokenName: 'USDT'
-        }, {
-            value: 'ceUsdc',
-            logo: UsdcIcon,
-            tokenName: 'ceUSDC'
-        }, {
-            value: 'wbtc',
-            logo: BtcIcon,
-            tokenName: 'WBTC'
-        }, {
-            value: 'weth',
-            logo: EthereumIcon,
-            tokenName: 'WETH'
-        }
-    ]
 
     return (
         <Box className={'modal4'}
@@ -88,7 +52,6 @@ export default function Part4(props: any) {
             <Box
                 sx={{
                     background: '#241F3E',
-                    // background: '#43395b',
                     display: 'flex',
                     alignItems: 'center',
                     padding: '23px 45px',
@@ -124,33 +87,28 @@ export default function Part4(props: any) {
                     </Typography>
 
                     <Stack direction={'row'} alignItems="center" gap={1}>
-                        <img src={EzmIcon} alt="ezm" width={25} height={25} style={{ borderRadius: '50%' }} />
-                        <Typography variant={'h6'}> {valueAPT} {'EZM'}</Typography>
+                        <img src={TokenIcon.ezm} alt="ezm" width={25} height={25} style={{ borderRadius: '50%' }} />
+                        <Typography variant={'h6'}> {valueEZM} {'EZM'}</Typography>
                     </Stack>
 
                     <Stack direction={'row'} alignItems="center" gap={1}>
-                        <img src={AptosIcon} alt="Aptos" width={25} height={25} style={{ borderRadius: '50%' }} />
+                        <img src={TokenIcon.apt} alt="Aptos" width={25} height={25} style={{ borderRadius: '50%' }} />
                         <Typography variant={'h6'}> {valueAPT} {'APT'}</Typography>
                     </Stack>
 
                     <Stack direction={'row'} alignItems="center" gap={1}>
-                        <img src={LpIcon} alt="lp" width={25} height={25} style={{ borderRadius: '50%' }} />
-                        <Typography variant={'h6'}> {valueAPT} {'LP'}</Typography>
+                        <img src={TokenIcon.lp} alt="lp" width={25} height={25} style={{ borderRadius: '50%' }} />
+                        <Typography variant={'h6'}> {valueLP} {'LP'}</Typography>
                     </Stack>
-
-                    {/* <Stack direction={'row'} alignItems="center" gap={1}>
-                        <img src={imgb} alt="" width={25} height={25} style={{ borderRadius: '50%' }} />
-                        <Typography variant={'h6'}>0 {nameb}</Typography>
-                    </Stack> */}
                 </Box>
 
                 <Box sx={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: 1 }}>
                     <Typography variant="h5" sx={{ fontSize: '18px', py: 2 }}>
-                        -$90.21
+                        ~${valueTotalSupply}
                     </Typography>
-                    <Typography variant="h6">$0.00</Typography>
-                    <Typography variant="h6">$0.00</Typography>
-                    <Typography variant="h6">$0.00</Typography>
+                    <Typography variant="h6">${valueDolarEZM.toFixed(3)}</Typography>
+                    <Typography variant="h6">${valueDolarAPT.toFixed(3)}</Typography>
+                    <Typography variant="h6">${valueDolarLP.toFixed(3)}</Typography>
                 </Box>
             </Box>
 
@@ -181,21 +139,18 @@ export default function Part4(props: any) {
 
                 <Box sx={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: 1 }}>
                     <Typography variant="h5" sx={{ fontSize: '18px', py: 2 }}>
-                        ~$90.21
+                        ~${valueTotalDebt}
                     </Typography>
-                    <Typography variant="h6">$0.00</Typography>
-                    <Typography variant="h6">$0.00</Typography>
+                    <Typography variant="h6">${valueDolarDebtA}</Typography>
+                    <Typography variant="h6">${valueDolarDebtB}</Typography>
                 </Box>
             </Box>
-
-            {/* <Box className={classes.devideLine} /> */}
 
             <Button
                 sx={{
                     fontFamily: 'Square',
                     fontSize: '18px',
                     fontWeight: '500',
-                    // background: 'linear-gradient(93.57deg, #543DFB 0.71%, #F76CC5 50.59%, #FF4848 97.83%)',
                     background: 'linear-gradient(90deg,#6e42ca,#8d29c1)',
                     borderRadius: '15px',
                     width: '100%',

@@ -1,19 +1,10 @@
 import React from 'react';
+
 import { Box, Typography, Slider, Stack } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 
-import a from '../../../asset/icons/Aptos.png';
-import b from '../../../asset/icons/crypto-usdc.png';
 import { trim } from '../../../helper/trim';
 
-import LpIcon from '../../../asset/icons/LpToken.png'
-import EzmIcon from '../../../asset/icons/EZM.png'
-import AptosIcon from '../../../asset/icons/Aptos.png'
-import BtcIcon from '../../../asset/icons/crypto-btc.svg'
-import UsdcIcon from '../../../asset/icons/crypto-usdc.png'
-import UsdtIcon from '../../../asset/icons/crypto-usdt.png'
-import EthereumIcon from '../../../asset/icons/crypto-ethereum.png'
-import DaiIcon from '../../../asset/icons/crypto-dai.svg'
 
 const useStyles = makeStyles((theme: any) => ({
     left: {
@@ -34,34 +25,6 @@ export default function Part3(props: any) {
     const handleClick = () => {
         setRectCheck(!rectCheck);
     };
-
-    const faucetItems = [
-        {
-            value: 'dai',
-            logo: DaiIcon,
-            tokenName: 'DAI'
-        }, {
-            value: 'usdc',
-            logo: UsdcIcon,
-            tokenName: 'USDC'
-        }, {
-            value: 'usdt',
-            logo: UsdtIcon,
-            tokenName: 'USDT'
-        }, {
-            value: 'ceUsdc',
-            logo: UsdcIcon,
-            tokenName: 'ceUSDC'
-        }, {
-            value: 'wbtc',
-            logo: BtcIcon,
-            tokenName: 'WBTC'
-        }, {
-            value: 'weth',
-            logo: EthereumIcon,
-            tokenName: 'WETH'
-        }
-    ]
 
     return (
         <Box

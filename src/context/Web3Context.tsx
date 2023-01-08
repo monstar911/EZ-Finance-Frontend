@@ -4,7 +4,8 @@ import { ezfinance, TokenPrice, tokens } from './constant'
 import { sleep } from '../helper/sleep';
 import { ethers } from 'ethers'
 
-const client = new AptosClient('https://fullnode.testnet.aptoslabs.com/v1');
+// const client = new AptosClient('https://fullnode.testnet.aptoslabs.com/v1');
+const client = new AptosClient('https://fullnode.devnet.aptoslabs.com/v1');
 const coinClient = new CoinClient(client);
 
 import { MODULES_ACCOUNT, RESOURCES_ACCOUNT, TOKENS_MAPPING } from '../constants';
@@ -611,7 +612,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         const tokenTypeX = tokens[coinX]
         const tokenTypeY = tokens[coinY]
         const tokenTypeZ = tokens[coinZ]
-        const amountInWei = ethers.utils.parseUnits(String(10), 8).toNumber()
+        const amountInWei = ethers.utils.parseUnits(String(0.01), 8).toNumber()
 
         console.log(tokenTypeX)
         console.log(tokenTypeY)

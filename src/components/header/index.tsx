@@ -3,21 +3,13 @@ import { alpha, Button, Menu, MenuProps, styled, Typography, useMediaQuery } fro
 import { makeStyles } from '@mui/styles'
 import { Avatar, Box, Select, MenuItem, Stack } from '@mui/material'
 import { IconMenu2 } from '@tabler/icons'
+
+import { faucetItems } from '../../context/constant'
+
+import { Web3Context } from '../../context/Web3Context'
+
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ConnectButton from './ConnectWallet'
-
-import aptosIcon from '../../asset/icons/Aptos.png'
-import suiIcon from '../../asset/icons/sui.png'
-
-import LpIcon from '../../asset/icons/LpToken.png'
-import EzmIcon from '../../asset/icons/EZM.png'
-import AptosIcon from '../../asset/icons/Aptos.png'
-import BtcIcon from '../../asset/icons/crypto-btc.svg'
-import UsdcIcon from '../../asset/icons/crypto-usdc.png'
-import UsdtIcon from '../../asset/icons/crypto-usdt.png'
-import EthereumIcon from '../../asset/icons/crypto-ethereum.png'
-import DaiIcon from '../../asset/icons/crypto-dai.svg'
-import { Web3Context } from '../../context/Web3Context'
 
 
 interface IHeader {
@@ -133,38 +125,6 @@ function Header({ handleDrawerToggle }: IHeader) {
 
     const web3 = useContext(Web3Context)
 
-    const faucetItems = [
-        {
-            value: 'ezm',
-            logo: EzmIcon,
-            tokenName: 'EZM'
-        }, {
-            value: 'dai',
-            logo: DaiIcon,
-            tokenName: 'DAI'
-        }, {
-            value: 'usdc',
-            logo: UsdcIcon,
-            tokenName: 'USDC'
-        }, {
-            value: 'usdt',
-            logo: UsdtIcon,
-            tokenName: 'USDT'
-        }, {
-            value: 'ceUsdc',
-            logo: UsdcIcon,
-            tokenName: 'ceUSDC'
-        }, {
-            value: 'wbtc',
-            logo: BtcIcon,
-            tokenName: 'WBTC'
-        }, {
-            value: 'weth',
-            logo: EthereumIcon,
-            tokenName: 'WETH'
-        }
-    ]
-
     const onGetFaucet = async (token: string) => {
         console.log('onGetFaucet: ', token);
 
@@ -207,7 +167,6 @@ function Header({ handleDrawerToggle }: IHeader) {
                         sx={{
                             color: 'white',
                             padding: '15px 20px',
-                            // backgroundImage: 'linear-gradient(93.57deg, #543DFB 0.71%, #F76CC5 50.59%, #FF4848 97.83%)',
                             background: 'linear-gradient(90deg,#6e42ca,#8d29c1)',
                             borderRadius: '200px',
                             marginRight: '-5px',
