@@ -5,16 +5,15 @@ import { Typography, Box, Grid } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { Common_FillButton } from '../../../components/button';
+import { coins, coin_apt } from '../../../context/constant';
 
 const useStyles = makeStyles((theme: any) => ({
     root: {
-        padding: '20px 0',
+        padding: '16px 0',
         color: 'white',
         textAlign: 'center',
         '& > div': {
             padding: '30px',
-            // borderRadius: '20px',
-            // background: '#342D55',
             background: '#16162d', borderRadius: '24px',
             boxShadow: '0px 1px 4px #ccc',
 
@@ -30,7 +29,6 @@ const useStyles = makeStyles((theme: any) => ({
             },
             '& .hidden_content': {
                 marginTop: '20px',
-                // background: 'linear-gradient(93.57deg, #543DFB 0.71%, #F76CC5 50.59%, #FF4848 97.83%)',
                 background: 'linear-gradient(90deg,#6e42ca,#8d29c1)',
                 borderRadius: '13px',
                 padding: '10px',
@@ -51,6 +49,7 @@ const useStyles = makeStyles((theme: any) => ({
             },
         },
     },
+
     textContent: {
         textAlign: 'right',
         [theme.breakpoints.down('md')]: {
@@ -68,9 +67,7 @@ function PoolCard(props: any) {
     const [dropOpen, setDropOpen] = useState(false);
     const { param } = props;
     const {
-        aTokenIcon,
-        bTokenIcon,
-        pool_count,
+        index,
         pool_total,
         from_percent,
         from_multi,
@@ -83,7 +80,9 @@ function PoolCard(props: any) {
         trade_volume,
         tvl,
     } = props.poolInfo;
+
     const navigate = useNavigate();
+
 
     return (
         <Box className={classes.root}>
@@ -95,6 +94,7 @@ function PoolCard(props: any) {
                     >
                         <Box
                             sx={{
+                                alignItems: 'center',
                                 display: 'flex',
                                 width: { xs: '100%' },
                                 '& img': {
@@ -104,28 +104,37 @@ function PoolCard(props: any) {
                                 },
                             }}
                         >
-                            <img src={aTokenIcon} />
-                            <img src={bTokenIcon} style={{ marginLeft: '-15px' }} />
+
+                            <img src={coins[index].logo} />
+                            <img src={coin_apt.logo} style={{ marginLeft: '-8px' }} />
+                            <Typography sx={{ wordBreak: 'keep-all', marginLeft: '16px' }}>
+                                {coins[index].name}-APT
+                            </Typography>
                         </Box>
                     </Box>
+
                     <Box className={classes.textContent}>
                         <Typography sx={{ opacity: '.5', wordBreak: 'keep-all' }}>
                             From {from_percent}% up to
                         </Typography>
+
                         <Typography sx={{ fontSize: '18px' }}>
                             {(Number(from_percent) + Number(Math.random() * 0.5 + 0.5)).toFixed(2)}%
                         </Typography>
                     </Box>
+
                     <Box className={classes.textContent}>
                         <Typography sx={{ opacity: '.5', wordBreak: 'keep-all' }}>From {from_multi}x up to</Typography>
                         <Typography sx={{ fontSize: '18px' }}>
                             {(Number(from_multi) + Number(Math.random() * 0.5 + 1)).toFixed(2)}x
                         </Typography>
                     </Box>
+
                     <Box className={classes.textContent}>
                         <Typography sx={{ opacity: '.5', wordBreak: 'keep-all' }}>Pool TVL</Typography>
                         <Typography sx={{ fontSize: '18px' }}>{pool_total}</Typography>
                     </Box>
+
                     <Box
                         sx={{
                             display: 'flex',
@@ -137,9 +146,10 @@ function PoolCard(props: any) {
                         }}
                     >
                         <Common_FillButton
-                            content={'Farm up to ' + /*(Math.random() * 1 + 1).toFixed(2) +*/ '1.00x'}
+                            content={'Farm up to ' + '1.00x'}
                             onClick={() => navigate(`/farm/${param}`)}
                         />
+
                         <Box
                             onClick={() => setDropOpen(!dropOpen)}
                             sx={{
@@ -156,6 +166,7 @@ function PoolCard(props: any) {
                         </Box>
                     </Box>
                 </Box>
+
                 {dropOpen && (
                     <Box className="hidden_content">
                         <Grid container justifyContent={'center'} alignItems={'center'}>

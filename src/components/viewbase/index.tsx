@@ -13,7 +13,7 @@ interface IViewBaseProps {
 const useStyles = makeStyles((theme) => ({
     content: {
         marginTop: '80px',
-        marginLeft: '280px',
+        marginLeft: '260px',
         padding: '20px',
         borderTopLeftRadius: '20px',
         borderTopRightRadius: '20px',

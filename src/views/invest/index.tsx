@@ -9,7 +9,7 @@ import Part3 from './components/part3';
 import Part4 from './components/part4';
 
 import BTCIcon from '../../asset/icons/crypto-btc.png';
-import EthereumIcon from '../../asset/icons/crypto-ethereum.png';
+import EthIcon from '../../asset/icons/crypto-ethereum.png';
 import USDCIcon from '../../asset/icons/crypto-usdc.png';
 import USDTIcon from '../../asset/icons/crypto-usdt.png';
 import DaiIcon from '../../asset/icons/crypto-dai.svg';
@@ -100,7 +100,7 @@ export default function Invest() {
 
     const coins = {
         0: { img: BTCIcon, name: 'WBTC', symbol: 'wbtc' },
-        1: { img: EthereumIcon, name: 'WETH', symbol: 'weth' },
+        1: { img: EthIcon, name: 'WETH', symbol: 'weth' },
         2: { img: DaiIcon, name: 'DAI', symbol: 'dai' },
         3: { img: USDCIcon, name: 'USDC', symbol: 'usdc' },
         4: { img: USDTIcon, name: 'USDT', symbol: 'usdt' },

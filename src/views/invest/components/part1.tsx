@@ -169,11 +169,12 @@ export default function Part1(props: any) {
                 </Box>
 
                 <Typography
-                    variant="subtitle1" sx={{ fontSize: '14px !important' }} textAlign='right'>Balance: {userInfo?.tokenBalance['ezm']?.toFixed(4) ?? 0}
+                    variant="subtitle1" sx={{ fontSize: '14px !important', whiteSpace: "nowrap" }} textAlign='right'>Balance: {userInfo?.tokenBalance['ezm']?.toFixed(4) ?? 0}
                 </Typography>
 
                 <StyledInput
                     value={valueEZM}
+                    type="number"
                     placeholder="e.g 1.83"
                     onChange={(e: any) => {
                         setValueEZM(e.target.value)
@@ -209,11 +210,12 @@ export default function Part1(props: any) {
                 </Box>
 
                 <Typography
-                    variant="subtitle1" sx={{ fontSize: '14px !important' }} textAlign='right'>Balance: {userInfo?.tokenBalance['apt']?.toFixed(4) ?? 0}
+                    variant="subtitle1" sx={{ fontSize: '14px !important', whiteSpace: "nowrap" }} textAlign='right'>Balance: {userInfo?.tokenBalance['apt']?.toFixed(4) ?? 0}
                 </Typography>
 
                 <StyledInput
                     value={valueAPT}
+                    type="number"
                     placeholder="e.g 1.83"
                     onChange={(e: any) => {
                         setValueAPT(e.target.value)
@@ -249,11 +251,12 @@ export default function Part1(props: any) {
                 </Box>
 
                 <Typography
-                    variant="subtitle1" sx={{ fontSize: '14px !important' }} textAlign='right'>Balance: {userInfo?.tokenBalance['lp']?.toFixed(4) ?? 0}
+                    variant="subtitle1" sx={{ fontSize: '14px !important', whiteSpace: "nowrap" }} textAlign='right'>Balance: {userInfo?.tokenBalance['lp']?.toFixed(4) ?? 0}
                 </Typography>
 
                 <StyledInput
                     value={valueLP}
+                    type="number"
                     placeholder="e.g 1.83"
                     onChange={(e: any) => {
                         setValueLP(e.target.value)

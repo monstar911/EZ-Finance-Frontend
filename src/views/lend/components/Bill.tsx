@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 
 import ArcoIcon from '../../../asset/icons/arco.svg';
-import AptosIcon from '../../../asset/icons/Aptos.png';
+import AptIcon from '../../../asset/icons/Aptos.png';
 import { IUserInfo, Web3Context } from '../../../context/Web3Context';
 import { trim } from '../../../helper/trim';
 import { IconX } from '@tabler/icons';
@@ -72,7 +72,7 @@ function Bill() {
 
     const datas = [
         {
-            icon: AptosIcon,
+            icon: AptIcon,
             asset: 'APT',
             deposit: 0,
             borrow: 0,

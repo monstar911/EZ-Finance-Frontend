@@ -2,26 +2,10 @@ import React, { ReactNode, useEffect, useState, createContext } from 'react';
 import { AptosClient, CoinClient } from 'aptos';
 import { ezfinance, TokenPrice, tokens } from './constant'
 import { sleep } from '../helper/sleep';
-import { ethers } from 'ethers'
 
 const client = new AptosClient('https://fullnode.testnet.aptoslabs.com/v1');
 // const client = new AptosClient('https://fullnode.devnet.aptoslabs.com/v1');
 const coinClient = new CoinClient(client);
-
-import { MODULES_ACCOUNT, RESOURCES_ACCOUNT, TOKENS_MAPPING } from '../constants';
-import SDK from '../main';
-
-
-const sdk = new SDK({
-    nodeUrl: 'https://fullnode.testnet.aptoslabs.com/v1',
-    networkOptions: {
-        resourceAccount: RESOURCES_ACCOUNT,
-        moduleAccount: MODULES_ACCOUNT
-    }
-});
-
-const curves = sdk.curves;
-
 
 export interface IUserInfo {
     tokenBalance: Record<string, number>;
@@ -53,7 +37,6 @@ export interface IAptosInterface {
     withdraw: any;
     getFaucet: any;
     checkBalance: any;
-    getCoinRate: any;
     leverage_yield_farming: any;
     leverage_yield_farming_dapp: any;
     leverage_yield_farming_swap: any;
@@ -173,94 +156,6 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
 
     useEffect(() => {
         getUserInfo();
-    }, [address]);
-
-    const getCoinRate = async () => {
-        const sender = address;
-
-        // Register account with coin
-        // try {
-        //     const coinRegisterPayload = {
-        //         type: 'entry_function_payload',
-        //         function: '0x1::managed_coin::register',
-        //         type_arguments: [TOKENS_MAPPING.APTOS],
-        //         arguments: [],
-        //     }
-
-        //     if (isConnected && wallet === 'petra') {
-        //         const rawTxn = await window.aptos.generateTransaction(coinRegisterPayload);
-        //         const bcsTxn = await window.aptos.signTransaction(rawTxn);
-        //         const { hash } = await window.aptos.submitTransaction(bcsTxn);
-        //         await window.aptos.waitForTransaction(hash);
-        //     } else if (isConnected && wallet === 'martian') {
-        //         const rawTxn = await window.martian.generateTransaction(coinRegisterPayload);
-        //         const bcsTxn = await window.martian.signTransaction(rawTxn);
-        //         const { hash } = await window.martian.submitTransaction(bcsTxn);
-        //         await window.martian.waitForTransaction(hash);
-        //     } else if (isConnected && wallet === 'pontem') {
-        //         const rawTxn = await window.pontem.generateTransaction(coinRegisterPayload);
-        //         const bcsTxn = await window.pontem.signTransaction(rawTxn);
-        //         const { hash } = await window.pontem.submitTransaction(bcsTxn);
-        //         await window.pontem.waitForTransaction(hash);
-        //     }
-
-        //     // const rawTxn = await client.generateTransaction(sender.address(), coinRegisterPayload);
-        //     // const bcsTxn = await client.signTransaction(alice, rawTxn);
-        //     // const { hash } = await client.submitTransaction(bcsTxn);
-        //     // await client.waitForTransaction(hash);
-
-        //     console.log(`Coin ${tokenTo} successfully Registered to Alice account`);
-        //     // console.log(`Check on explorer: https://explorer.aptoslabs.com/txn/${hash}?network=${NETWORKS_MAPPING.TESTNET}`);
-        // } catch (e) {
-        //     console.log("Coin register error: ", e);
-        // }
-
-
-        // get Rate for USDT coin.
-        const usdtRate = await sdk.Swap.calculateRates({
-            fromToken: TOKENS_MAPPING.USDT,
-            toToken: TOKENS_MAPPING.APTOS,
-            amount: 100000000,
-            curveType: 'uncorrelated',
-            interactiveToken: 'from',
-        });
-        console.log('usdtRate: ', usdtRate);
-
-        // get Rate for BTC coin.
-        const btcRate = await sdk.Swap.calculateRates({
-            fromToken: TOKENS_MAPPING.BTC,
-            toToken: TOKENS_MAPPING.APTOS,
-            amount: 100000000,
-            curveType: 'uncorrelated',
-            interactiveToken: 'from',
-        });
-        console.log('btcRate: ', btcRate);
-
-        // get Rate for USDC coin.
-        const usdcRate = await sdk.Swap.calculateRates({
-            fromToken: TOKENS_MAPPING.USDC,
-            toToken: TOKENS_MAPPING.APTOS,
-            amount: 100000000,
-            curveType: 'uncorrelated',
-            interactiveToken: 'from',
-        });
-        console.log('usdcRate: ', usdcRate);
-
-        // get Rate for WETH coin.
-        const wethRate = await sdk.Swap.calculateRates({
-            fromToken: TOKENS_MAPPING.WETH,
-            toToken: TOKENS_MAPPING.APTOS,
-            amount: 100000000,
-            curveType: 'uncorrelated',
-            interactiveToken: 'from',
-        });
-        console.log('wethRate: ', wethRate);
-
-        setCoinRate(usdtRate, btcRate, wethRate, usdcRate);
-    }
-
-    useEffect(() => {
-        getCoinRate();
     }, [address]);
 
     const connect = async (wallet: string) => {
@@ -857,7 +752,6 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         withdraw,
         getFaucet,
         checkBalance,
-        getCoinRate,
         leverage_yield_farming,
         leverage_yield_farming_dapp,
         leverage_yield_farming_swap,

@@ -5,7 +5,7 @@ import Container from '../../components/container';
 import ProtocolModal from './components/protocol_modal';
 import PoolModal from './components/pool_modal';
 
-import EthereumIcon from '../../asset/icons/crypto-ethereum.png';
+import EthIcon from '../../asset/icons/crypto-ethereum.png';
 import USDCIcon from '../../asset/icons/crypto-usdc.png';
 import USDTIcon from '../../asset/icons/crypto-usdt.png';
 import BTCIcon from '../../asset/icons/crypto-btc.png';
@@ -51,7 +51,7 @@ export default function TVL() {
         },
         {
             name: 'WETH',
-            img: EthereumIcon,
+            img: EthIcon,
         },
         {
             name: 'DAI',

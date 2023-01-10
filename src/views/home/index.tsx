@@ -14,7 +14,7 @@ import part2_img from '../../asset/icons/wallet.png';
 import part3_img from '../../asset/icons/Private Key.png';
 import SmartContract from '../../asset/icons/Smart_Contract.png';
 
-import EthereumIcon from '../../asset/icons/crypto-ethereum.png';
+import EthIcon from '../../asset/icons/crypto-ethereum.png';
 import USDCIcon from '../../asset/icons/crypto-usdc.png';
 import USDTIcon from '../../asset/icons/crypto-usdt.png';
 import BTCIcon from '../../asset/icons/crypto-btc.png';
@@ -421,7 +421,7 @@ function Home() {
         },
         {
             name: 'WETH',
-            img: EthereumIcon,
+            img: EthIcon,
         },
         {
             name: 'DAI',
