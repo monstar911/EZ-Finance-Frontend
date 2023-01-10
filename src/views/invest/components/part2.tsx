@@ -45,9 +45,13 @@ const StyledSwitch = styled(Switch)(({ theme }) => ({
 export default function Part2(props: any) {
     const { selectValue, setSelectValue, valueLeverage, setValueLeverage, token, amount, setToken, setAmount,
         debt, setDebt, estimatiedAPR, setAPR,
+        valueBorrowEZM, setValueBorrowEZM, valueBorrowAPT, setValueBorrowAPT, valueBorrowLP, setValueBorrowLP,
+        valueBorrowDolarEZM, setValueBorrowDolarEZM, valueBorrowDolarAPT, setValueBorrowDolarAPT, valueBorrowDolarLP, setValueBorrowDolarLP,
+        valueEZM, setValueEZM, valueAPT, setValueAPT, valueLP, setValueLP,
+        valueDolarEZM, setValueDolarEZM, valueDolarAPT, setValueDolarAPT, valueDolarLP, setValueDolarLP,
+        valueSupplyEZM, setValueSupplyEZM, valueSupplyAPT, setValueSupplyAPT, valueSupplyLP, setValueSupplyLP, valueTotalSupply, setValueTotalSupply,
         valueDebtA, setValueDebtA, valueDebtB, setValueDebtB, valueDolarDebtA, setValueDolarDebtA,
         valueDolarDebtB, setValueDolarDebtB, valueTotalDebt, setValueTotalDebt } = props;
-
 
     const getDebtRatio = (balance: number, amountSupply: number, leverage: number) => {
         console.log('getDebtRatio: balance, amountSupply, leverage', balance, amountSupply, leverage);
@@ -59,6 +63,8 @@ export default function Part2(props: any) {
         const borrow_credit = total_debt_amount * 0.8 * (leverage - 1) / 1.6; //0.8;
         const collateral_credit = total_LP_amount * 1.05;
         console.log('getDebtRatio: borrow, collateral', borrow_credit, collateral_credit, 100 * borrow_credit / collateral_credit);
+        if (borrow_credit == 0 || collateral_credit == 0) return 0;
+        if (isNaN(borrow_credit) || isNaN(collateral_credit)) return 0;
         return trim(100 * borrow_credit / collateral_credit, 2);
     }
 
@@ -72,9 +78,24 @@ export default function Part2(props: any) {
     const handleSliderChange = (event: Event, newValue: number | number[]) => {
         setValueLeverage(newValue);
 
-        console.log('handleSliderChange: ', selectValue);
+        console.log('handleSliderChange: ', newValue, valueEZM);
         setDebt(getDebtRatio(userInfo.tokenBalance[selectValue], amount, newValue));
         setAPR(getEstimatedAPR(newValue));
+
+        setValueBorrowEZM((valueEZM * (newValue - 1)).toFixed(3))
+        setValueBorrowAPT((valueAPT * (newValue - 1)).toFixed(3))
+        setValueBorrowLP((valueLP * (newValue - 1)).toFixed(3))
+        setValueBorrowDolarEZM((TokenPrice.ezm * valueEZM * (newValue - 1)).toFixed(3))
+        setValueBorrowDolarAPT((TokenPrice.apt * valueAPT * (newValue - 1)).toFixed(3))
+        setValueBorrowDolarLP((TokenPrice.lp * valueLP * (newValue - 1)).toFixed(3))
+
+        setValueSupplyEZM(valueEZM * newValue)
+        setValueSupplyAPT(valueAPT * newValue)
+        setValueSupplyLP(valueLP * newValue)
+        setValueDolarEZM(TokenPrice.ezm * valueEZM * newValue)
+        setValueDolarAPT(TokenPrice.apt * valueAPT * newValue)
+        setValueDolarLP(TokenPrice.lp * valueLP * newValue)
+        setValueTotalSupply(valueDolarEZM + valueDolarAPT + valueDolarLP)
 
         // setValueDebtA();
         // setValueDebtB();

@@ -75,6 +75,17 @@ export default function Invest() {
     const [valueDolarEZM, setValueDolarEZM] = useState(0);
     const [valueDolarAPT, setValueDolarAPT] = useState(0);
     const [valueDolarLP, setValueDolarLP] = useState(0);
+
+    const [valueBorrowEZM, setValueBorrowEZM] = useState(0);
+    const [valueBorrowAPT, setValueBorrowAPT] = useState(0);
+    const [valueBorrowLP, setValueBorrowLP] = useState(0);
+    const [valueBorrowDolarEZM, setValueBorrowDolarEZM] = useState(0);
+    const [valueBorrowDolarAPT, setValueBorrowDolarAPT] = useState(0);
+    const [valueBorrowDolarLP, setValueBorrowDolarLP] = useState(0);
+
+    const [valueSupplyEZM, setValueSupplyEZM] = useState(0);
+    const [valueSupplyAPT, setValueSupplyAPT] = useState(0);
+    const [valueSupplyLP, setValueSupplyLP] = useState(0);
     const [valueTotalSupply, setValueTotalSupply] = useState(0);
     const [valueDebtA, setValueDebtA] = useState(0.056432);
     const [valueDebtB, setValueDebtB] = useState(0.056432);
@@ -166,24 +177,27 @@ export default function Invest() {
                             nameb={coins[Number(strArr[1])].name}
                             selectValue={selectValue}
                             setSelectValue={setSelectValue}
-                            index={index}
-                            setIndex={setIndex}
+                            valueLeverage={valueLeverage}
+                            setValueLeverage={setValueLeverage}
                             token={token}
                             setToken={setToken}
                             amount={amount}
                             setAmount={setAmount}
+
                             valueEZM={valueEZM}
                             setValueEZM={setValueEZM}
                             valueAPT={valueAPT}
                             setValueAPT={setValueAPT}
                             valueLP={valueLP}
                             setValueLP={setValueLP}
+
                             valueDolarEZM={valueDolarEZM}
                             setValueDolarEZM={setValueDolarEZM}
                             valueDolarAPT={valueDolarAPT}
                             setValueDolarAPT={setValueDolarAPT}
                             valueDolarLP={valueDolarLP}
                             setValueDolarLP={setValueDolarLP}
+
                             valueTotalSupply={valueTotalSupply}
                             setValueTotalSupply={setValueTotalSupply}
                         />
@@ -200,6 +214,44 @@ export default function Invest() {
                             setDebt={setDebt}
                             estimatiedAPR={estimatiedAPR}
                             setAPR={setAPR}
+
+                            valueBorrowEZM={valueBorrowEZM}
+                            setValueBorrowEZM={setValueBorrowEZM}
+                            valueBorrowAPT={valueBorrowAPT}
+                            setValueBorrowAPT={setValueBorrowAPT}
+                            valueBorrowLP={valueBorrowLP}
+                            setValueBorrowLP={setValueBorrowLP}
+
+                            valueBorrowDolarEZM={valueBorrowDolarEZM}
+                            setValueBorrowDolarEZM={setValueBorrowDolarEZM}
+                            valueBorrowDolarAPT={valueBorrowDolarAPT}
+                            setValueBorrowDolarAPT={setValueBorrowDolarAPT}
+                            valueBorrowDolarLP={valueBorrowDolarLP}
+                            setValueBorrowDolarLP={setValueBorrowDolarLP}
+
+                            valueEZM={valueEZM}
+                            setValueEZM={setValueEZM}
+                            valueAPT={valueAPT}
+                            setValueAPT={setValueAPT}
+                            valueLP={valueLP}
+                            setValueLP={setValueLP}
+
+                            valueDolarEZM={valueDolarEZM}
+                            setValueDolarEZM={setValueDolarEZM}
+                            valueDolarAPT={valueDolarAPT}
+                            setValueDolarAPT={setValueDolarAPT}
+                            valueDolarLP={valueDolarLP}
+                            setValueDolarLP={setValueDolarLP}
+
+                            valueSupplyEZM={valueSupplyEZM}
+                            setValueSupplyEZM={setValueSupplyEZM}
+                            valueSupplyAPT={valueSupplyAPT}
+                            setValueSupplyAPT={setValueSupplyAPT}
+                            valueSupplyLP={valueSupplyLP}
+                            setValueSupplyLP={setValueSupplyLP}
+                            valueTotalSupply={valueTotalSupply}
+                            setValueTotalSupply={setValueTotalSupply}
+
                             valueDebtA={valueDebtA}
                             setValueDebtA={setValueDebtA}
                             valueDebtB={valueDebtB}
@@ -223,6 +275,34 @@ export default function Invest() {
                             setValueLeverage={setValueLeverage}
                             debt={debt}
                             setDebt={setDebt}
+
+                            valueBorrowEZM={valueBorrowEZM}
+                            setValueBorrowEZM={setValueBorrowEZM}
+                            valueBorrowAPT={valueBorrowAPT}
+                            setValueBorrowAPT={setValueBorrowAPT}
+                            valueBorrowLP={valueBorrowLP}
+                            setValueBorrowLP={setValueBorrowLP}
+
+                            valueBorrowDolarEZM={valueBorrowDolarEZM}
+                            setValueBorrowDolarEZM={setValueBorrowDolarEZM}
+                            valueBorrowDolarAPT={valueBorrowDolarAPT}
+                            setValueBorrowDolarAPT={setValueBorrowDolarAPT}
+                            valueBorrowDolarLP={valueBorrowDolarLP}
+                            setValueBorrowDolarLP={setValueBorrowDolarLP}
+
+                            valueEZM={valueEZM}
+                            setValueEZM={setValueEZM}
+                            valueAPT={valueAPT}
+                            setValueAPT={setValueAPT}
+                            valueLP={valueLP}
+                            setValueLP={setValueLP}
+
+                            valueDolarEZM={valueDolarEZM}
+                            setValueDolarEZM={setValueDolarEZM}
+                            valueDolarAPT={valueDolarAPT}
+                            setValueDolarAPT={setValueDolarAPT}
+                            valueDolarLP={valueDolarLP}
+                            setValueDolarLP={setValueDolarLP}
                         />
                     </Box>
 
@@ -251,20 +331,30 @@ export default function Invest() {
                             setDebt={setDebt}
                             estimatiedAPR={estimatiedAPR}
                             setAPR={setAPR}
+
                             valueEZM={valueEZM}
                             setValueEZM={setValueEZM}
                             valueAPT={valueAPT}
                             setValueAPT={setValueAPT}
                             valueLP={valueLP}
                             setValueLP={setValueLP}
+
                             valueDolarEZM={valueDolarEZM}
                             setValueDolarEZM={setValueDolarEZM}
                             valueDolarAPT={valueDolarAPT}
                             setValueDolarAPT={setValueDolarAPT}
                             valueDolarLP={valueDolarLP}
                             setValueDolarLP={setValueDolarLP}
+
+                            valueSupplyEZM={valueSupplyEZM}
+                            setValueSupplyEZM={setValueSupplyEZM}
+                            valueSupplyAPT={valueSupplyAPT}
+                            setValueSupplyAPT={setValueSupplyAPT}
+                            valueSupplyLP={valueSupplyLP}
+                            setValueSupplyLP={setValueSupplyLP}
                             valueTotalSupply={valueTotalSupply}
                             setValueTotalSupply={setValueTotalSupply}
+
                             valueDebtA={valueDebtA}
                             setValueDebtA={setValueDebtA}
                             valueDebtB={valueDebtB}

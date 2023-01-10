@@ -3,10 +3,12 @@ module ezfinance::lending {
     use std::signer;
     use ezfinance::faucet_tokens;
     use ezfinance::faucet_provider;
+    
     use aptos_framework::managed_coin;
     use aptos_framework::coin;
     use aptos_framework::aptos_coin::AptosCoin;
     use aptos_framework::timestamp;
+
 
     const MODULE_ADMIN: address = @ezfinance;
 
@@ -44,6 +46,7 @@ module ezfinance::lending {
         let amount = 1000000000000000000u64;
         let per_request = 1000000000u64;
         let period = 3000u64;
+
         //Deposite Pool Token 8000 at the startup
         managed_coin::register<faucet_tokens::EZM>(sender);
         managed_coin::mint<faucet_tokens::EZM>(sender,account_addr,amount);
@@ -61,42 +64,43 @@ module ezfinance::lending {
 
         managed_coin::register<faucet_tokens::USDT>(sender);
         managed_coin::mint<faucet_tokens::USDT>(sender,account_addr,amount);
-         faucet_provider::create_faucet<faucet_tokens::USDT>(sender,amount/2,per_request,period);
+        faucet_provider::create_faucet<faucet_tokens::USDT>(sender,amount/2,per_request,period);
         let coin3 = coin::withdraw<faucet_tokens::USDT>(sender, 0);        
         let pool3 = Pool<faucet_tokens::USDT> {borrowed_amount: 0, deposited_amount: 0, token: coin3};
         move_to(sender, pool3);
 
         managed_coin::register<faucet_tokens::WETH>(sender);
         managed_coin::mint<faucet_tokens::WETH>(sender,account_addr,amount);
-         faucet_provider::create_faucet<faucet_tokens::WETH>(sender,amount/2,1000000u64,period);
+        faucet_provider::create_faucet<faucet_tokens::WETH>(sender,amount/2,1000000u64,period);
         let coin4 = coin::withdraw<faucet_tokens::WETH>(sender, 0);        
         let pool4 = Pool<faucet_tokens::WETH> {borrowed_amount: 0, deposited_amount: 0, token: coin4};
         move_to(sender, pool4);
 
         managed_coin::register<faucet_tokens::WBTC>(sender);
         managed_coin::mint<faucet_tokens::WBTC>(sender,account_addr,amount);
-         faucet_provider::create_faucet<faucet_tokens::WBTC>(sender,amount/2,100000u64,period);
+        faucet_provider::create_faucet<faucet_tokens::WBTC>(sender,amount/2,100000u64,period);
         let coin5 = coin::withdraw<faucet_tokens::WBTC>(sender, 0);        
         let pool5 = Pool<faucet_tokens::WBTC> {borrowed_amount: 0, deposited_amount: 0, token: coin5};
         move_to(sender, pool5);
 
         managed_coin::register<faucet_tokens::CEUSDC>(sender);
         managed_coin::mint<faucet_tokens::CEUSDC>(sender,account_addr,amount);
-         faucet_provider::create_faucet<faucet_tokens::CEUSDC>(sender,amount/2,per_request,period);
+        faucet_provider::create_faucet<faucet_tokens::CEUSDC>(sender,amount/2,per_request,period);
         let coin6 = coin::withdraw<faucet_tokens::CEUSDC>(sender, 0);        
         let pool6 = Pool<faucet_tokens::CEUSDC> {borrowed_amount: 0, deposited_amount: 0, token: coin6};
         move_to(sender, pool6);
 
         managed_coin::register<faucet_tokens::DAI>(sender);
         managed_coin::mint<faucet_tokens::DAI>(sender,account_addr,amount);
-         faucet_provider::create_faucet<faucet_tokens::DAI>(sender,amount/2,per_request,period);
+        faucet_provider::create_faucet<faucet_tokens::DAI>(sender,amount/2,per_request,period);
         let coin7 = coin::withdraw<faucet_tokens::DAI>(sender, 0);        
         let pool7 = Pool<faucet_tokens::DAI> {borrowed_amount: 0, deposited_amount: 0, token: coin7};
         move_to(sender, pool7);
 
+        faucet_provider::create_faucet<AptosCoin>(sender,amount/2,per_request,period);
         let native_coin = coin::withdraw<AptosCoin>(sender, 0);
         let pool8 = Pool<AptosCoin> {borrowed_amount: 0, deposited_amount: 0, token: native_coin};
-        move_to(sender, pool8); 
+        move_to(sender, pool8);
     }
 
     public entry fun manage_pool<CoinType> (

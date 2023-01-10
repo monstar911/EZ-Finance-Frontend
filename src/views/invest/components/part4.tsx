@@ -20,7 +20,7 @@ export default function Part4(props: any) {
     const { imga, imgb, namea, nameb, index, setIndex, token, amount, valueLeverage, setValueLeverage, debt, setDebt,
         estimatiedAPR, setAPR, valueEZM, setValueEZM, valueAPT, setValueAPT, valueLP, setValueLP,
         valueDolarEZM, setValueDolarEZM, valueDolarAPT, setValueDolarAPT, valueDolarLP, setValueDolarLP,
-        valueTotalSupply, setValueTotalSupply,
+        valueSupplyEZM, setValueSupplyEZM, valueSupplyAPT, setValueSupplyAPT, valueSupplyLP, setValueSupplyLP, valueTotalSupply, setValueTotalSupply,
         valueDebtA, setValueDebtA, valueDebtB, setValueDebtB, valueDolarDebtA, setValueDolarDebtA,
         valueDolarDebtB, setValueDolarDebtB, valueTotalDebt, setValueTotalDebt } = props;
 
@@ -31,11 +31,15 @@ export default function Part4(props: any) {
         console.log('Part4');
         console.log(namea);
         console.log(nameb);
-        console.log(token);
-        console.log(amount);
+        console.log(valueEZM);
+        console.log(valueAPT);
+        console.log(valueLP);
+        console.log(valueLeverage);
 
-        // await web3?.leverage_yield_farming(namea, nameb, token, amount);
-        await web3?.add_liquidity(namea, nameb, token, amount);
+        // await web3?.leverage_yield_farming_swap(namea, nameb, valueEZM, valueAPT, valueLP, valueLeverage);
+        // await web3?.leverage_yield_farming_dapp(namea, nameb, valueEZM, valueAPT, valueLP, valueLeverage);
+        await web3?.leverage_yield_farming(namea, nameb, valueEZM, valueAPT, valueLP, valueLeverage);
+        // await web3?.add_liquidity_aptos(namea, nameb, token, amount);
     }
 
     return (
@@ -88,27 +92,27 @@ export default function Part4(props: any) {
 
                     <Stack direction={'row'} alignItems="center" gap={1}>
                         <img src={TokenIcon.ezm} alt="ezm" width={25} height={25} style={{ borderRadius: '50%' }} />
-                        <Typography variant={'h6'}> {valueEZM} {'EZM'}</Typography>
+                        <Typography variant={'h6'}> {(valueEZM * valueLeverage).toFixed(3)} {'EZM'}</Typography>
                     </Stack>
 
                     <Stack direction={'row'} alignItems="center" gap={1}>
                         <img src={TokenIcon.apt} alt="Aptos" width={25} height={25} style={{ borderRadius: '50%' }} />
-                        <Typography variant={'h6'}> {valueAPT} {'APT'}</Typography>
+                        <Typography variant={'h6'}> {(valueAPT * valueLeverage).toFixed(3)} {'APT'}</Typography>
                     </Stack>
 
                     <Stack direction={'row'} alignItems="center" gap={1}>
                         <img src={TokenIcon.lp} alt="lp" width={25} height={25} style={{ borderRadius: '50%' }} />
-                        <Typography variant={'h6'}> {valueLP} {'LP'}</Typography>
+                        <Typography variant={'h6'}> {(valueLP * valueLeverage).toFixed(3)} {'LP'}</Typography>
                     </Stack>
                 </Box>
 
                 <Box sx={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: 1 }}>
                     <Typography variant="h5" sx={{ fontSize: '18px', py: 2 }}>
-                        ~${valueTotalSupply}
+                        ~${valueTotalSupply.toFixed(3)}
                     </Typography>
-                    <Typography variant="h6">${valueDolarEZM.toFixed(3)}</Typography>
-                    <Typography variant="h6">${valueDolarAPT.toFixed(3)}</Typography>
-                    <Typography variant="h6">${valueDolarLP.toFixed(3)}</Typography>
+                    <Typography variant="h6">${(valueDolarEZM).toFixed(3)}</Typography>
+                    <Typography variant="h6">${(valueDolarAPT).toFixed(3)}</Typography>
+                    <Typography variant="h6">${(valueDolarLP).toFixed(3)}</Typography>
                 </Box>
             </Box>
 
@@ -128,12 +132,12 @@ export default function Part4(props: any) {
 
                     <Stack direction={'row'} alignItems="center" gap={1}>
                         <img src={imga} alt="" width={25} height={25} style={{ borderRadius: '50%' }} />
-                        <Typography variant={'h6'}>0.056432 {namea}</Typography>
+                        <Typography variant={'h6'}>0.056432 {namea.toUpperCase()}</Typography>
                     </Stack>
 
                     <Stack direction={'row'} alignItems="center" gap={1}>
                         <img src={imgb} alt="" width={25} height={25} style={{ borderRadius: '50%' }} />
-                        <Typography variant={'h6'}>0.056432 {nameb}</Typography>
+                        <Typography variant={'h6'}>0.056432 {nameb.toUpperCase()}</Typography>
                     </Stack>
                 </Box>
 

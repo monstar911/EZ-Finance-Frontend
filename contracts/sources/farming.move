@@ -1,11 +1,13 @@
 module ezfinance::farming {
     
     use std::signer;
+    use ezfinance::swap;
+    use aptos_framework::coin;
+    use ezfinance::swap_utils;
 
     use ezfinance::faucet_tokens::{Self, EZM, USDC, USDT, WETH, WBTC, CEUSDC, DAI};
 
     use aptos_framework::account;
-    use aptos_framework::coin;
     use aptos_framework::genesis;
     use aptos_framework::resource_account;
     use aptos_framework::managed_coin;
@@ -14,10 +16,8 @@ module ezfinance::farming {
 
     use aptos_std::math64::pow;
 
-    use ezfinance::swap::{Self, LPToken};
     use ezfinance::router;
     use ezfinance::math;
-    use ezfinance::swap_utils;
 
     use ezfinance::lending;
     use ezfinance::faucet_provider;
@@ -32,53 +32,86 @@ module ezfinance::farming {
     const AMOUNT_ZERO: u64 = 4;
 
 
-    // fun init_module(sender: &signer) {
-
-    //     let account_addr = signer::address_of(sender);
-    //     let amount = 1000000000000000000u64;
-    //     let per_request = 1000000000u64;
-    //     let period = 3000u64;
-    //     //Deposite Pool Token 8000 at the startup
-    //     managed_coin::register<faucet_tokens::EZM>(sender);
-    //     managed_coin::mint<faucet_tokens::EZM>(sender,account_addr,amount);
-    //     faucet_provider::create_faucet<faucet_tokens::EZM>(sender,amount/2,per_request,period);
-    //     let coin1 = coin::withdraw<faucet_tokens::EZM>(sender, 0);        
-    //     let pool1 = Pool<faucet_tokens::EZM> {borrowed_amount: 0, deposited_amount: 0, token: coin1};
-    //     move_to(sender, pool1);
-    // }
-
-    //Z: supply
-    //X, Y: to be requidity
-    //valLeverage
-    //amount_z: amount of Z
-    public entry fun leverage_yield_farming<X, Y, Z>(
-        sender: &signer, 
-        amount_z: u64
+    /// Create a Pair from 2 Coins
+    /// Should revert if the pair is already created
+    public entry fun create_pair<X, Y>(
+        sender: &signer,
     ) {
-
-        // assert!(exists<Pool<X>>(MODULE_ADMIN), COIN_NOT_EXIST);
-        // assert!(exists<Pool<Y>>(MODULE_ADMIN), COIN_NOT_EXIST);
-        // assert!(exists<Pool<Z>>(MODULE_ADMIN), COIN_NOT_EXIST);
-
-        assert!(amount_z > 0, AMOUNT_ZERO);
-
-        let amount_x = amount_z;
-        let amount_y = amount_z;
-
-        // if (type_of(Z) == type_of(X)) {
-        //     let coin_x = coin::withdraw<X>(sender, amount_z);
-        //     amount_x = coin_x - amount_z;
-        //     lending::borrow<X>(sender, amount_x);
-        // } else if (type_of(Z) == type_of(Y)) {
-        //     let coin_y = coin::withdraw<X>(sender, amount_z);
-        //     amount_y = coin_y - amount_z;
-        //     lending::borrow<Y>(sender, amount_y);
+        if (swap_utils::sort_token_type<X, Y>()) {
+        //     swap::create_pair<X, Y>(sender);
         // } else {
-        //     lending::borrow<Z>(sender, 2*amount_z);
-        // };
-        
-        // swap::swap<X, Y>(amount_x, amount_y);
-        // router::add_liquidity<X, Y>(sender, amount_x, amount_y, 0, 0);
+        //     swap::create_pair<Y, X>(sender);
+        }
+    }
+
+    /// Leverage Yield Farming, create pair if it's needed
+    //X, Y: to be requidity
+    //EZM, APT, LP: supply
+    //amountSupplyEZM
+    //amountSupplyAPT
+    //amountSupplyLP
+    //amountInWeiBorrowEZM
+    //amountInWeiBorrowAPT
+    //amountInWeiBorrowLP
+    public entry fun leverage_yield_farming<X, Y>(
+        sender: &signer, 
+        amountInWeiSupplyEZM: u64,
+        amountInWeiSupplyAPT: u64,
+        amountInWeiSupplyLP: u64,
+        amountInWeiBorrowEZM: u64,
+        amountInWeiBorrowAPT: u64,
+        amountInWeiBorrowLP: u64,
+    ) {
+        let amount = 1000000000000000000u64;
+        let amount_pool = amount / 20;
+
+        if (!(swap::is_pair_created<X, Y>() || swap::is_pair_created<Y, X>())) {
+            create_pair<X, Y>(sender);
+            router::add_liquidity<X, Y>(sender, amount_pool/4, amount_pool/4, 0, 0);
+        };
+
+        if (amountInWeiBorrowEZM > 0) {
+            lending::borrow<EZM>(sender, amountInWeiBorrowEZM);
+        };
+
+        if (amountInWeiBorrowAPT > 0) {
+            lending::borrow<AptosCoin>(sender, amountInWeiBorrowAPT);
+        };
+
+        if (amountInWeiBorrowLP > 0) {
+            // lending::borrow<ezfinance::faucet_tokens::LP>(sender, amountInWeiBorrowLP);
+        };
+
+        if (!(swap::is_pair_created<EZM, X>() || swap::is_pair_created<X, EZM>())) {
+            create_pair<EZM, X>(sender);
+            router::add_liquidity<EZM, X>(sender, amount_pool/4, amount_pool/4, 0, 0);
+        };
+
+        if (!(swap::is_pair_created<EZM, Y>() || swap::is_pair_created<Y, EZM>())) {
+            create_pair<EZM, Y>(sender);
+            router::add_liquidity<EZM, Y>(sender, amount_pool/4, amount_pool/4, 0, 0);
+        };
+
+        if (!(swap::is_pair_created<AptosCoin, X>() || swap::is_pair_created<X, AptosCoin>())) {
+            create_pair<AptosCoin, X>(sender);
+            router::add_liquidity<AptosCoin, X>(sender, amount_pool/4, amount_pool/4, 0, 0);
+        };
+
+        if (!(swap::is_pair_created<AptosCoin, Y>() || swap::is_pair_created<Y, AptosCoin>())) {
+            create_pair<AptosCoin, Y>(sender);
+            router::add_liquidity<AptosCoin, Y>(sender, amount_pool/4, amount_pool/4, 0, 0);
+        };
+
+        router::swap_exact_input<EZM, X>(sender, (amountInWeiSupplyEZM + amountInWeiBorrowEZM)/2, 0);
+        router::swap_exact_input<EZM, Y>(sender, (amountInWeiSupplyEZM + amountInWeiBorrowEZM)/2, 0);
+
+        router::swap_exact_input<AptosCoin, X>(sender, (amountInWeiSupplyAPT + amountInWeiBorrowAPT)/2, 0);
+        router::swap_exact_input<AptosCoin, Y>(sender, (amountInWeiSupplyAPT + amountInWeiBorrowAPT)/2, 0);
+
+        let token_x_after_balance = coin::balance<X>(signer::address_of(sender));
+        let token_y_after_balance = coin::balance<Y>(signer::address_of(sender));
+
+        router::add_liquidity<X, Y>(sender, token_x_after_balance, token_y_after_balance, 0, 0);
     }
 }
 

@@ -66,7 +66,7 @@ const StyledInput = styled(OutlinedInput)({
 });
 
 export default function Part1(props: any) {
-    const { imga, imgb, namea, nameb, selectValue, setSelectValue, index, setIndex, token, setToken,
+    const { imga, imgb, namea, nameb, selectValue, setSelectValue, valueLeverage, setValueLeverage, token, setToken,
         amount, setAmount, valueEZM, setValueEZM, valueAPT, setValueAPT, valueLP, setValueLP,
         valueDolarEZM, setValueDolarEZM, valueDolarAPT, setValueDolarAPT, valueDolarLP, setValueDolarLP,
         valueTotalSupply, setValueTotalSupply } = props;
@@ -177,8 +177,8 @@ export default function Part1(props: any) {
                     placeholder="e.g 1.83"
                     onChange={(e: any) => {
                         setValueEZM(e.target.value)
-                        setValueDolarEZM(TokenPrice.ezm * e.target.value)
-                        setValueTotalSupply(TokenPrice.ezm * e.target.value + valueDolarAPT + valueDolarLP)
+                        setValueDolarEZM(TokenPrice.ezm * valueLeverage * e.target.value)
+                        setValueTotalSupply(TokenPrice.ezm * valueLeverage * e.target.value + valueDolarAPT + valueDolarLP)
                     }
                     }
                     endAdornment={<InputAdornment position="end"></InputAdornment>}
@@ -249,7 +249,7 @@ export default function Part1(props: any) {
                 </Box>
 
                 <Typography
-                    variant="subtitle1" sx={{ fontSize: '14px !important' }} textAlign='right'>Balance: {userInfo?.tokenBalance['apt']?.toFixed(4) ?? 0}
+                    variant="subtitle1" sx={{ fontSize: '14px !important' }} textAlign='right'>Balance: {userInfo?.tokenBalance['lp']?.toFixed(4) ?? 0}
                 </Typography>
 
                 <StyledInput

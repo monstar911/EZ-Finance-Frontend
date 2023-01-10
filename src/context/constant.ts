@@ -1,7 +1,3 @@
-
-export const ezfinance = "0xac864f0ac98704df22572b04ba1cf5630046b5534c1cfd8bcc68d493f9ad6452";
-// export const ezfinance = "0xb926569bb507dafd750c44c26e9f9ab322da7010273d5c5f321c1c14e4bf2065";
-// abc6f78cff1a65c65a5a9f672d374110b84bf83c5ce55ba3626bb6bdfc28d224
 import LpIcon from '../asset/icons/LpToken.png'
 import EzmIcon from '../asset/icons/EZM.png'
 import AptosIcon from '../asset/icons/Aptos.png'
@@ -10,6 +6,9 @@ import UsdcIcon from '../asset/icons/crypto-usdc.png'
 import UsdtIcon from '../asset/icons/crypto-usdt.png'
 import EthereumIcon from '../asset/icons/crypto-ethereum.png'
 import DaiIcon from '../asset/icons/crypto-dai.svg'
+
+
+export const ezfinance = "0xd346a1afda73c8f9bab2a5ed12ed1f44761fed4ce90049dfbda27bfba943ea0d";
 
 export const tokens = {
     ezm: `${ezfinance}::faucet_tokens::EZM`,

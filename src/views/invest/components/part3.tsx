@@ -4,6 +4,7 @@ import { Box, Typography, Slider, Stack } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 
 import { trim } from '../../../helper/trim';
+import { TokenIcon } from '../../../context/constant';
 
 
 const useStyles = makeStyles((theme: any) => ({
@@ -18,7 +19,12 @@ const useStyles = makeStyles((theme: any) => ({
 }));
 
 export default function Part3(props: any) {
-    const { imga, imgb, namea, nameb, index, setIndex, amount, valueLeverage, setValueLeverage, debt, setDebt } = props;
+    const { imga, imgb, namea, nameb, index, setIndex, amount, valueLeverage, setValueLeverage, debt, setDebt,
+        valueBorrowEZM, setValueBorrowEZM, valueBorrowAPT, setValueBorrowAPT, valueBorrowLP, setValueBorrowLP,
+        valueBorrowDolarEZM, setValueBorrowDolarEZM, valueBorrowDolarAPT, setValueBorrowDolarAPT, valueBorrowDolarLP, setValueBorrowDolarLP,
+        valueEZM, setValueEZM, valueAPT, setValueAPT, valueLP, setValueLP,
+        valueDolarEZM, setValueDolarEZM, valueDolarAPT, setValueDolarAPT, valueDolarLP, setValueDolarLP
+    } = props;
     const classes = useStyles();
     const [rectCheck, setRectCheck] = React.useState(false);
 
@@ -56,7 +62,7 @@ export default function Part3(props: any) {
                 <Typography variant="body1" sx={{ fontSize: '21px' }}>
                     Liquidiation Conditions
                 </Typography>
-                <Typography variant="h6" sx={{ lineHeight: '40px' }}>
+                {/* <Typography variant="h6" sx={{ lineHeight: '40px' }}>
                     Blandit at ornare sagittis in tortor tempus morbi dolor. Consectetur.
                 </Typography>
                 <Typography variant="h6" sx={{ lineHeight: '40px' }}>
@@ -64,7 +70,7 @@ export default function Part3(props: any) {
                 </Typography>
                 <Typography variant="h6" sx={{ lineHeight: '40px', mb: 3 }}>
                     Morbi molestie ac posuere iaculis commodo lectus nec. Vulputate.
-                </Typography>
+                </Typography> */}
                 <hr />
                 <Stack
                     direction="row"
@@ -77,7 +83,7 @@ export default function Part3(props: any) {
                     </Typography>
                     <Stack direction="row" alignItems={'center'} gap={1}>
                         <img src={imga} alt="" style={{ width: '20px', height: '20px', borderRadius: '50%' }} />
-                        <Typography variant="h6">$1.00</Typography>
+                        <Typography variant="h6">${1.00}</Typography>
                     </Stack>
                     <Stack direction="row" alignItems={'center'} gap={1}>
                         <img src={imgb} alt="" style={{ width: '20px', height: '20px', borderRadius: '50%' }} />
@@ -109,20 +115,28 @@ export default function Part3(props: any) {
                 }}
             >
                 <Stack direction={'row'} alignItems="center" gap={2}>
-                    <img src={imga} alt="" style={{ width: '40px', height: '40px', borderRadius: '50%' }} />
+                    <img src={TokenIcon.ezm} alt="ezm" style={{ width: '30px', height: '30px', borderRadius: '50%' }} />
                     <Stack direction={'column'}>
                         <Typography variant="h5" sx={{ fontSize: '22px', fontWeight: 700 }}>
-                            {trim(2 * (valueLeverage - 1) * amount, 3)} {namea}
+                            {valueBorrowEZM} {'EZM'}
                         </Typography>
-                        <Typography variant="h6">~${ }</Typography>
+                        <Typography variant="h6">~${valueBorrowDolarEZM}</Typography>
                     </Stack>
 
-                    <img src={imgb} alt="" style={{ width: '40px', height: '40px', borderRadius: '50%' }} />
+                    <img src={TokenIcon.apt} alt="apt" style={{ width: '30px', height: '30px', borderRadius: '50%' }} />
                     <Stack direction={'column'}>
                         <Typography variant="h5" sx={{ fontSize: '22px', fontWeight: 700 }}>
-                            {trim(2 * (valueLeverage - 1) * amount, 3)} {nameb}
+                            {valueBorrowAPT} {'APT'}
                         </Typography>
-                        <Typography variant="h6">~${ }</Typography>
+                        <Typography variant="h6">~${valueBorrowDolarAPT}</Typography>
+                    </Stack>
+
+                    <img src={TokenIcon.lp} alt="lp" style={{ width: '30px', height: '30px', borderRadius: '50%' }} />
+                    <Stack direction={'column'}>
+                        <Typography variant="h5" sx={{ fontSize: '22px', fontWeight: 700 }}>
+                            {valueBorrowLP} {'LP'}
+                        </Typography>
+                        <Typography variant="h6">~${valueBorrowDolarLP}</Typography>
                     </Stack>
                 </Stack>
             </Box>

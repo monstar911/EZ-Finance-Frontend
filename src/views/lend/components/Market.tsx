@@ -1,5 +1,4 @@
 import React, { useState, useContext, useMemo, useEffect } from 'react';
-import { IUserInfo, Web3Context } from '../../../context/Web3Context';
 import { makeStyles } from '@mui/styles';
 import {
     Box,
@@ -17,15 +16,12 @@ import {
     useMediaQuery
 } from '@mui/material';
 
-import ArcoIcon from '../../../asset/icons/arco.svg';
-import AptosIcon from '../../../asset/icons/Aptos.png';
-import BtcIcon from '../../../asset/icons/crypto-btc.svg';
-import UsdcIcon from '../../../asset/icons/crypto-usdc.png';
-import UsdtIcon from '../../../asset/icons/crypto-usdt.png';
-import EthereumIcon from '../../../asset/icons/crypto-ethereum.png';
-import DaiIcon from '../../../asset/icons/crypto-dai.svg';
 import { IconX } from '@tabler/icons';
 import { trim } from '../../../helper/trim';
+
+import { TokenIcon } from '../../../context/constant';
+import { IUserInfo, Web3Context } from '../../../context/Web3Context';
+
 
 const useStyles = makeStyles((theme) => ({
     marketView: {
@@ -87,7 +83,15 @@ function Market() {
 
     const datas = [
         {
-            icon: AptosIcon,
+            icon: TokenIcon.ezm,
+            asset: 'EZM',
+            symbol: 'ezm',
+            depositAPY: 1.3,
+            totalDeposited: trim(poolInfo?.apt ?? 0, 3),
+            depositBalance: trim(userInfo?.deposit['ezm'] ?? 0, 3),
+            walletBalance: trim(userInfo?.tokenBalance['ezm'] ?? 0, 3)
+        }, {
+            icon: TokenIcon.apt,
             asset: 'APT',
             symbol: 'apt',
             depositAPY: 1.3,
@@ -95,7 +99,7 @@ function Market() {
             depositBalance: trim(userInfo?.deposit['apt'] ?? 0, 3),
             walletBalance: trim(userInfo?.tokenBalance['apt'] ?? 0, 3)
         }, {
-            icon: BtcIcon,
+            icon: TokenIcon.wbtc,
             asset: 'WBTC',
             symbol: 'wbtc',
             depositAPY: 2.4,
@@ -103,7 +107,7 @@ function Market() {
             depositBalance: userInfo?.deposit['wbtc'] ?? 0,
             walletBalance: trim(userInfo?.tokenBalance['wbtc'] ?? 0, 3)
         }, {
-            icon: UsdcIcon,
+            icon: TokenIcon.ceUsdc,
             asset: 'ceUSDC',
             symbol: 'ceUsdc',
             depositAPY: 1.6,
@@ -111,7 +115,7 @@ function Market() {
             depositBalance: userInfo?.deposit['ceUsdc'] ?? 0,
             walletBalance: trim(userInfo?.tokenBalance['ceUsdc'] ?? 0, 3)
         }, {
-            icon: EthereumIcon,
+            icon: TokenIcon.weth,
             asset: 'WETH',
             symbol: 'weth',
             depositAPY: 2.3,
@@ -119,7 +123,7 @@ function Market() {
             depositBalance: userInfo?.deposit['weth'] ?? 0,
             walletBalance: trim(userInfo?.tokenBalance['weth'] ?? 0, 3)
         }, {
-            icon: DaiIcon,
+            icon: TokenIcon.dai,
             asset: 'DAI',
             symbol: 'dai',
             depositAPY: 1.1,
@@ -127,7 +131,7 @@ function Market() {
             depositBalance: userInfo?.deposit['dai'] ?? 0,
             walletBalance: trim(userInfo?.tokenBalance['dai'] ?? 0, 3)
         }, {
-            icon: UsdcIcon,
+            icon: TokenIcon.usdc,
             asset: 'USDC',
             symbol: 'usdc',
             depositAPY: 0.9,
@@ -135,7 +139,7 @@ function Market() {
             depositBalance: userInfo?.deposit['usdc'] ?? 0,
             walletBalance: trim(userInfo?.tokenBalance['usdc'] ?? 0, 3)
         }, {
-            icon: UsdtIcon,
+            icon: TokenIcon.usdt,
             asset: 'USDT',
             symbol: 'usdt',
             depositAPY: 1.0,
