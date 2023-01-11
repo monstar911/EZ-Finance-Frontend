@@ -5,7 +5,7 @@ module ezfinance::farming {
     use aptos_framework::coin;
     use ezfinance::swap_utils;
 
-    use ezfinance::faucet_tokens::{Self, EZM, USDC, USDT, WETH, WBTC, CEUSDC, DAI};
+    use ezfinance::faucet_tokens::{Self, EZM, WBTC, WETH, USDT, USDC, DAI};
 
     use aptos_framework::account;
     use aptos_framework::genesis;

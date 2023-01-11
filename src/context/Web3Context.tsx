@@ -2,9 +2,9 @@ import React, { ReactNode, useEffect, useState, createContext } from 'react';
 import { AptosClient, CoinClient } from 'aptos';
 import { ezfinance, TokenPrice, tokens } from './constant'
 import { sleep } from '../helper/sleep';
+import { ethers } from 'ethers';
 
 const client = new AptosClient('https://fullnode.testnet.aptoslabs.com/v1');
-// const client = new AptosClient('https://fullnode.devnet.aptoslabs.com/v1');
 const coinClient = new CoinClient(client);
 
 export interface IUserInfo {
@@ -38,10 +38,10 @@ export interface IAptosInterface {
     getFaucet: any;
     checkBalance: any;
     leverage_yield_farming: any;
-    leverage_yield_farming_dapp: any;
+    leverage_yield_farming_borrow: any;
     leverage_yield_farming_swap: any;
     add_liquidity: any;
-    add_liquidity_aptos: any;
+    add_liquidity_pool: any;
 }
 
 interface Props {
@@ -124,18 +124,26 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         if (address) {
             const resOfUser = await client.getAccountResources(address)
             Object.keys(tokens).map((symbol) => {
+                console.log('getUserInfo Ticket:', symbol);
+
                 const tokenTicketInfo = resOfUser.find(
                     (item) => item.type === `${ezfinance}::lending::Ticket<${tokens[symbol]}>`
                 )
+
                 const tokenInfo = resOfUser.find((item) => item.type === `0x1::coin::CoinStore<${tokens[symbol]}>`)
                 if (tokenTicketInfo) {
+                    console.log('getUserInfo tokenTicketInfo is not null');
                     const _data = tokenTicketInfo.data as {
                         borrow_amount: number;
                         lend_amount: number;
                         claim_amount: number;
                     }
+                    console.log('getUserInfo borrow_amount:', _data.borrow_amount);
+
                     userInfo.deposit[symbol] = _data.lend_amount / Math.pow(10, 8)
                     setUserInfo(userInfo)
+                } else {
+                    console.log('getUserInfo tokenTicketInfo is null');
                 }
                 if (tokenInfo) {
                     const _data = tokenInfo.data as { coin: { value: number } }
@@ -381,47 +389,32 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
 
     // }
 
-    const leverage_yield_farming = async (coinX: string, coinY: string, valueEZM: number, valueAPT: number, valueLP: number, valueLeverage: number) => {
+    const leverage_yield_farming = async (coinX: string, coinY: string, valuePairX: number, valuePairY: number, valueEZM: number, valueLeverage: number) => {
         if (wallet === '' || !isConnected) return;
 
         const tokenTypeX = tokens[coinX]
         const tokenTypeY = tokens[coinY]
+        const leverageBorrowPairX = (valueLeverage - 1) * valuePairX;
+        const leverageBorrowPairY = (valueLeverage - 1) * valuePairY;
         const leverageBorrowEZM = (valueLeverage - 1) * valueEZM;
-        const leverageBorrowAPT = (valueLeverage - 1) * valueAPT;
-        const leverageBorrowLP = (valueLeverage - 1) * valueLP;
 
-        console.log('leverage_yield_farming')
-        console.log(tokenTypeX)
-        console.log(tokenTypeY)
-        console.log(valueEZM)
-        console.log(valueAPT)
-        console.log(valueLP)
-        console.log(valueLeverage)
-        console.log("leverageBorrowEZM", leverageBorrowEZM)
+        console.log('leverage_yield_farming', tokenTypeX, tokenTypeY, valuePairX, valuePairY, valueEZM,
+            valueLeverage, leverageBorrowPairX, leverageBorrowPairY, leverageBorrowEZM)
 
+        const amountInWeiSupplyPairX = ethers.utils.parseUnits(String(valuePairX), 8).toNumber()
+        const amountInWeiSupplyPairY = ethers.utils.parseUnits(String(valuePairY), 8).toNumber()
         const amountInWeiSupplyEZM = ethers.utils.parseUnits(String(valueEZM), 8).toNumber()
-        const amountInWeiSupplyAPT = ethers.utils.parseUnits(String(valueAPT), 8).toNumber()
-        const amountInWeiSupplyLP = ethers.utils.parseUnits(String(valueLP), 8).toNumber()
 
-        console.log("amountInWeiSupplyEZM", amountInWeiSupplyEZM)
-        console.log(amountInWeiSupplyAPT)
-        console.log(amountInWeiSupplyLP)
-
+        const amountInWeiBorrowPairX = ethers.utils.parseUnits(String(leverageBorrowPairX.toFixed(7)), 8).toNumber()
+        const amountInWeiBorrowPairY = ethers.utils.parseUnits(String(leverageBorrowPairY.toFixed(7)), 8).toNumber()
         const amountInWeiBorrowEZM = ethers.utils.parseUnits(String(leverageBorrowEZM.toFixed(7)), 8).toNumber()
-        const amountInWeiBorrowAPT = ethers.utils.parseUnits(String(leverageBorrowAPT.toFixed(7)), 8).toNumber()
-        const amountInWeiBorrowLP = ethers.utils.parseUnits(String(leverageBorrowLP.toFixed(7)), 8).toNumber()
 
-        // const amountInWeiBorrowEZM = ethers.utils.parseUnits(String(valueEZM), 8).toNumber()
-        // const amountInWeiBorrowAPT = ethers.utils.parseUnits(String(valueEZM), 8).toNumber()
-        // const amountInWeiBorrowLP = ethers.utils.parseUnits(String(valueEZM), 8).toNumber()
-
-        console.log(amountInWeiBorrowEZM)
-        console.log(amountInWeiBorrowAPT)
-        console.log(amountInWeiBorrowLP)
-
+        console.log('leverage_yield_farming', tokenTypeX, tokenTypeY, amountInWeiSupplyPairX, amountInWeiSupplyPairY, amountInWeiSupplyEZM,
+            valueLeverage, amountInWeiBorrowPairX, amountInWeiBorrowPairY, amountInWeiBorrowEZM)
 
         const petraTransaction = {
-            arguments: [amountInWeiSupplyEZM, amountInWeiSupplyAPT, amountInWeiSupplyLP, amountInWeiBorrowEZM, amountInWeiBorrowAPT, amountInWeiBorrowLP],
+            arguments: [amountInWeiSupplyPairX, amountInWeiSupplyPairY, amountInWeiSupplyEZM,
+                amountInWeiBorrowPairX, amountInWeiBorrowPairY, amountInWeiBorrowEZM],
             function: ezfinance + '::router::leverage_yield_farming',
             type: 'entry_function_payload',
             type_arguments: [tokenTypeX, tokenTypeY],
@@ -430,7 +423,8 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         const sender = address;
         const payload = {
             function: ezfinance + '::router::leverage_yield_farming',
-            arguments: [amountInWeiSupplyEZM, amountInWeiSupplyAPT, amountInWeiSupplyLP, amountInWeiBorrowEZM, amountInWeiBorrowAPT, amountInWeiBorrowLP],
+            arguments: [amountInWeiSupplyPairX, amountInWeiSupplyPairY, amountInWeiSupplyEZM,
+                amountInWeiBorrowPairX, amountInWeiBorrowPairY, amountInWeiBorrowEZM],
             type_arguments: [tokenTypeX, tokenTypeY],
         };
 
@@ -456,67 +450,45 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         await getPoolInfo();
     }
 
-    const leverage_yield_farming_dapp = async (coinX: string, coinY: string, valueEZM: number, valueAPT: number, valueLP: number, valueLeverage: number) => {
+    const leverage_yield_farming_borrow = async (coinX: string, coinY: string, valuePairX: number, valuePairY: number, valueEZM: number, valueLeverage: number) => {
         if (wallet === '' || !isConnected) return;
 
         const tokenTypeX = tokens[coinX]
         const tokenTypeY = tokens[coinY]
+        const leverageBorrowPairX = (valueLeverage - 1) * valuePairX;
+        const leverageBorrowPairY = (valueLeverage - 1) * valuePairY;
         const leverageBorrowEZM = (valueLeverage - 1) * valueEZM;
-        const leverageBorrowAPT = (valueLeverage - 1) * valueAPT;
-        const leverageBorrowLP = (valueLeverage - 1) * valueLP;
 
-        console.log('leverage_yield_farming_dapp')
-        console.log(tokenTypeX)
-        console.log(tokenTypeY)
-        console.log(valueEZM)
-        console.log(valueAPT)
-        console.log(valueLP)
-        console.log(valueLeverage)
+        console.log('leverage_yield_farming_borrow', tokenTypeX, tokenTypeY, valuePairX, valuePairY, valueEZM,
+            valueLeverage, leverageBorrowPairX, leverageBorrowPairY, leverageBorrowEZM)
 
+        const amountInWeiSupplyPairX = ethers.utils.parseUnits(String(valuePairX), 8).toNumber()
+        const amountInWeiSupplyPairY = ethers.utils.parseUnits(String(valuePairY), 8).toNumber()
         const amountInWeiSupplyEZM = ethers.utils.parseUnits(String(valueEZM), 8).toNumber()
-        const amountInWeiSupplyAPT = ethers.utils.parseUnits(String(valueAPT), 8).toNumber()
-        const amountInWeiSupplyLP = ethers.utils.parseUnits(String(valueLP), 8).toNumber()
 
-        console.log(amountInWeiSupplyEZM)
-        console.log(amountInWeiSupplyAPT)
-        console.log(amountInWeiSupplyLP)
-
+        const amountInWeiBorrowPairX = ethers.utils.parseUnits(String(leverageBorrowPairX.toFixed(7)), 8).toNumber()
+        const amountInWeiBorrowPairY = ethers.utils.parseUnits(String(leverageBorrowPairY.toFixed(7)), 8).toNumber()
         const amountInWeiBorrowEZM = ethers.utils.parseUnits(String(leverageBorrowEZM.toFixed(7)), 8).toNumber()
-        const amountInWeiBorrowAPT = ethers.utils.parseUnits(String(leverageBorrowAPT.toFixed(7)), 8).toNumber()
-        const amountInWeiBorrowLP = ethers.utils.parseUnits(String(leverageBorrowLP.toFixed(7)), 8).toNumber()
 
-        // const amountInWeiBorrowEZM = ethers.utils.parseUnits(String(valueAPT), 8).toNumber()
-        // const amountInWeiBorrowAPT = ethers.utils.parseUnits(String(valueAPT), 8).toNumber()
-        // const amountInWeiBorrowLP = ethers.utils.parseUnits(String(valueAPT), 8).toNumber()
-
-        console.log(amountInWeiBorrowEZM)
-        console.log(amountInWeiBorrowAPT)
-        console.log(amountInWeiBorrowLP)
-
-        // if (amountInWeiBorrowEZM > 0) {
-        //     lending:: borrow<EZM>(sender, amountInWeiBorrowEZM);
-        // };
-
-        // if (amountInWeiBorrowAPT > 0) {
-        //     lending:: borrow<AptosCoin>(sender, amountInWeiBorrowAPT);
-        // };
-
-        // if (amountInWeiBorrowLP > 0) {
-        //     // lending::borrow<ezfinance::faucet_tokens::LP>(sender, amountInWeiBorrowLP);
-        // };
+        console.log('leverage_yield_farming_borrow', tokenTypeX, tokenTypeY, amountInWeiSupplyPairX, amountInWeiSupplyPairY, amountInWeiSupplyEZM,
+            valueLeverage, amountInWeiBorrowPairX, amountInWeiBorrowPairY, amountInWeiBorrowEZM)
 
         const petraTransaction = {
-            arguments: [amountInWeiBorrowEZM],
+            arguments: [amountInWeiBorrowPairY],
             function: ezfinance + '::lending::borrow',
             type: 'entry_function_payload',
-            type_arguments: [tokens['apt']],
+            // type_arguments: [tokenTypeX],
+            type_arguments: [tokenTypeY],
+            // type_arguments: [tokens['ezm']],
         };
 
         const sender = address;
         const payload = {
             function: ezfinance + '::lending::borrow',
-            arguments: [amountInWeiBorrowEZM],
-            type_arguments: [tokens['apt']],
+            arguments: [amountInWeiBorrowPairY],
+            // type_arguments: [tokenTypeX],
+            type_arguments: [tokenTypeY],
+            // type_arguments: [tokens['ezm']],
         };
 
         let transaction;
@@ -541,77 +513,45 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         await getPoolInfo();
     }
 
-    const leverage_yield_farming_swap = async (coinX: string, coinY: string, valueEZM: number, valueAPT: number, valueLP: number, valueLeverage: number) => {
+    const leverage_yield_farming_swap = async (coinX: string, coinY: string, valuePairX: number, valuePairY: number, valueEZM: number, valueLeverage: number) => {
         if (wallet === '' || !isConnected) return;
 
         const tokenTypeX = tokens[coinX]
         const tokenTypeY = tokens[coinY]
+        const leverageBorrowPairX = (valueLeverage - 1) * valuePairX;
+        const leverageBorrowPairY = (valueLeverage - 1) * valuePairY;
         const leverageBorrowEZM = (valueLeverage - 1) * valueEZM;
-        const leverageBorrowAPT = (valueLeverage - 1) * valueAPT;
-        const leverageBorrowLP = (valueLeverage - 1) * valueLP;
 
-        console.log('leverage_yield_farming_dapp')
-        console.log(tokenTypeX)
-        console.log(tokenTypeY)
-        console.log(valueEZM)
-        console.log(valueAPT)
-        console.log(valueLP)
-        console.log(valueLeverage)
+        console.log('leverage_yield_farming_swap', tokenTypeX, tokenTypeY, valuePairX, valuePairY, valueEZM,
+            valueLeverage, leverageBorrowPairX, leverageBorrowPairY, leverageBorrowEZM)
 
+        const amountInWeiSupplyPairX = ethers.utils.parseUnits(String(valuePairX), 8).toNumber()
+        const amountInWeiSupplyPairY = ethers.utils.parseUnits(String(valuePairY), 8).toNumber()
         const amountInWeiSupplyEZM = ethers.utils.parseUnits(String(valueEZM), 8).toNumber()
-        const amountInWeiSupplyAPT = ethers.utils.parseUnits(String(valueAPT), 8).toNumber()
-        const amountInWeiSupplyLP = ethers.utils.parseUnits(String(valueLP), 8).toNumber()
 
-        console.log(amountInWeiSupplyEZM)
-        console.log(amountInWeiSupplyAPT)
-        console.log(amountInWeiSupplyLP)
+        const amountInWeiBorrowPairX = ethers.utils.parseUnits(String(leverageBorrowPairX.toFixed(7)), 8).toNumber()
+        const amountInWeiBorrowPairY = ethers.utils.parseUnits(String(leverageBorrowPairY.toFixed(7)), 8).toNumber()
+        const amountInWeiBorrowEZM = ethers.utils.parseUnits(String(leverageBorrowEZM.toFixed(7)), 8).toNumber()
 
-        // const amountInWeiBorrowEZM = ethers.utils.parseUnits(String(leverageBorrowEZM), 8).toNumber()
-        // const amountInWeiBorrowAPT = ethers.utils.parseUnits(String(leverageBorrowAPT), 8).toNumber()
-        // const amountInWeiBorrowLP = ethers.utils.parseUnits(String(leverageBorrowLP), 8).toNumber()
-
-        const amountInWeiBorrowEZM = ethers.utils.parseUnits(String(valueAPT), 8).toNumber()
-        const amountInWeiBorrowAPT = ethers.utils.parseUnits(String(valueAPT), 8).toNumber()
-        const amountInWeiBorrowLP = ethers.utils.parseUnits(String(valueAPT), 8).toNumber()
-
-        console.log(amountInWeiBorrowEZM)
-        console.log(amountInWeiBorrowAPT)
-        console.log(amountInWeiBorrowLP)
-
-        // if (amountInWeiBorrowEZM > 0) {
-        //     lending:: borrow<EZM>(sender, amountInWeiBorrowEZM);
-        // };
-
-        // if (amountInWeiBorrowAPT > 0) {
-        //     lending:: borrow<AptosCoin>(sender, amountInWeiBorrowAPT);
-        // };
-
-        // if (amountInWeiBorrowLP > 0) {
-        //     // lending::borrow<ezfinance::faucet_tokens::LP>(sender, amountInWeiBorrowLP);
-        // };
-        // router::swap_exact_input<EZM, X>(sender, (amountInWeiSupplyEZM + amountInWeiBorrowEZM)/2, 0);
-        // router::swap_exact_input<EZM, Y>(sender, (amountInWeiSupplyEZM + amountInWeiBorrowEZM)/2, 0);
-
-        // router::swap_exact_input<AptosCoin, X>(sender, (amountInWeiSupplyAPT + amountInWeiBorrowAPT)/2, 0);
-        // router::swap_exact_input<AptosCoin, Y>(sender, (amountInWeiSupplyAPT + amountInWeiBorrowAPT)/2, 0);
-
-        // let token_x_after_balance = coin::balance<X>(signer::address_of(sender));
-        // let token_y_after_balance = coin::balance<Y>(signer::address_of(sender));
-
-        // router::add_liquidity<X, Y>(sender, token_x_after_balance, token_y_after_balance, 0, 0);
+        console.log('leverage_yield_farming_swap', tokenTypeX, tokenTypeY, amountInWeiSupplyPairX, amountInWeiSupplyPairY, amountInWeiSupplyEZM,
+            valueLeverage, amountInWeiBorrowPairX, amountInWeiBorrowPairY, amountInWeiBorrowEZM)
 
         const petraTransaction = {
             arguments: [(amountInWeiSupplyEZM + amountInWeiBorrowEZM) / 2, 0],
             function: ezfinance + '::router::swap_exact_input',
             type: 'entry_function_payload',
-            type_arguments: [tokens['ezm'], tokenTypeX],
+            // type_arguments: [tokenTypeX, tokenTypeY],
+            // type_arguments: [tokens['ezm'], tokenTypeX],
+            type_arguments: [tokens['ezm'], tokenTypeY],
         };
 
         const sender = address;
         const payload = {
             function: ezfinance + '::router::swap_exact_input',
             arguments: [(amountInWeiSupplyEZM + amountInWeiBorrowEZM) / 2, 0],
-            type_arguments: [tokens['ezm'], tokenTypeX],
+            // type_arguments: [tokenTypeX, tokenTypeY],
+            // type_arguments: [tokens['ezm'], tokenTypeX],
+            type_arguments: [tokens['ezm'], tokenTypeY],
         };
 
         let transaction;
@@ -687,19 +627,16 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         await getPoolInfo();
     }
 
-    const add_liquidity_aptos = async (coinX: string, coinY: string, coinZ: string, amount: number) => {
+    const add_liquidity_pool = async (coinX: string, coinY: string, amountX: number, amountY: number) => {
 
         if (wallet === '' || !isConnected) return;
 
-        const tokenTypeX = tokens['dai']
-        const tokenTypeY = tokens['ezm']
-        const amountInWeiX = ethers.utils.parseUnits(String(10), 8).toNumber()
-        const amountInWeiY = ethers.utils.parseUnits(String(10), 8).toNumber()
+        const tokenTypeX = tokens[coinX]
+        const tokenTypeY = tokens[coinY]
+        const amountInWeiX = ethers.utils.parseUnits(String(amountX), 8).toNumber()
+        const amountInWeiY = ethers.utils.parseUnits(String(amountY), 8).toNumber()
 
-        console.log(tokenTypeX)
-        console.log(tokenTypeY)
-        console.log(amountInWeiX)
-        console.log(amountInWeiY)
+        console.log('add_liquidity_pool', tokenTypeX, tokenTypeY, amountInWeiX, amountInWeiY)
 
         const petraTransaction = {
             arguments: [amountInWeiX, amountInWeiY, 0, 0],
@@ -753,10 +690,10 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         getFaucet,
         checkBalance,
         leverage_yield_farming,
-        leverage_yield_farming_dapp,
+        leverage_yield_farming_borrow,
         leverage_yield_farming_swap,
         add_liquidity,
-        add_liquidity_aptos
+        add_liquidity_pool
     };
 
     return <Web3Context.Provider value={contextValue}> {children} </Web3Context.Provider>;

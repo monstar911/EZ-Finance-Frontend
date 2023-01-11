@@ -5,7 +5,7 @@ module ezfinance::router {
     use aptos_framework::coin;
     use ezfinance::swap_utils;
 
-    use ezfinance::faucet_tokens::{Self, EZM, USDC, USDT, WETH, WBTC, CEUSDC, DAI};
+    use ezfinance::faucet_tokens::{Self, EZM, WBTC, WETH, USDT, USDC, DAI};
 
     use aptos_framework::account;
     use aptos_framework::genesis;
@@ -46,193 +46,132 @@ module ezfinance::router {
     }
 
     fun init_module(sender: &signer) {
-        let amount = 1000000000000000000u64;
+        let account_addr = signer::address_of(sender);
+        // let amount = 1000000000000000000u64;
+        // let amount_pool = amount / 20;
+
+        if (!coin::is_account_registered<EZM>(account_addr)) {
+            coin::register<faucet_tokens::EZM>(sender);
+        };
+
+        if (!coin::is_account_registered<WBTC>(account_addr)) {
+            coin::register<faucet_tokens::WBTC>(sender);
+        };
+
+        if (!coin::is_account_registered<WETH>(account_addr)) {
+            coin::register<faucet_tokens::WETH>(sender);
+        };
+
+        if (!coin::is_account_registered<USDT>(account_addr)) {
+            coin::register<faucet_tokens::USDT>(sender);
+        };
+
+        if (!coin::is_account_registered<USDC>(account_addr)) {
+            coin::register<faucet_tokens::USDC>(sender);
+        };
+
+        if (!coin::is_account_registered<DAI>(account_addr)) {
+            coin::register<faucet_tokens::DAI>(sender);
+        };
 
         // create pair
-        // EZM, USDC, USDT, WETH, WBTC, CEUSDC, DAI, AptosCoin
-        let amount_pool = amount / 20;
+        // <(WBTC, WETH, USDT, USDC, DAI), AptosCoin>
 
-        // 1-EZM, USDC
-        create_pair<EZM, USDC>(sender);
-        add_liquidity<EZM, USDC>(sender, amount_pool, amount_pool, 0, 0);
-
-        // 2-EZM, USDT
-        create_pair<EZM, USDT>(sender);
-        add_liquidity<EZM, USDT>(sender, amount_pool, amount_pool, 0, 0);
-
-        // 3-EZM, WETH
-        create_pair<EZM, WETH>(sender);
-        add_liquidity<EZM, WETH>(sender, amount_pool, amount_pool, 0, 0);
-
-        // 4-EZM, WBTC
-        create_pair<EZM, WBTC>(sender);
-        add_liquidity<EZM, WBTC>(sender, amount_pool, amount_pool, 0, 0);
-
-        // 5-EZM, CEUSDC
-        create_pair<EZM, CEUSDC>(sender);
-        add_liquidity<EZM, CEUSDC>(sender, amount_pool, amount_pool, 0, 0);
-
-        // 6-EZM, DAI
-        create_pair<EZM, DAI>(sender);
-        add_liquidity<EZM, DAI>(sender, amount_pool, amount_pool, 0, 0);
-
-        // 7-EZM, AptosCoin
-        create_pair<EZM, AptosCoin>(sender);
-        add_liquidity<EZM, AptosCoin>(sender, amount_pool, amount_pool, 0, 0);
-
-        // 8-USDC, USDT
-        create_pair<USDC, USDT>(sender);
-        add_liquidity<USDC, USDT>(sender, amount_pool, amount_pool, 0, 0);
-
-        // 9-USDC, WETH
-        create_pair<USDC, WETH>(sender);
-        add_liquidity<USDC, WETH>(sender, amount_pool, amount_pool, 0, 0);
-
-        // 10-USDC, WBTC
-        create_pair<USDC, WBTC>(sender);
-        add_liquidity<USDC, WBTC>(sender, amount_pool, amount_pool, 0, 0);
-
-        // 11-USDC, CEUSDC
-        create_pair<USDC, CEUSDC>(sender);
-        add_liquidity<USDC, CEUSDC>(sender, amount_pool, amount_pool, 0, 0);
-
-        // 12-USDC, DAI
-        create_pair<USDC, DAI>(sender);
-        add_liquidity<USDC, DAI>(sender, amount_pool, amount_pool, 0, 0);
-
-        // 13-USDC, AptosCoin
-        create_pair<USDC, AptosCoin>(sender);
-        // add_liquidity<USDC, AptosCoin>(sender, amount_pool, amount_pool, 0, 0);
-
-        // 14-USDT, WETH
-        create_pair<USDT, WETH>(sender);
-        add_liquidity<USDT, WETH>(sender, amount_pool, amount_pool, 0, 0);
-
-        // 15-USDT, WBTC
-        create_pair<USDT, WBTC>(sender);
-        add_liquidity<USDT, WBTC>(sender, amount_pool, amount_pool, 0, 0);
-
-        // 16-USDT, CEUSDC
-        create_pair<USDT, CEUSDC>(sender);
-        add_liquidity<USDT, CEUSDC>(sender, amount_pool, amount_pool, 0, 0);
-
-        // 17-USDT, DAI
-        create_pair<USDT, DAI>(sender);
-        add_liquidity<USDT, DAI>(sender, amount_pool, amount_pool, 0, 0);
-
-        // 18-USDT, AptosCoin
-        create_pair<USDT, AptosCoin>(sender);
-        // add_liquidity<USDT, AptosCoin>(sender, amount_pool, amount_pool, 0, 0);
-
-        // 19-WETH, WBTC
-        create_pair<WETH, WBTC>(sender);
-        add_liquidity<WETH, WBTC>(sender, amount_pool, amount_pool, 0, 0);
-
-        // 20-WETH, CEUSDC
-        create_pair<WETH, CEUSDC>(sender);
-        add_liquidity<WETH, CEUSDC>(sender, amount_pool, amount_pool, 0, 0);
-
-        // 21-WETH, DAI
-        create_pair<WETH, DAI>(sender);
-        add_liquidity<WETH, DAI>(sender, amount_pool, amount_pool, 0, 0);
-
-        // 22-WETH, AptosCoin
-        create_pair<WETH, AptosCoin>(sender);
-        // add_liquidity<WETH, AptosCoin>(sender, amount_pool, amount_pool, 0, 0);
-
-        // 23-WBTC, CEUSDC
-        create_pair<WBTC, CEUSDC>(sender);
-        add_liquidity<WBTC, CEUSDC>(sender, amount_pool, amount_pool, 0, 0);
-
-        // 24-WBTC, DAI
-        create_pair<WBTC, DAI>(sender);
-        add_liquidity<WBTC, DAI>(sender, amount_pool, amount_pool, 0, 0);
-
-        // 25-WBTC, AptosCoin
+        // 1-WBTC, AptosCoin
         create_pair<WBTC, AptosCoin>(sender);
         // add_liquidity<WBTC, AptosCoin>(sender, amount_pool, amount_pool, 0, 0);
 
-        // 26-CEUSDC, DAI
-        create_pair<CEUSDC, DAI>(sender);
-        add_liquidity<CEUSDC, DAI>(sender, amount_pool, amount_pool, 0, 0);
+        // 2-WETH, AptosCoin
+        create_pair<WETH, AptosCoin>(sender);
+        // add_liquidity<WETH, AptosCoin>(sender, amount_pool, amount_pool, 0, 0);
 
-        // 27-CEUSDC, AptosCoin
-        create_pair<CEUSDC, AptosCoin>(sender);
-        // add_liquidity<CEUSDC, AptosCoin>(sender, amount_pool, amount_pool, 0, 0);
+        // 3-USDT, AptosCoin
+        create_pair<USDT, AptosCoin>(sender);
+        // add_liquidity<USDT, AptosCoin>(sender, amount_pool, amount_pool, 0, 0);
 
-        // 28-DAI, AptosCoin
+        // 4-USDC, AptosCoin
+        create_pair<USDC, AptosCoin>(sender);
+        // add_liquidity<USDC, AptosCoin>(sender, amount_pool, amount_pool, 0, 0);
+
+        // 5-DAI, AptosCoin
         create_pair<DAI, AptosCoin>(sender);
         // add_liquidity<DAI, AptosCoin>(sender, amount_pool, amount_pool, 0, 0);
     }
 
     /// Leverage Yield Farming, create pair if it's needed
-    //X, Y: to be requidity
-    //EZM, APT, LP: supply
-    //amountSupplyEZM
-    //amountSupplyAPT
-    //amountSupplyLP
+    //X, Y=APT: to be requidity
+    //X, Y=APT, EZM: supply
+    //amountInWeiSupplyPairX
+    //amountInWeiSupplyPairY
+    //amountInWeiSupplyEZM
+    //amountInWeiBorrowPairX
+    //amountInWeiBorrowPairY
     //amountInWeiBorrowEZM
-    //amountInWeiBorrowAPT
-    //amountInWeiBorrowLP
     public entry fun leverage_yield_farming<X, Y>(
         sender: &signer, 
+        amountInWeiSupplyPairX: u64,
+        amountInWeiSupplyPairY: u64,
         amountInWeiSupplyEZM: u64,
-        amountInWeiSupplyAPT: u64,
-        amountInWeiSupplyLP: u64,
+        amountInWeiBorrowPairX: u64,
+        amountInWeiBorrowPairY: u64,
         amountInWeiBorrowEZM: u64,
-        amountInWeiBorrowAPT: u64,
-        amountInWeiBorrowLP: u64,
     ) {
-        // let amount = 1000000000000000000u64;
-        // let amount_pool = amount / 20;
-
         if (!(swap::is_pair_created<X, Y>() || swap::is_pair_created<Y, X>())) {
             create_pair<X, Y>(sender);
             // add_liquidity<X, Y>(sender, amount_pool/4, amount_pool/4, 0, 0);
+        };
+
+        //Borrow
+        if (amountInWeiBorrowPairX > 0) {
+            lending::borrow<X>(sender, amountInWeiBorrowPairX);
+        };
+
+        if (amountInWeiBorrowPairY > 0) {
+            lending::borrow<Y>(sender, amountInWeiBorrowPairY);
         };
 
         if (amountInWeiBorrowEZM > 0) {
             lending::borrow<EZM>(sender, amountInWeiBorrowEZM);
         };
 
-        if (amountInWeiBorrowAPT > 0) {
-            lending::borrow<AptosCoin>(sender, amountInWeiBorrowAPT);
+
+        let token_x_before_balance = coin::balance<X>(signer::address_of(sender));
+        let token_y_before_balance = coin::balance<Y>(signer::address_of(sender));
+
+        //swap EZM
+        if ((amountInWeiSupplyEZM + amountInWeiBorrowEZM)/2 > 0) {
+            if (!(swap::is_pair_created<EZM, X>() || swap::is_pair_created<X, EZM>())) {
+                create_pair<EZM, X>(sender);
+                // add_liquidity<EZM, X>(sender, amount_pool/4, amount_pool/4, 0, 0);
+                
+                swap_exact_input<EZM, X>(sender, (amountInWeiSupplyEZM + amountInWeiBorrowEZM)/2, 0);
+            };
+            
+            if (!(swap::is_pair_created<EZM, Y>() || swap::is_pair_created<Y, EZM>())) {
+                create_pair<EZM, Y>(sender);
+                // add_liquidity<EZM, Y>(sender, amount_pool/4, amount_pool/4, 0, 0);
+                
+                swap_exact_input<EZM, Y>(sender, (amountInWeiSupplyEZM + amountInWeiBorrowEZM)/2, 0);
+            };
         };
 
-        if (amountInWeiBorrowLP > 0) {
-            // lending::borrow<ezfinance::faucet_tokens::LP>(sender, amountInWeiBorrowLP);
+
+        //Balanced swap: X/2 -> Y, Y/2 -> X
+        if ((amountInWeiSupplyPairX + amountInWeiBorrowPairX)/2 > 0) {
+            swap_exact_input<X, Y>(sender, (amountInWeiSupplyPairX + amountInWeiBorrowPairX)/2, 0);
+            swap_exact_input<Y, X>(sender, (amountInWeiSupplyPairY + amountInWeiBorrowPairY)/2, 0);
         };
 
-        if (!(swap::is_pair_created<EZM, X>() || swap::is_pair_created<X, EZM>())) {
-            create_pair<EZM, X>(sender);
-            // add_liquidity<EZM, X>(sender, amount_pool/4, amount_pool/4, 0, 0);
-        };
 
-        if (!(swap::is_pair_created<EZM, Y>() || swap::is_pair_created<Y, EZM>())) {
-            create_pair<EZM, Y>(sender);
-            // add_liquidity<EZM, Y>(sender, amount_pool/4, amount_pool/4, 0, 0);
-        };
-
-        if (!(swap::is_pair_created<AptosCoin, X>() || swap::is_pair_created<X, AptosCoin>())) {
-            create_pair<AptosCoin, X>(sender);
-            // add_liquidity<AptosCoin, X>(sender, amount_pool/4, amount_pool/4, 0, 0);
-        };
-
-        if (!(swap::is_pair_created<AptosCoin, Y>() || swap::is_pair_created<Y, AptosCoin>())) {
-            create_pair<AptosCoin, Y>(sender);
-            // add_liquidity<AptosCoin, Y>(sender, amount_pool/4, amount_pool/4, 0, 0);
-        };
-
-        swap_exact_input<EZM, X>(sender, (amountInWeiSupplyEZM + amountInWeiBorrowEZM)/2, 0);
-        swap_exact_input<EZM, Y>(sender, (amountInWeiSupplyEZM + amountInWeiBorrowEZM)/2, 0);
-
-        swap_exact_input<AptosCoin, X>(sender, (amountInWeiSupplyAPT + amountInWeiBorrowAPT)/2, 0);
-        swap_exact_input<AptosCoin, Y>(sender, (amountInWeiSupplyAPT + amountInWeiBorrowAPT)/2, 0);
-
+        //add liquidity
         let token_x_after_balance = coin::balance<X>(signer::address_of(sender));
         let token_y_after_balance = coin::balance<Y>(signer::address_of(sender));
 
-        add_liquidity<X, Y>(sender, token_x_after_balance, token_y_after_balance, 0, 0);
+        let amountAddX = amountInWeiSupplyPairX + token_x_after_balance - token_x_before_balance;
+        let amountAddY = amountInWeiSupplyPairY + token_y_after_balance - token_y_before_balance;
+        if (amountAddX > 0 && amountAddY > 0) {
+            add_liquidity<X, Y>(sender, token_x_after_balance, token_y_after_balance, 0, 0);
+        };
     }
 
     /// Add Liquidity, create pair if it's needed

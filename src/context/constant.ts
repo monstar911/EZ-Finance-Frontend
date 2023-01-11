@@ -7,10 +7,8 @@ import UsdtIcon from '../asset/icons/crypto-usdt.png'
 import UsdcIcon from '../asset/icons/crypto-usdc.png'
 import DaiIcon from '../asset/icons/crypto-dai.svg'
 
-import LpIcon from '../asset/icons/LpToken.png'
 
-
-export const ezfinance = "0xd346a1afda73c8f9bab2a5ed12ed1f44761fed4ce90049dfbda27bfba943ea0d";
+export const ezfinance = "0xca106b236587e2b81b1091f2240c38526c4ab4aa1059d694a70bc3fe9470c723";
 
 export const tokens = {
     apt: '0x1::aptos_coin::AptosCoin',
@@ -20,7 +18,6 @@ export const tokens = {
     usdt: `${ezfinance}::faucet_tokens::USDT`,
     usdc: `${ezfinance}::faucet_tokens::USDC`,
     dai: `${ezfinance}::faucet_tokens::DAI`,
-    ceUsdc: `${ezfinance}::faucet_tokens::CEUSDC`,
 }
 
 export const TokenPrice = {
@@ -35,58 +32,12 @@ export const TokenPrice = {
     apt: 4
 }
 
-export const TokenIcon = {
-    lp: LpIcon,
-    ezm: EzmIcon,
-    usdc: UsdcIcon,
-    usdt: UsdtIcon,
-    dai: DaiIcon,
-    ceUsdc: UsdcIcon,
-    weth: EthIcon,
-    wbtc: BtcIcon,
-    apt: AptIcon
+export const coins = {
+    ezm: { name: 'EZM', symbol: 'ezm', logo: EzmIcon, price: 10 },
+    apt: { name: 'APT', symbol: 'apt', logo: AptIcon, price: 4 },
+    wbtc: { name: 'WBTC', symbol: 'wbtc', logo: BtcIcon, price: 17000 },
+    weth: { name: 'WETH', symbol: 'weth', logo: EthIcon, price: 1200 },
+    usdt: { name: 'USDT', symbol: 'usdt', logo: UsdtIcon, price: 1 },
+    usdc: { name: 'USDC', symbol: 'usdc', logo: UsdcIcon, price: 1 },
+    dai: { name: 'DAI', symbol: 'dai', logo: DaiIcon, price: 1 },
 }
-
-export const coin_ezm = { name: 'EZM', symbol: 'ezm', logo: EzmIcon, }
-export const coin_apt = { name: 'APT', symbol: 'apt', logo: AptIcon, }
-export const coins = [
-    { name: 'WBTC', symbol: 'wbtc', logo: BtcIcon },
-    { name: 'WETH', symbol: 'weth', logo: EthIcon },
-    { name: 'USDT', symbol: 'usdt', logo: UsdtIcon },
-    { name: 'USDC', symbol: 'usdc', logo: UsdcIcon },
-    { name: 'DAI', symbol: 'dai', logo: DaiIcon },
-]
-
-
-export const faucetItems = [
-    {
-        value: 'ezm',
-        logo: EzmIcon,
-        tokenName: 'EZM'
-    }, {
-        value: 'dai',
-        logo: DaiIcon,
-        tokenName: 'DAI'
-    }, {
-        value: 'usdc',
-        logo: UsdcIcon,
-        tokenName: 'USDC'
-    }, {
-        value: 'usdt',
-        logo: UsdtIcon,
-        tokenName: 'USDT'
-    }, {
-        value: 'ceUsdc',
-        logo: UsdcIcon,
-        tokenName: 'ceUSDC'
-    }, {
-        value: 'wbtc',
-        logo: BtcIcon,
-        tokenName: 'WBTC'
-    }, {
-        value: 'weth',
-        logo: EthIcon,
-        tokenName: 'WETH'
-    }
-]
-

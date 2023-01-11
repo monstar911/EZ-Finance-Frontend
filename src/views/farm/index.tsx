@@ -4,7 +4,7 @@ import { makeStyles } from '@mui/styles';
 
 import Container from '../../components/container';
 import PoolCard from './components/PoolCard';
-import { coins, coin_apt } from '../../context/constant';
+import { coins } from '../../context/constant';
 
 
 const useStyles = makeStyles((theme: any) => ({
@@ -92,9 +92,12 @@ function Farm() {
 
     const farmPools = React.useMemo(() => {
         const bump: any = [];
-        for (let i = 0; i < coins.length; i++) {
+
+        for (var key in coins) {
+            if (key == 'ezm' || key == 'apt') continue;
+
             const obj = {
-                index: i,
+                property: key,
                 from_multi: (Math.random() * 1 + 1).toFixed(2),
                 from_percent: (Math.random() * 1 + 0.4).toFixed(2),
                 max_apr: (Math.random() * 0.7 + 0.4).toFixed(2),
@@ -105,7 +108,8 @@ function Farm() {
                 farm_apr: (Math.random() * 0.5 + 0.1).toFixed(2),
                 trade_volume: '0.00',
                 tvl: '0.00',
-                pair: i + '-' + 0,
+                pair: key + '-apt',
+                // pair: i + '-' + 0,
             };
             bump.push(obj);
         }
@@ -133,7 +137,7 @@ function Farm() {
                 >
                     <Box sx={{ textAlign: 'right' }}>
                         <Typography variant="subtitle1">Total Positions</Typography>
-                        <Typography variant="h5">234 Positions</Typography>
+                        <Typography variant="h5">5 Positions</Typography>
                     </Box>
 
                     <Box sx={{ textAlign: 'right' }}>
@@ -155,11 +159,13 @@ function Farm() {
                 >
                     <ToggleButton value="1">All assets</ToggleButton>
                     {
-                        coins.map((item: any, index: number) => (
-                            <ToggleButton value={String(index + 2)} key={index}>
-                                <img src={item.logo} alt="" accessKey={String(index + 2)} />
-                                {item.name}
-                            </ToggleButton>
+                        Object.keys(coins).map((key: string, index: number) => (
+                            (key != 'ezm' && key != 'apt' &&
+                                < ToggleButton value={String(index + 2)} key={index}>
+                                    {<img src={coins[key].logo} alt="" accessKey={String(index + 2)} />}
+                                    {coins[key].name}
+                                </ToggleButton>
+                            )
                         ))
                     }
                 </ToggleButtonGroup>
@@ -167,11 +173,11 @@ function Farm() {
 
             {/* Pool Component */}
             <Box>
-                {farmPools.map((pool: any, index: number) => (
-                    <PoolCard key={index} poolInfo={pool} param={pool.pair} />
+                {farmPools.map((pool: any, property: any) => (
+                    <PoolCard key={property} poolInfo={pool} param={pool.pair} />
                 ))}
             </Box>
-        </Container>
+        </Container >
     );
 }
 

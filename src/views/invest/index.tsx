@@ -2,17 +2,15 @@ import React, { useState } from 'react';
 import { Box, Typography, Stack } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { makeStyles } from '@mui/styles';
-import Container from '../../components/container';
-import Part1 from './components/part1';
-import Part2 from './components/part2';
-import Part3 from './components/part3';
-import Part4 from './components/part4';
 
-import BTCIcon from '../../asset/icons/crypto-btc.png';
-import EthIcon from '../../asset/icons/crypto-ethereum.png';
-import USDCIcon from '../../asset/icons/crypto-usdc.png';
-import USDTIcon from '../../asset/icons/crypto-usdt.png';
-import DaiIcon from '../../asset/icons/crypto-dai.svg';
+import Container from '../../components/container';
+import SupplyAssets from './components/SupplyAssets';
+import SetLeverage from './components/SetLeverage';
+import BorrowAssets from './components/BorrowAssets';
+import YourActions from './components/YourActions';
+
+import { coins } from '../../context/constant';
+
 
 const useStyles = makeStyles((theme: any) => ({
     root: {
@@ -40,17 +38,6 @@ const useStyles = makeStyles((theme: any) => ({
             marginTop: '20px',
             flexWrap: 'wrap',
             gap: '20px',
-            // '& .MuiSwitch-thumb': {
-            //     background: 'linear-gradient(93.41deg, #6452DE 0.68%, #F76CC5 53.61%, #FF6F6F 103.74%)',
-            // },
-            // '& .MuiSlider-thumbColorPrimary': {
-            //     display: 'none',
-            // },
-            '& .modal4': {
-                // padding: '40px',
-                // background: '#342D55',
-                // borderRadius: '15px',
-            },
         },
     },
     devideLine: {
@@ -65,28 +52,31 @@ export default function Invest() {
     const { poolid } = useParams();
     const classes = useStyles();
 
+    const [valuePairX, setValuePairX] = useState('');
+    const [valuePairY, setValuePairY] = useState('');
+    const [valueEZM, setValueEZM] = useState('');
+    const [valueDolarPairX, setValueDolarPairX] = useState(0);
+    const [valueDolarPairY, setValueDolarPairY] = useState(0);
+    const [valueDolarEZM, setValueDolarEZM] = useState(0);
+
+    const [valueBorrowPairX, setValueBorrowPairX] = useState(0);
+    const [valueBorrowPairY, setValueBorrowPairY] = useState(0);
+    const [valueBorrowEZM, setValueBorrowEZM] = useState(0);
+    const [valueBorrowDolarPairX, setValueBorrowDolarPairX] = useState(0);
+    const [valueBorrowDolarPairY, setValueBorrowDolarPairY] = useState(0);
+    const [valueBorrowDolarEZM, setValueBorrowDolarEZM] = useState(0);
+
     const [selectValue, setSelectValue] = useState('dai');
 
     const [index, setIndex] = useState(0);
     const [token, setToken] = useState('dai');
-    const [valueEZM, setValueEZM] = useState('0');
-    const [valueAPT, setValueAPT] = useState('0');
-    const [valueLP, setValueLP] = useState('0');
-    const [valueDolarEZM, setValueDolarEZM] = useState(0);
-    const [valueDolarAPT, setValueDolarAPT] = useState(0);
-    const [valueDolarLP, setValueDolarLP] = useState(0);
 
-    const [valueBorrowEZM, setValueBorrowEZM] = useState(0);
-    const [valueBorrowAPT, setValueBorrowAPT] = useState(0);
-    const [valueBorrowLP, setValueBorrowLP] = useState(0);
-    const [valueBorrowDolarEZM, setValueBorrowDolarEZM] = useState(0);
-    const [valueBorrowDolarAPT, setValueBorrowDolarAPT] = useState(0);
-    const [valueBorrowDolarLP, setValueBorrowDolarLP] = useState(0);
-
+    const [valueSupplyPairX, setValueSupplyPairX] = useState(0);
+    const [valueSupplyPairY, setValueSupplyPairY] = useState(0);
     const [valueSupplyEZM, setValueSupplyEZM] = useState(0);
-    const [valueSupplyAPT, setValueSupplyAPT] = useState(0);
-    const [valueSupplyLP, setValueSupplyLP] = useState(0);
+
     const [valueTotalSupply, setValueTotalSupply] = useState(0);
+
     const [valueDebtA, setValueDebtA] = useState(0.056432);
     const [valueDebtB, setValueDebtB] = useState(0.056432);
     const [valueDolarDebtA, setValueDolarDebtA] = useState(0);
@@ -98,16 +88,7 @@ export default function Invest() {
     const [debt, setDebt] = useState<number | string | Array<number | string>>(0);
     const [estimatiedAPR, setAPR] = useState(0)
 
-    const coins = {
-        0: { img: BTCIcon, name: 'WBTC', symbol: 'wbtc' },
-        1: { img: EthIcon, name: 'WETH', symbol: 'weth' },
-        2: { img: DaiIcon, name: 'DAI', symbol: 'dai' },
-        3: { img: USDCIcon, name: 'USDC', symbol: 'usdc' },
-        4: { img: USDTIcon, name: 'USDT', symbol: 'usdt' },
-        5: { img: USDCIcon, name: 'ceUSDC', symbol: 'ceusdc' },
-    };
-
-    const strArr: any = React.useMemo(() => {
+    const strCoinPair: any = React.useMemo(() => {
         return poolid?.split('-');
     }, [poolid]);
 
@@ -122,14 +103,14 @@ export default function Invest() {
                                 alignItems={'center'}
                                 sx={{ '& img': { width: '40px', height: '40px', borderRadius: '50%' } }}
                             >
-                                <img src={coins[Number(strArr[0])].img} alt="" />
-                                <img src={coins[Number(strArr[1])].img} alt="" style={{ marginLeft: '-15px' }} />
+                                <img src={coins[strCoinPair[0]].logo} alt={coins[strCoinPair[0]].name} />
+                                <img src={coins[strCoinPair[1]].logo} alt={coins[strCoinPair[1]].name} style={{ marginLeft: '-8px' }} />
                             </Stack>
                             <Typography variant="h4">
-                                {coins[Number(strArr[0])].name}/{coins[Number(strArr[1])].name}
+                                {coins[strCoinPair[0]].name}/{coins[strCoinPair[1]].name}
                             </Typography>
                         </Stack>
-                        <Typography variant="subtitle1">Yield farming on LiquidSwap</Typography>
+                        <Typography variant="subtitle1">Yield farming on PancakeSwap</Typography>
                     </Stack>
 
                     <Stack
@@ -146,15 +127,15 @@ export default function Invest() {
                     >
                         <Box>
                             <Typography variant="subtitle1">Positions</Typography>
-                            <Typography variant="h5">9</Typography>
+                            <Typography variant="h5">0</Typography>
                         </Box>
                         <Box>
                             <Typography variant="subtitle1">TVL via EZ</Typography>
-                            <Typography variant="h5">$5,435.43</Typography>
+                            <Typography variant="h5">$0</Typography>
                         </Box>
                         <Box>
-                            <Typography variant="subtitle1">TVL on Sushiswap</Typography>
-                            <Typography variant="h5">$12,422,434.54</Typography>
+                            <Typography variant="subtitle1">TVL on PancakeSwap</Typography>
+                            <Typography variant="h5">$0</Typography>
                         </Box>
                     </Stack>
                 </Box>
@@ -170,38 +151,62 @@ export default function Invest() {
                             },
                         }}
                     >
-                        <Part1
-                            imga={coins[Number(strArr[0])].img}
-                            imgb={coins[Number(strArr[1])].img}
-                            namea={coins[Number(strArr[0])].symb}
-                            nameb={coins[Number(strArr[1])].name}
-                            selectValue={selectValue}
-                            setSelectValue={setSelectValue}
-                            valueLeverage={valueLeverage}
-                            setValueLeverage={setValueLeverage}
-                            token={token}
-                            setToken={setToken}
-                            amount={amount}
-                            setAmount={setAmount}
+                        <SupplyAssets
+                            strCoinPair={strCoinPair}
 
+                            valuePairX={valuePairX}
+                            setValuePairX={setValuePairX}
+                            valuePairY={valuePairY}
+                            setValuePairY={setValuePairY}
                             valueEZM={valueEZM}
                             setValueEZM={setValueEZM}
-                            valueAPT={valueAPT}
-                            setValueAPT={setValueAPT}
-                            valueLP={valueLP}
-                            setValueLP={setValueLP}
 
+                            valueDolarPairX={valueDolarPairX}
+                            setValueDolarPairX={setValueDolarPairX}
+                            valueDolarPairY={valueDolarPairY}
+                            setValueDolarPairY={setValueDolarPairY}
                             valueDolarEZM={valueDolarEZM}
                             setValueDolarEZM={setValueDolarEZM}
-                            valueDolarAPT={valueDolarAPT}
-                            setValueDolarAPT={setValueDolarAPT}
-                            valueDolarLP={valueDolarLP}
-                            setValueDolarLP={setValueDolarLP}
+
+                            valueLeverage={valueLeverage}
+                            setValueLeverage={setValueLeverage}
+                            amount={amount}
+                            setAmount={setAmount}
 
                             valueTotalSupply={valueTotalSupply}
                             setValueTotalSupply={setValueTotalSupply}
                         />
-                        <Part2
+                        <SetLeverage
+                            strCoinPair={strCoinPair}
+
+                            valuePairX={valuePairX}
+                            setValuePairX={setValuePairX}
+                            valuePairY={valuePairY}
+                            setValuePairY={setValuePairY}
+                            valueEZM={valueEZM}
+                            setValueEZM={setValueEZM}
+
+                            valueDolarPairX={valueDolarPairX}
+                            setValueDolarPairX={setValueDolarPairX}
+                            valueDolarPairY={valueDolarPairY}
+                            setValueDolarPairY={setValueDolarPairY}
+                            valueDolarEZM={valueDolarEZM}
+                            setValueDolarEZM={setValueDolarEZM}
+
+                            valueBorrowPairX={valueBorrowPairX}
+                            setValueBorrowPairX={setValueBorrowPairX}
+                            valueBorrowPairY={valueBorrowPairY}
+                            setValueBorrowPairY={setValueBorrowPairY}
+                            valueBorrowEZM={valueBorrowEZM}
+                            setValueBorrowEZM={setValueBorrowEZM}
+
+                            valueBorrowDolarPairX={valueBorrowDolarPairX}
+                            setValueBorrowDolarPairX={setValueBorrowDolarPairX}
+                            valueBorrowDolarPairY={valueBorrowDolarPairY}
+                            setValueBorrowDolarPairY={setValueBorrowDolarPairY}
+                            valueBorrowDolarEZM={valueBorrowDolarEZM}
+                            setValueBorrowDolarEZM={setValueBorrowDolarEZM}
+
                             selectValue={selectValue}
                             setSelectValue={setSelectValue}
                             valueLeverage={valueLeverage}
@@ -215,40 +220,13 @@ export default function Invest() {
                             estimatiedAPR={estimatiedAPR}
                             setAPR={setAPR}
 
-                            valueBorrowEZM={valueBorrowEZM}
-                            setValueBorrowEZM={setValueBorrowEZM}
-                            valueBorrowAPT={valueBorrowAPT}
-                            setValueBorrowAPT={setValueBorrowAPT}
-                            valueBorrowLP={valueBorrowLP}
-                            setValueBorrowLP={setValueBorrowLP}
-
-                            valueBorrowDolarEZM={valueBorrowDolarEZM}
-                            setValueBorrowDolarEZM={setValueBorrowDolarEZM}
-                            valueBorrowDolarAPT={valueBorrowDolarAPT}
-                            setValueBorrowDolarAPT={setValueBorrowDolarAPT}
-                            valueBorrowDolarLP={valueBorrowDolarLP}
-                            setValueBorrowDolarLP={setValueBorrowDolarLP}
-
-                            valueEZM={valueEZM}
-                            setValueEZM={setValueEZM}
-                            valueAPT={valueAPT}
-                            setValueAPT={setValueAPT}
-                            valueLP={valueLP}
-                            setValueLP={setValueLP}
-
-                            valueDolarEZM={valueDolarEZM}
-                            setValueDolarEZM={setValueDolarEZM}
-                            valueDolarAPT={valueDolarAPT}
-                            setValueDolarAPT={setValueDolarAPT}
-                            valueDolarLP={valueDolarLP}
-                            setValueDolarLP={setValueDolarLP}
-
+                            valueSupplyPairX={valueSupplyPairX}
+                            setValueSupplyPairX={setValueSupplyPairX}
+                            valueSupplyPairY={valueSupplyPairY}
+                            setValueSupplyPairY={setValueSupplyPairY}
                             valueSupplyEZM={valueSupplyEZM}
                             setValueSupplyEZM={setValueSupplyEZM}
-                            valueSupplyAPT={valueSupplyAPT}
-                            setValueSupplyAPT={setValueSupplyAPT}
-                            valueSupplyLP={valueSupplyLP}
-                            setValueSupplyLP={setValueSupplyLP}
+
                             valueTotalSupply={valueTotalSupply}
                             setValueTotalSupply={setValueTotalSupply}
 
@@ -263,46 +241,18 @@ export default function Invest() {
                             valueTotalDebt={valueTotalDebt}
                             setValueTotalDebt={setValueTotalDebt}
                         />
-                        <Part3
-                            imga={coins[Number(strArr[0])].img}
-                            imgb={coins[Number(strArr[1])].img}
-                            namea={coins[Number(strArr[0])].name}
-                            nameb={coins[Number(strArr[1])].name}
-                            index={index}
-                            setIndex={setIndex}
-                            amount={amount}
-                            valueLeverage={valueLeverage}
-                            setValueLeverage={setValueLeverage}
-                            debt={debt}
-                            setDebt={setDebt}
+                        <BorrowAssets
+                            strCoinPair={strCoinPair}
 
+                            valueBorrowPairX={valueBorrowPairX}
+                            valueBorrowPairY={valueBorrowPairY}
                             valueBorrowEZM={valueBorrowEZM}
-                            setValueBorrowEZM={setValueBorrowEZM}
-                            valueBorrowAPT={valueBorrowAPT}
-                            setValueBorrowAPT={setValueBorrowAPT}
-                            valueBorrowLP={valueBorrowLP}
-                            setValueBorrowLP={setValueBorrowLP}
 
+                            valueBorrowDolarPairX={valueBorrowDolarPairX}
+                            valueBorrowDolarPairY={valueBorrowDolarPairY}
                             valueBorrowDolarEZM={valueBorrowDolarEZM}
-                            setValueBorrowDolarEZM={setValueBorrowDolarEZM}
-                            valueBorrowDolarAPT={valueBorrowDolarAPT}
-                            setValueBorrowDolarAPT={setValueBorrowDolarAPT}
-                            valueBorrowDolarLP={valueBorrowDolarLP}
-                            setValueBorrowDolarLP={setValueBorrowDolarLP}
 
-                            valueEZM={valueEZM}
-                            setValueEZM={setValueEZM}
-                            valueAPT={valueAPT}
-                            setValueAPT={setValueAPT}
-                            valueLP={valueLP}
-                            setValueLP={setValueLP}
-
-                            valueDolarEZM={valueDolarEZM}
-                            setValueDolarEZM={setValueDolarEZM}
-                            valueDolarAPT={valueDolarAPT}
-                            setValueDolarAPT={setValueDolarAPT}
-                            valueDolarLP={valueDolarLP}
-                            setValueDolarLP={setValueDolarLP}
+                            debt={debt}
                         />
                     </Box>
 
@@ -316,11 +266,23 @@ export default function Invest() {
                             },
                         }}
                     >
-                        <Part4
-                            imga={coins[Number(strArr[0])].img}
-                            imgb={coins[Number(strArr[1])].img}
-                            namea={coins[Number(strArr[0])].symbol}
-                            nameb={coins[Number(strArr[1])].symbol}
+                        <YourActions
+                            strCoinPair={strCoinPair}
+
+                            valuePairX={valuePairX}
+                            setValuePairX={setValuePairX}
+                            valuePairY={valuePairY}
+                            setValuePairY={setValuePairY}
+                            valueEZM={valueEZM}
+                            setValueEZM={setValueEZM}
+
+                            valueDolarPairX={valueDolarPairX}
+                            setValueDolarPairX={setValueDolarPairX}
+                            valueDolarPairY={valueDolarPairY}
+                            setValueDolarPairY={setValueDolarPairY}
+                            valueDolarEZM={valueDolarEZM}
+                            setValueDolarEZM={setValueDolarEZM}
+
                             index={index}
                             setIndex={setIndex}
                             token={token}
@@ -332,26 +294,13 @@ export default function Invest() {
                             estimatiedAPR={estimatiedAPR}
                             setAPR={setAPR}
 
-                            valueEZM={valueEZM}
-                            setValueEZM={setValueEZM}
-                            valueAPT={valueAPT}
-                            setValueAPT={setValueAPT}
-                            valueLP={valueLP}
-                            setValueLP={setValueLP}
-
-                            valueDolarEZM={valueDolarEZM}
-                            setValueDolarEZM={setValueDolarEZM}
-                            valueDolarAPT={valueDolarAPT}
-                            setValueDolarAPT={setValueDolarAPT}
-                            valueDolarLP={valueDolarLP}
-                            setValueDolarLP={setValueDolarLP}
-
+                            valueSupplyPairX={valueSupplyPairX}
+                            setValueSupplyPairX={setValueSupplyPairX}
+                            valueSupplyPairY={valueSupplyPairY}
+                            setValueSupplyPairY={setValueSupplyPairY}
                             valueSupplyEZM={valueSupplyEZM}
                             setValueSupplyEZM={setValueSupplyEZM}
-                            valueSupplyAPT={valueSupplyAPT}
-                            setValueSupplyAPT={setValueSupplyAPT}
-                            valueSupplyLP={valueSupplyLP}
-                            setValueSupplyLP={setValueSupplyLP}
+
                             valueTotalSupply={valueTotalSupply}
                             setValueTotalSupply={setValueTotalSupply}
 

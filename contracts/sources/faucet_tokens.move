@@ -5,63 +5,63 @@ module ezfinance::faucet_tokens {
     use std::signer;
 
     struct EZM {}
-    struct USDC {}
-    struct USDT {}
-    struct WETH {}
     struct WBTC {}
-    struct CEUSDC {}
+    struct WETH {}
+    struct USDT {}
+    struct USDC {}
     struct DAI {}
     
     fun init_module(sender: &signer) {
         // let account = account::create_account_for_test(@test_coin);
 
         // init coins
+        init_coins(sender);
+    }
+
+    fun init_coins(sender: &signer) {
         managed_coin::initialize<EZM>(
             sender,
+            b"EZM Coin",
             b"EZM",
-            b"EZM",
             8,
             false,
         );
-         managed_coin::initialize<USDC>(
+        
+        managed_coin::initialize<WBTC>(
             sender,
-            b"USDC",
-            b"USDC",
-            8,
-            false,
-        );
-         managed_coin::initialize<USDT>(
-            sender,
-            b"USDT",
-            b"USDT",
-            8,
-            false,
-        );
-         managed_coin::initialize<WETH>(
-            sender,
-            b"WETH",
-            b"WETH",
-            8,
-            false,
-        );
-         managed_coin::initialize<WBTC>(
-            sender,
-            b"WBTC",
+            b"WBTC Coin",
             b"WBTC",
             8,
             false,
         );
-        managed_coin::initialize<CEUSDC>(
+
+        managed_coin::initialize<WETH>(
             sender,
-            b"ceUSDC",
-            b"ceUSDC",
+            b"WETH Coin",
+            b"WETH",
+            8,
+            false,
+        );
+
+        managed_coin::initialize<USDT>(
+            sender,
+            b"USDT Coin",
+            b"USDT",
+            8,
+            false,
+        );
+        
+        managed_coin::initialize<USDC>(
+            sender,
+            b"USDC Coin",
+            b"USDC",
             8,
             false,
         );
 
         managed_coin::initialize<DAI>(
             sender,
-            b"DAI",
+            b"DAI Coin",
             b"DAI",
             8,
             false,

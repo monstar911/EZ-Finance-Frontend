@@ -1,10 +1,10 @@
 import React from 'react';
 
-import { Box, Typography, Slider, Stack } from '@mui/material';
+import { Box, Typography, Stack, Slider } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 
 import { trim } from '../../../helper/trim';
-import { TokenIcon } from '../../../context/constant';
+import { coins } from '../../../context/constant';
 
 
 const useStyles = makeStyles((theme: any) => ({
@@ -18,13 +18,14 @@ const useStyles = makeStyles((theme: any) => ({
     },
 }));
 
-export default function Part3(props: any) {
-    const { imga, imgb, namea, nameb, index, setIndex, amount, valueLeverage, setValueLeverage, debt, setDebt,
-        valueBorrowEZM, setValueBorrowEZM, valueBorrowAPT, setValueBorrowAPT, valueBorrowLP, setValueBorrowLP,
-        valueBorrowDolarEZM, setValueBorrowDolarEZM, valueBorrowDolarAPT, setValueBorrowDolarAPT, valueBorrowDolarLP, setValueBorrowDolarLP,
-        valueEZM, setValueEZM, valueAPT, setValueAPT, valueLP, setValueLP,
-        valueDolarEZM, setValueDolarEZM, valueDolarAPT, setValueDolarAPT, valueDolarLP, setValueDolarLP
+export default function BorrowAssets(props: any) {
+    const {
+        strCoinPair,
+        valueBorrowPairX, valueBorrowPairY, valueBorrowEZM,
+        valueBorrowDolarPairX, valueBorrowDolarPairY, valueBorrowDolarEZM,
+        debt,
     } = props;
+
     const classes = useStyles();
     const [rectCheck, setRectCheck] = React.useState(false);
 
@@ -50,12 +51,9 @@ export default function Part3(props: any) {
             <Typography variant="h4">{/*getDebtRatio()*/debt}%</Typography>
 
             <Slider
-                debt={typeof debt === 'number' ? debt : 0}
-                step={0.01}
-                onChange={(e: any) => setDebt(e.target.value)}
                 disabled
-                aria-labelledby="input-slider"
                 value={debt}
+                aria-labelledby="input-slider"
             />
 
             <Box sx={{ p: 4, border: '1px solid rgba(255,255,255,.3)', borderRadius: '13px', mt: 3 }}>
@@ -72,22 +70,31 @@ export default function Part3(props: any) {
                     Morbi molestie ac posuere iaculis commodo lectus nec. Vulputate.
                 </Typography> */}
                 <hr />
+
                 <Stack
                     direction="row"
                     alignItems={'center'}
                     gap={5}
                     sx={{ pt: 2, '@media(max-width: 560px)': { flexDirection: 'column', gap: 1 } }}
                 >
+
                     <Typography variant="body1" sx={{ fontSize: '18px' }}>
                         Current Price
                     </Typography>
+
                     <Stack direction="row" alignItems={'center'} gap={1}>
-                        <img src={imga} alt="" style={{ width: '20px', height: '20px', borderRadius: '50%' }} />
-                        <Typography variant="h6">${1.00}</Typography>
+                        <img src={coins[strCoinPair[0]].logo} alt={coins[strCoinPair[0]].name} style={{ width: '20px', height: '20px', borderRadius: '50%' }} />
+                        <Typography variant="h6">${coins[strCoinPair[0]].price}</Typography>
                     </Stack>
+
                     <Stack direction="row" alignItems={'center'} gap={1}>
-                        <img src={imgb} alt="" style={{ width: '20px', height: '20px', borderRadius: '50%' }} />
-                        <Typography variant="h6">$1,219.37</Typography>
+                        <img src={coins[strCoinPair[1]].logo} alt={coins[strCoinPair[1]].name} style={{ width: '20px', height: '20px', borderRadius: '50%' }} />
+                        <Typography variant="h6">${coins[strCoinPair[1]].price}</Typography>
+                    </Stack>
+
+                    <Stack direction="row" alignItems={'center'} gap={1}>
+                        <img src={coins['ezm'].logo} alt={coins['ezm'].name} style={{ width: '20px', height: '20px', borderRadius: '50%' }} />
+                        <Typography variant="h6">${coins['ezm'].price}</Typography>
                     </Stack>
                 </Stack>
             </Box>
@@ -95,6 +102,7 @@ export default function Part3(props: any) {
             <Typography variant="body1" sx={{ fontSize: '18px', my: 2 }}>
                 Borrow Assets
             </Typography>
+
             <Box
                 sx={{
                     display: 'flex',
@@ -114,29 +122,36 @@ export default function Part3(props: any) {
                     },
                 }}
             >
-                <Stack direction={'row'} alignItems="center" gap={2}>
-                    <img src={TokenIcon.ezm} alt="ezm" style={{ width: '30px', height: '30px', borderRadius: '50%' }} />
-                    <Stack direction={'column'}>
-                        <Typography variant="h5" sx={{ fontSize: '22px', fontWeight: 700 }}>
-                            {valueBorrowEZM} {'EZM'}
-                        </Typography>
-                        <Typography variant="h6">~${valueBorrowDolarEZM}</Typography>
+
+                <Stack direction={'row'} alignItems="center" gap={5}>
+                    <Stack direction={'row'} alignItems="center" gap={2}>
+                        <img src={coins[strCoinPair[0]].logo} alt={coins[strCoinPair[0]].symbol} style={{ width: '30px', height: '30px', borderRadius: '50%' }} />
+                        <Stack direction={'column'}>
+                            <Typography variant="h5" sx={{ fontSize: '22px', fontWeight: 700 }}>
+                                {valueBorrowPairX} {coins[strCoinPair[0]].name}
+                            </Typography>
+                            <Typography variant="h6">~${valueBorrowDolarPairX}</Typography>
+                        </Stack>
                     </Stack>
 
-                    <img src={TokenIcon.apt} alt="apt" style={{ width: '30px', height: '30px', borderRadius: '50%' }} />
-                    <Stack direction={'column'}>
-                        <Typography variant="h5" sx={{ fontSize: '22px', fontWeight: 700 }}>
-                            {valueBorrowAPT} {'APT'}
-                        </Typography>
-                        <Typography variant="h6">~${valueBorrowDolarAPT}</Typography>
+                    <Stack direction={'row'} alignItems="center" gap={2}>
+                        <img src={coins[strCoinPair[1]].logo} alt={coins[strCoinPair[1].symbol]} style={{ width: '30px', height: '30px', borderRadius: '50%' }} />
+                        <Stack direction={'column'}>
+                            <Typography variant="h5" sx={{ fontSize: '22px', fontWeight: 700 }}>
+                                {valueBorrowPairY} {coins[strCoinPair[1].name]}
+                            </Typography>
+                            <Typography variant="h6">~${valueBorrowDolarPairY}</Typography>
+                        </Stack>
                     </Stack>
 
-                    <img src={TokenIcon.lp} alt="lp" style={{ width: '30px', height: '30px', borderRadius: '50%' }} />
-                    <Stack direction={'column'}>
-                        <Typography variant="h5" sx={{ fontSize: '22px', fontWeight: 700 }}>
-                            {valueBorrowLP} {'LP'}
-                        </Typography>
-                        <Typography variant="h6">~${valueBorrowDolarLP}</Typography>
+                    <Stack direction={'row'} alignItems="center" gap={2}>
+                        <img src={coins['ezm'].logo} alt='ezm' style={{ width: '30px', height: '30px', borderRadius: '50%' }} />
+                        <Stack direction={'column'}>
+                            <Typography variant="h5" sx={{ fontSize: '22px', fontWeight: 700 }}>
+                                {valueBorrowEZM} {'EZM'}
+                            </Typography>
+                            <Typography variant="h6">~${valueBorrowDolarEZM}</Typography>
+                        </Stack>
                     </Stack>
                 </Stack>
             </Box>

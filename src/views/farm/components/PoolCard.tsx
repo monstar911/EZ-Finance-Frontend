@@ -5,7 +5,7 @@ import { Typography, Box, Grid } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { Common_FillButton } from '../../../components/button';
-import { coins, coin_apt } from '../../../context/constant';
+import { coins } from '../../../context/constant';
 
 const useStyles = makeStyles((theme: any) => ({
     root: {
@@ -67,7 +67,7 @@ function PoolCard(props: any) {
     const [dropOpen, setDropOpen] = useState(false);
     const { param } = props;
     const {
-        index,
+        property,
         pool_total,
         from_percent,
         from_multi,
@@ -105,10 +105,10 @@ function PoolCard(props: any) {
                             }}
                         >
 
-                            <img src={coins[index].logo} />
-                            <img src={coin_apt.logo} style={{ marginLeft: '-8px' }} />
+                            <img src={coins[property].logo} />
+                            <img src={coins['apt'].logo} style={{ marginLeft: '-8px' }} />
                             <Typography sx={{ wordBreak: 'keep-all', marginLeft: '16px' }}>
-                                {coins[index].name}-APT
+                                {coins[property].name}-APT
                             </Typography>
                         </Box>
                     </Box>

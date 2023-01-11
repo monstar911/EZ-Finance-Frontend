@@ -2,8 +2,9 @@ import React, { useContext } from 'react';
 import { Box, Typography, Stack, Slider, Switch, Input } from '@mui/material';
 import { styled } from '@mui/system';
 import { trim } from "../../../helper/trim";
+import { coins } from '../../../context/constant';
 import { IUserInfo, Web3Context } from '../../../context/Web3Context';
-import { TokenPrice } from '../../../context/constant';
+
 
 const StyledSwitch = styled(Switch)(({ theme }) => ({
     width: 40,
@@ -42,16 +43,20 @@ const StyledSwitch = styled(Switch)(({ theme }) => ({
     },
 }));
 
-export default function Part2(props: any) {
-    const { selectValue, setSelectValue, valueLeverage, setValueLeverage, token, amount, setToken, setAmount,
+export default function SetLeverage(props: any) {
+    const {
+        strCoinPair,
+        valuePairX, setValuePairX, valuePairY, setValuePairY, valueEZM, setValueEZM,
+        valueDolarPairX, setValueDolarPairX, valueDolarPairY, setValueDolarPairY, valueDolarEZM, setValueDolarEZM,
+        valueBorrowPairX, setValueBorrowPairX, valueBorrowPairY, setValueBorrowPairY, valueBorrowEZM, setValueBorrowEZM,
+        valueBorrowDolarPairX, setValueBorrowDolarPairX, valueBorrowDolarPairY, setValueBorrowDolarPairY, valueBorrowDolarEZM, setValueBorrowDolarEZM,
+        selectValue, setSelectValue, valueLeverage, setValueLeverage, token, amount, setToken, setAmount,
         debt, setDebt, estimatiedAPR, setAPR,
-        valueBorrowEZM, setValueBorrowEZM, valueBorrowAPT, setValueBorrowAPT, valueBorrowLP, setValueBorrowLP,
-        valueBorrowDolarEZM, setValueBorrowDolarEZM, valueBorrowDolarAPT, setValueBorrowDolarAPT, valueBorrowDolarLP, setValueBorrowDolarLP,
-        valueEZM, setValueEZM, valueAPT, setValueAPT, valueLP, setValueLP,
-        valueDolarEZM, setValueDolarEZM, valueDolarAPT, setValueDolarAPT, valueDolarLP, setValueDolarLP,
-        valueSupplyEZM, setValueSupplyEZM, valueSupplyAPT, setValueSupplyAPT, valueSupplyLP, setValueSupplyLP, valueTotalSupply, setValueTotalSupply,
+        valueSupplyPairX, setValueSupplyPairX, valueSupplyPairY, setValueSupplyPairY, valueSupplyEZM, setValueSupplyEZM,
+        valueTotalSupply, setValueTotalSupply,
         valueDebtA, setValueDebtA, valueDebtB, setValueDebtB, valueDolarDebtA, setValueDolarDebtA,
-        valueDolarDebtB, setValueDolarDebtB, valueTotalDebt, setValueTotalDebt } = props;
+        valueDolarDebtB, setValueDolarDebtB, valueTotalDebt, setValueTotalDebt
+    } = props;
 
     const getDebtRatio = (balance: number, amountSupply: number, leverage: number) => {
         console.log('getDebtRatio: balance, amountSupply, leverage', balance, amountSupply, leverage);
@@ -76,32 +81,37 @@ export default function Part2(props: any) {
     const userInfo = web3?.userInfo as IUserInfo
 
     const handleSliderChange = (event: Event, newValue: number | number[]) => {
-        setValueLeverage(newValue);
+        if (typeof newValue === 'number') {
+            setValueLeverage(newValue);
 
-        console.log('handleSliderChange: ', newValue, valueEZM);
-        setDebt(getDebtRatio(userInfo.tokenBalance[selectValue], amount, newValue));
-        setAPR(getEstimatedAPR(newValue));
+            console.log('handleSliderChange: ', newValue, valueEZM);
+            setDebt(getDebtRatio(userInfo.tokenBalance[selectValue], amount, newValue));
+            setAPR(getEstimatedAPR(newValue));
 
-        setValueBorrowEZM((valueEZM * (newValue - 1)).toFixed(3))
-        setValueBorrowAPT((valueAPT * (newValue - 1)).toFixed(3))
-        setValueBorrowLP((valueLP * (newValue - 1)).toFixed(3))
-        setValueBorrowDolarEZM((TokenPrice.ezm * valueEZM * (newValue - 1)).toFixed(3))
-        setValueBorrowDolarAPT((TokenPrice.apt * valueAPT * (newValue - 1)).toFixed(3))
-        setValueBorrowDolarLP((TokenPrice.lp * valueLP * (newValue - 1)).toFixed(3))
+            setValueBorrowPairX(trim(valuePairX * (newValue - 1), 3))
+            setValueBorrowPairY(trim(valuePairY * (newValue - 1), 3))
+            setValueBorrowEZM(trim(valueEZM * (newValue - 1), 3))
+            setValueBorrowDolarPairX(trim(coins[strCoinPair[0]].price * valuePairX * (newValue - 1), 3))
+            setValueBorrowDolarPairY(trim(coins[strCoinPair[1]].price * valuePairY * (newValue - 1), 3))
+            setValueBorrowDolarEZM(trim(coins['ezm'].price * valueEZM * (newValue - 1), 3))
 
-        setValueSupplyEZM(valueEZM * newValue)
-        setValueSupplyAPT(valueAPT * newValue)
-        setValueSupplyLP(valueLP * newValue)
-        setValueDolarEZM(TokenPrice.ezm * valueEZM * newValue)
-        setValueDolarAPT(TokenPrice.apt * valueAPT * newValue)
-        setValueDolarLP(TokenPrice.lp * valueLP * newValue)
-        setValueTotalSupply(valueDolarEZM + valueDolarAPT + valueDolarLP)
+            setValueSupplyPairX(trim(valuePairX * newValue, 3))
+            setValueSupplyPairY(trim(valuePairY * newValue, 3))
+            setValueSupplyEZM(trim(valueEZM * newValue, 3))
 
-        // setValueDebtA();
-        // setValueDebtB();
-        setValueDolarDebtA(TokenPrice.wbtc * valueDebtA);
-        setValueDolarDebtB(TokenPrice.wbtc * valueDebtA);
-        setValueTotalDebt(valueDolarDebtA + valueDolarDebtB);
+            setValueDolarPairX(trim(coins[strCoinPair[0]].price * valuePairX * newValue, 3))
+            setValueDolarPairY(trim(coins[strCoinPair[1]].price * valuePairY * newValue, 3))
+            setValueDolarEZM(trim(coins['ezm'].price * valueEZM * newValue, 3))
+
+            setValueTotalSupply(trim(parseFloat(valueDolarPairX) + parseFloat(valueDolarPairY) + parseFloat(valueDolarEZM), 3))
+
+            // setValueDebtA();
+            // setValueDebtB();
+            setValueDolarDebtA(trim(coins[strCoinPair[0]].price * valueDebtA, 3))
+            setValueDolarDebtB(trim(coins[strCoinPair[1]].price * valueDebtB, 3))
+
+            setValueTotalDebt(trim(parseFloat(valueDolarDebtA) + parseFloat(valueDolarDebtB), 3))
+        }
     };
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {

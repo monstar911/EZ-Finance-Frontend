@@ -44,10 +44,39 @@ module ezfinance::lending {
 
         let account_addr = signer::address_of(sender);
         let amount = 1000000000000000000u64;
-        let per_request = 1000000000u64;
+        let per_request = 10000000000u64;
         let period = 3000u64;
 
-        //Deposite Pool Token 8000 at the startup
+        // if (!coin::is_account_registered<faucet_tokens::EZM>(account_addr)) {
+        //     coin::register<faucet_tokens::EZM>(sender);
+        // };
+
+        // if (!coin::is_account_registered<faucet_tokens::WBTC>(account_addr)) {
+        //     coin::register<faucet_tokens::WBTC>(sender);
+        // };
+
+        // if (!coin::is_account_registered<faucet_tokens::WETH>(account_addr)) {
+        //     coin::register<faucet_tokens::WETH>(sender);
+        // };
+
+        // if (!coin::is_account_registered<faucet_tokens::USDT>(account_addr)) {
+        //     coin::register<faucet_tokens::USDT>(sender);
+        // };
+
+        // if (!coin::is_account_registered<faucet_tokens::USDC>(account_addr)) {
+        //     coin::register<faucet_tokens::USDC>(sender);
+        // };
+
+        // if (!coin::is_account_registered<faucet_tokens::DAI>(account_addr)) {
+        //     coin::register<faucet_tokens::DAI>(sender);
+        // };
+
+        //Deposite Pool Token 8000 at the startup        
+        // faucet_provider::create_faucet<AptosCoin>(sender,amount/2,per_request,period);
+        let native_coin = coin::withdraw<AptosCoin>(sender, 0);
+        let pool8 = Pool<AptosCoin> {borrowed_amount: 0, deposited_amount: 0, token: native_coin};
+        move_to(sender, pool8);
+
         managed_coin::register<faucet_tokens::EZM>(sender);
         managed_coin::mint<faucet_tokens::EZM>(sender,account_addr,amount);
         faucet_provider::create_faucet<faucet_tokens::EZM>(sender,amount/2,per_request,period);
@@ -55,12 +84,19 @@ module ezfinance::lending {
         let pool1 = Pool<faucet_tokens::EZM> {borrowed_amount: 0, deposited_amount: 0, token: coin1};
         move_to(sender, pool1);
 
-        managed_coin::register<faucet_tokens::USDC>(sender);
-        managed_coin::mint<faucet_tokens::USDC>(sender,account_addr,amount);
-        faucet_provider::create_faucet<faucet_tokens::USDC>(sender,amount/2,per_request,period);
-        let coin2 = coin::withdraw<faucet_tokens::USDC>(sender, 0);        
-        let pool2 = Pool<faucet_tokens::USDC> {borrowed_amount: 0, deposited_amount: 0, token: coin2};
-        move_to(sender, pool2);
+        managed_coin::register<faucet_tokens::WBTC>(sender);
+        managed_coin::mint<faucet_tokens::WBTC>(sender,account_addr,amount);
+        faucet_provider::create_faucet<faucet_tokens::WBTC>(sender,amount/2,10000000u64,period);
+        let coin5 = coin::withdraw<faucet_tokens::WBTC>(sender, 0);        
+        let pool5 = Pool<faucet_tokens::WBTC> {borrowed_amount: 0, deposited_amount: 0, token: coin5};
+        move_to(sender, pool5);
+
+        managed_coin::register<faucet_tokens::WETH>(sender);
+        managed_coin::mint<faucet_tokens::WETH>(sender,account_addr,amount);
+        faucet_provider::create_faucet<faucet_tokens::WETH>(sender,amount/2,100000000u64,period);
+        let coin4 = coin::withdraw<faucet_tokens::WETH>(sender, 0);        
+        let pool4 = Pool<faucet_tokens::WETH> {borrowed_amount: 0, deposited_amount: 0, token: coin4};
+        move_to(sender, pool4);
 
         managed_coin::register<faucet_tokens::USDT>(sender);
         managed_coin::mint<faucet_tokens::USDT>(sender,account_addr,amount);
@@ -69,26 +105,12 @@ module ezfinance::lending {
         let pool3 = Pool<faucet_tokens::USDT> {borrowed_amount: 0, deposited_amount: 0, token: coin3};
         move_to(sender, pool3);
 
-        managed_coin::register<faucet_tokens::WETH>(sender);
-        managed_coin::mint<faucet_tokens::WETH>(sender,account_addr,amount);
-        faucet_provider::create_faucet<faucet_tokens::WETH>(sender,amount/2,1000000u64,period);
-        let coin4 = coin::withdraw<faucet_tokens::WETH>(sender, 0);        
-        let pool4 = Pool<faucet_tokens::WETH> {borrowed_amount: 0, deposited_amount: 0, token: coin4};
-        move_to(sender, pool4);
-
-        managed_coin::register<faucet_tokens::WBTC>(sender);
-        managed_coin::mint<faucet_tokens::WBTC>(sender,account_addr,amount);
-        faucet_provider::create_faucet<faucet_tokens::WBTC>(sender,amount/2,100000u64,period);
-        let coin5 = coin::withdraw<faucet_tokens::WBTC>(sender, 0);        
-        let pool5 = Pool<faucet_tokens::WBTC> {borrowed_amount: 0, deposited_amount: 0, token: coin5};
-        move_to(sender, pool5);
-
-        managed_coin::register<faucet_tokens::CEUSDC>(sender);
-        managed_coin::mint<faucet_tokens::CEUSDC>(sender,account_addr,amount);
-        faucet_provider::create_faucet<faucet_tokens::CEUSDC>(sender,amount/2,per_request,period);
-        let coin6 = coin::withdraw<faucet_tokens::CEUSDC>(sender, 0);        
-        let pool6 = Pool<faucet_tokens::CEUSDC> {borrowed_amount: 0, deposited_amount: 0, token: coin6};
-        move_to(sender, pool6);
+        managed_coin::register<faucet_tokens::USDC>(sender);
+        managed_coin::mint<faucet_tokens::USDC>(sender,account_addr,amount);
+        faucet_provider::create_faucet<faucet_tokens::USDC>(sender,amount/2,per_request,period);
+        let coin2 = coin::withdraw<faucet_tokens::USDC>(sender, 0);        
+        let pool2 = Pool<faucet_tokens::USDC> {borrowed_amount: 0, deposited_amount: 0, token: coin2};
+        move_to(sender, pool2);
 
         managed_coin::register<faucet_tokens::DAI>(sender);
         managed_coin::mint<faucet_tokens::DAI>(sender,account_addr,amount);
@@ -96,11 +118,6 @@ module ezfinance::lending {
         let coin7 = coin::withdraw<faucet_tokens::DAI>(sender, 0);        
         let pool7 = Pool<faucet_tokens::DAI> {borrowed_amount: 0, deposited_amount: 0, token: coin7};
         move_to(sender, pool7);
-
-        faucet_provider::create_faucet<AptosCoin>(sender,amount/2,per_request,period);
-        let native_coin = coin::withdraw<AptosCoin>(sender, 0);
-        let pool8 = Pool<AptosCoin> {borrowed_amount: 0, deposited_amount: 0, token: native_coin};
-        move_to(sender, pool8);
     }
 
     public entry fun manage_pool<CoinType> (
@@ -165,16 +182,8 @@ module ezfinance::lending {
             move_to(admin, ticket);  
         };
 
-        if(!exists<Ticket<faucet_tokens::USDC>>(signer_addr)){
-            let ticket = Ticket<faucet_tokens::USDC> {
-                borrow_amount: 0,
-                lend_amount: 0,               
-            };
-            move_to(admin, ticket);  
-        };
-
-        if(!exists<Ticket<faucet_tokens::USDT>>(signer_addr)){
-            let ticket = Ticket<faucet_tokens::USDT> {
+        if(!exists<Ticket<faucet_tokens::WBTC>>(signer_addr)){
+            let ticket = Ticket<faucet_tokens::WBTC> {
                 borrow_amount: 0,
                 lend_amount: 0,               
             };
@@ -189,16 +198,16 @@ module ezfinance::lending {
             move_to(admin, ticket);  
         };
 
-        if(!exists<Ticket<faucet_tokens::WBTC>>(signer_addr)){
-            let ticket = Ticket<faucet_tokens::WBTC> {
+        if(!exists<Ticket<faucet_tokens::USDT>>(signer_addr)){
+            let ticket = Ticket<faucet_tokens::USDT> {
                 borrow_amount: 0,
                 lend_amount: 0,               
             };
             move_to(admin, ticket);  
         };
 
-        if(!exists<Ticket<faucet_tokens::CEUSDC>>(signer_addr)){
-            let ticket = Ticket<faucet_tokens::CEUSDC> {
+        if(!exists<Ticket<faucet_tokens::USDC>>(signer_addr)){
+            let ticket = Ticket<faucet_tokens::USDC> {
                 borrow_amount: 0,
                 lend_amount: 0,               
             };
@@ -227,20 +236,19 @@ module ezfinance::lending {
         assert!(exists<Pool<CoinType>>(MODULE_ADMIN), COIN_NOT_EXIST);
         assert!(_amount > 0, AMOUNT_ZERO);      
 
-        let aptos_ticket_data = borrow_global<Ticket<AptosCoin>>(signer_addr);
-        let ezm_ticket_data = borrow_global<Ticket<faucet_tokens::EZM>>(signer_addr);
+        let ticket_data = borrow_global_mut<Ticket<CoinType>>(signer_addr);
        
         //When Supplying Multiple Tokens should sum up ticket_data's lend_amount
-        assert!((aptos_ticket_data.lend_amount + ezm_ticket_data.lend_amount) * 80 / 100 >= 
-            (_amount + (aptos_ticket_data.borrow_amount + ezm_ticket_data.borrow_amount)) , INSUFFICIENT_TOKEN_SUPPLY);
+        assert!((ticket_data.lend_amount) * 80 / 100 >= 
+            (_amount + (ticket_data.borrow_amount)) , INSUFFICIENT_TOKEN_SUPPLY);
           
+        ticket_data.borrow_amount = ticket_data.borrow_amount + _amount + _amount * 25 / 1000  ;
+
         let pool_data = borrow_global_mut<Pool<CoinType>>(MODULE_ADMIN);                        
         let origin_coin = &mut pool_data.token;        
         let extract_coin = coin::extract(origin_coin, _amount);
-        pool_data.borrowed_amount = pool_data.borrowed_amount + _amount + _amount * 25 / 1000;
 
-        let ticket_data = borrow_global_mut<Ticket<CoinType>>(signer_addr);
-        ticket_data.borrow_amount = ticket_data.borrow_amount + _amount + _amount * 25 / 1000  ;
+        pool_data.borrowed_amount = pool_data.borrowed_amount + _amount + _amount * 25 / 1000;
 
         if(!coin::is_account_registered<CoinType>(signer_addr))
             coin::register<CoinType>(admin);

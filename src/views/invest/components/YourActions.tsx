@@ -1,10 +1,10 @@
 import React, { useContext, useState } from 'react';
-import { IUserInfo, Web3Context } from '../../../context/Web3Context';
-
 import { Box, Typography, Stack, Button } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 
-import { TokenIcon } from '../../../context/constant';
+import { IUserInfo, Web3Context } from '../../../context/Web3Context';
+import { trim } from '../../../helper/trim';
+import { coins } from '../../../context/constant';
 
 
 const useStyles = makeStyles((theme: any) => ({
@@ -16,11 +16,15 @@ const useStyles = makeStyles((theme: any) => ({
     },
 }));
 
-export default function Part4(props: any) {
-    const { imga, imgb, namea, nameb, index, setIndex, token, amount, valueLeverage, setValueLeverage, debt, setDebt,
-        estimatiedAPR, setAPR, valueEZM, setValueEZM, valueAPT, setValueAPT, valueLP, setValueLP,
-        valueDolarEZM, setValueDolarEZM, valueDolarAPT, setValueDolarAPT, valueDolarLP, setValueDolarLP,
-        valueSupplyEZM, setValueSupplyEZM, valueSupplyAPT, setValueSupplyAPT, valueSupplyLP, setValueSupplyLP, valueTotalSupply, setValueTotalSupply,
+export default function YourActions(props: any) {
+    const {
+        strCoinPair,
+        valuePairX, setValuePairX, valuePairY, setValuePairY, valueEZM, setValueEZM,
+        valueDolarPairX, setValueDolarPairX, valueDolarPairY, setValueDolarPairY, valueDolarEZM, setValueDolarEZM,
+        index, setIndex, token, amount, valueLeverage, setValueLeverage, debt, setDebt,
+        estimatiedAPR, setAPR,
+        valueSupplyEZM, setValueSupplyEZM, valueSupplyAPT, setValueSupplyAPT, valueSupplyLP, setValueSupplyLP,
+        valueTotalSupply, setValueTotalSupply,
         valueDebtA, setValueDebtA, valueDebtB, setValueDebtB, valueDolarDebtA, setValueDolarDebtA,
         valueDolarDebtB, setValueDolarDebtB, valueTotalDebt, setValueTotalDebt } = props;
 
@@ -28,18 +32,25 @@ export default function Part4(props: any) {
     const web3 = useContext(Web3Context)
 
     const onClickConfirm = async () => {
-        console.log('Part4');
-        console.log(namea);
-        console.log(nameb);
-        console.log(valueEZM);
-        console.log(valueAPT);
-        console.log(valueLP);
-        console.log(valueLeverage);
+        console.log('onClickConfirm', coins[strCoinPair[0]].symbol, coins[strCoinPair[1]].symbol, valuePairX, valuePairY, valueEZM, valueLeverage);
 
-        // await web3?.leverage_yield_farming_swap(namea, nameb, valueEZM, valueAPT, valueLP, valueLeverage);
-        // await web3?.leverage_yield_farming_dapp(namea, nameb, valueEZM, valueAPT, valueLP, valueLeverage);
-        await web3?.leverage_yield_farming(namea, nameb, valueEZM, valueAPT, valueLP, valueLeverage);
-        // await web3?.add_liquidity_aptos(namea, nameb, token, amount);
+        await web3?.leverage_yield_farming(coins[strCoinPair[0]].symbol, coins[strCoinPair[1]].symbol, valuePairX, valuePairY, valueEZM, valueLeverage);
+
+
+        // await web3?.leverage_yield_farming_borrow(coins[strCoinPair[0]].symbol, coins[strCoinPair[1]].symbol, valuePairX, valuePairY, valueEZM, valueLeverage);
+        // await web3?.leverage_yield_farming_swap(coins[strCoinPair[0]].symbol, coins[strCoinPair[1]].symbol, valuePairX, valuePairY, valueEZM, valueLeverage);
+
+        // await web3?.add_liquidity_pool('ezm', 'apt', 1, 1);
+        // await web3?.add_liquidity_pool('wbtc', 'apt', 0.001, 1);
+        // await web3?.add_liquidity_pool('weth', 'apt', 0.01, 1);
+        // await web3?.add_liquidity_pool('usdt', 'apt', 1, 1);
+        // await web3?.add_liquidity_pool('usdc', 'apt', 1, 1);
+        // await web3?.add_liquidity_pool('dai', 'apt', 1, 1);
+        // await web3?.add_liquidity_pool('wbtc', 'ezm', 0.001, 1);
+        // await web3?.add_liquidity_pool('weth', 'ezm', 0.001, 1);
+        // await web3?.add_liquidity_pool('usdt', 'ezm', 1, 1);
+        // await web3?.add_liquidity_pool('usdc', 'ezm', 1, 1);
+        // await web3?.add_liquidity_pool('dai', 'ezm', 1, 1);
     }
 
     return (
@@ -91,28 +102,28 @@ export default function Part4(props: any) {
                     </Typography>
 
                     <Stack direction={'row'} alignItems="center" gap={1}>
-                        <img src={TokenIcon.ezm} alt="ezm" width={25} height={25} style={{ borderRadius: '50%' }} />
-                        <Typography variant={'h6'}> {(valueEZM * valueLeverage).toFixed(3)} {'EZM'}</Typography>
+                        <img src={coins[strCoinPair[0]].logo} alt={coins[strCoinPair[0]].symbol} width={25} height={25} style={{ borderRadius: '50%' }} />
+                        <Typography variant={'h6'}> {trim(valuePairX * valueLeverage, 3)} {coins[strCoinPair[0]].name}</Typography>
                     </Stack>
 
                     <Stack direction={'row'} alignItems="center" gap={1}>
-                        <img src={TokenIcon.apt} alt="Aptos" width={25} height={25} style={{ borderRadius: '50%' }} />
-                        <Typography variant={'h6'}> {(valueAPT * valueLeverage).toFixed(3)} {'APT'}</Typography>
+                        <img src={coins[strCoinPair[1]].logo} alt={coins[strCoinPair[1]].symbol} width={25} height={25} style={{ borderRadius: '50%' }} />
+                        <Typography variant={'h6'}> {trim(valuePairY * valueLeverage, 3)} {coins[strCoinPair[1]].name}</Typography>
                     </Stack>
 
                     <Stack direction={'row'} alignItems="center" gap={1}>
-                        <img src={TokenIcon.lp} alt="lp" width={25} height={25} style={{ borderRadius: '50%' }} />
-                        <Typography variant={'h6'}> {(valueLP * valueLeverage).toFixed(3)} {'LP'}</Typography>
+                        <img src={coins['ezm'].logo} alt="lp" width={25} height={25} style={{ borderRadius: '50%' }} />
+                        <Typography variant={'h6'}> {trim(valueEZM * valueLeverage, 3)} {coins['ezm'].name}</Typography>
                     </Stack>
                 </Box>
 
                 <Box sx={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: 1 }}>
                     <Typography variant="h5" sx={{ fontSize: '18px', py: 2 }}>
-                        ~${valueTotalSupply.toFixed(3)}
+                        ~${trim(valueTotalSupply, 3)}
                     </Typography>
-                    <Typography variant="h6">${(valueDolarEZM).toFixed(3)}</Typography>
-                    <Typography variant="h6">${(valueDolarAPT).toFixed(3)}</Typography>
-                    <Typography variant="h6">${(valueDolarLP).toFixed(3)}</Typography>
+                    <Typography variant="h6">${trim(valueDolarPairX, 3)}</Typography>
+                    <Typography variant="h6">${trim(valueDolarPairY, 3)}</Typography>
+                    <Typography variant="h6">${trim(valueDolarEZM, 3)}</Typography>
                 </Box>
             </Box>
 
@@ -131,13 +142,13 @@ export default function Part4(props: any) {
                     </Typography>
 
                     <Stack direction={'row'} alignItems="center" gap={1}>
-                        <img src={imga} alt="" width={25} height={25} style={{ borderRadius: '50%' }} />
-                        <Typography variant={'h6'}>0.056432 {namea.toUpperCase()}</Typography>
+                        <img src={coins[strCoinPair[0]].logo} alt={coins[strCoinPair[0]].symbol} width={25} height={25} style={{ borderRadius: '50%' }} />
+                        <Typography variant={'h6'}>0.056432 {coins[strCoinPair[0]].name}</Typography>
                     </Stack>
 
                     <Stack direction={'row'} alignItems="center" gap={1}>
-                        <img src={imgb} alt="" width={25} height={25} style={{ borderRadius: '50%' }} />
-                        <Typography variant={'h6'}>0.056432 {nameb.toUpperCase()}</Typography>
+                        <img src={coins[strCoinPair[1]].logo} alt={coins[strCoinPair[1]].symbol} width={25} height={25} style={{ borderRadius: '50%' }} />
+                        <Typography variant={'h6'}>0.056432 {coins[strCoinPair[1]].name}</Typography>
                     </Stack>
                 </Box>
 

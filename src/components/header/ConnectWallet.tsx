@@ -51,6 +51,7 @@ function ConnectButton() {
 
 
     const onConnectWallet = async (wallet: string) => {
+        console.log('onConnectWallet: ', wallet)
         await web3?.connect(wallet)
         setOpen(false)
     }

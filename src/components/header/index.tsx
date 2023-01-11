@@ -3,13 +3,11 @@ import { alpha, Button, Menu, MenuProps, styled, Typography, useMediaQuery } fro
 import { makeStyles } from '@mui/styles'
 import { Avatar, Box, Select, MenuItem, Stack } from '@mui/material'
 import { IconMenu2 } from '@tabler/icons'
-
-import { faucetItems } from '../../context/constant'
-
-import { Web3Context } from '../../context/Web3Context'
-
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+
 import ConnectButton from './ConnectWallet'
+import { coins } from '../../context/constant'
+import { Web3Context } from '../../context/Web3Context'
 
 
 interface IHeader {
@@ -193,18 +191,18 @@ function Header({ handleDrawerToggle }: IHeader) {
                         onClose={handleClose}
                     >
                         {
-                            faucetItems.map((item, index) => (
-                                <MenuItem key={index} value={item.value} onClick={() => onGetFaucet(item.value)}>
+                            Object.keys(coins).map((item, index) => (
+                                (!(coins[item].name == 'APT') && <MenuItem key={index} value={coins[item].symbol} onClick={() => onGetFaucet(coins[item].symbol)}>
                                     < Stack
                                         direction={'row'}
                                         alignItems={'center'}
                                         gap={1}
                                         sx={{ '& img': { width: '30px', height: '30px', borderRadius: '50%' } }}
                                     >
-                                        <Box sx={{ display: { xs: 'none', md: 'block' } }}><img src={item.logo} alt="aptos" /></Box>
-                                        <Typography >{item.tokenName}</Typography>
+                                        <Box sx={{ display: { xs: 'none', md: 'block' } }}><img src={coins[item].logo} alt="aptos" /></Box>
+                                        <Typography >{coins[item].name}</Typography>
                                     </Stack>
-                                </MenuItem>
+                                </MenuItem>)
                             ))
                         }
                     </StyledMenu>

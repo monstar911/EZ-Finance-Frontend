@@ -18,8 +18,7 @@ import {
 
 import { IconX } from '@tabler/icons';
 import { trim } from '../../../helper/trim';
-
-import { TokenIcon } from '../../../context/constant';
+import { coins } from '../../../context/constant';
 import { IUserInfo, Web3Context } from '../../../context/Web3Context';
 
 
@@ -83,7 +82,7 @@ function Market() {
 
     const datas = [
         {
-            icon: TokenIcon.ezm,
+            icon: coins['ezm'].logo,
             asset: 'EZM',
             symbol: 'ezm',
             depositAPY: 1.3,
@@ -91,7 +90,7 @@ function Market() {
             depositBalance: trim(userInfo?.deposit['ezm'] ?? 0, 3),
             walletBalance: trim(userInfo?.tokenBalance['ezm'] ?? 0, 3)
         }, {
-            icon: TokenIcon.apt,
+            icon: coins['apt'].logo,
             asset: 'APT',
             symbol: 'apt',
             depositAPY: 1.3,
@@ -99,7 +98,7 @@ function Market() {
             depositBalance: trim(userInfo?.deposit['apt'] ?? 0, 3),
             walletBalance: trim(userInfo?.tokenBalance['apt'] ?? 0, 3)
         }, {
-            icon: TokenIcon.wbtc,
+            icon: coins['wbtc'].logo,
             asset: 'WBTC',
             symbol: 'wbtc',
             depositAPY: 2.4,
@@ -107,15 +106,7 @@ function Market() {
             depositBalance: userInfo?.deposit['wbtc'] ?? 0,
             walletBalance: trim(userInfo?.tokenBalance['wbtc'] ?? 0, 3)
         }, {
-            icon: TokenIcon.ceUsdc,
-            asset: 'ceUSDC',
-            symbol: 'ceUsdc',
-            depositAPY: 1.6,
-            totalDeposited: trim(poolInfo?.ceUsdc ?? 0, 3),
-            depositBalance: userInfo?.deposit['ceUsdc'] ?? 0,
-            walletBalance: trim(userInfo?.tokenBalance['ceUsdc'] ?? 0, 3)
-        }, {
-            icon: TokenIcon.weth,
+            icon: coins['weth'].logo,
             asset: 'WETH',
             symbol: 'weth',
             depositAPY: 2.3,
@@ -123,7 +114,7 @@ function Market() {
             depositBalance: userInfo?.deposit['weth'] ?? 0,
             walletBalance: trim(userInfo?.tokenBalance['weth'] ?? 0, 3)
         }, {
-            icon: TokenIcon.dai,
+            icon: coins['dai'].logo,
             asset: 'DAI',
             symbol: 'dai',
             depositAPY: 1.1,
@@ -131,7 +122,7 @@ function Market() {
             depositBalance: userInfo?.deposit['dai'] ?? 0,
             walletBalance: trim(userInfo?.tokenBalance['dai'] ?? 0, 3)
         }, {
-            icon: TokenIcon.usdc,
+            icon: coins['usdc'].logo,
             asset: 'USDC',
             symbol: 'usdc',
             depositAPY: 0.9,
@@ -139,7 +130,7 @@ function Market() {
             depositBalance: userInfo?.deposit['usdc'] ?? 0,
             walletBalance: trim(userInfo?.tokenBalance['usdc'] ?? 0, 3)
         }, {
-            icon: TokenIcon.usdt,
+            icon: coins['usdt'].logo,
             asset: 'USDT',
             symbol: 'usdt',
             depositAPY: 1.0,
