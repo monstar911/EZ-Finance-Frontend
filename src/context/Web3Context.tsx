@@ -1,6 +1,6 @@
 import React, { ReactNode, useEffect, useState, createContext } from 'react';
 import { AptosClient, CoinClient } from 'aptos';
-import { ezfinance, TokenPrice, tokens } from './constant'
+import { ezfinance, pancake, TokenPrice, tokens } from './constant'
 import { sleep } from '../helper/sleep';
 import { ethers } from 'ethers';
 
@@ -398,7 +398,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         const leverageBorrowPairY = (valueLeverage - 1) * valuePairY;
         const leverageBorrowEZM = (valueLeverage - 1) * valueEZM;
 
-        console.log('leverage_yield_farming', tokenTypeX, tokenTypeY, valuePairX, valuePairY, valueEZM,
+        console.log('leverage_yield_farming', ezfinance, tokenTypeX, tokenTypeY, valuePairX, valuePairY, valueEZM,
             valueLeverage, leverageBorrowPairX, leverageBorrowPairY, leverageBorrowEZM)
 
         const amountInWeiSupplyPairX = ethers.utils.parseUnits(String(valuePairX), 8).toNumber()
@@ -409,20 +409,20 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         const amountInWeiBorrowPairY = ethers.utils.parseUnits(String(leverageBorrowPairY.toFixed(7)), 8).toNumber()
         const amountInWeiBorrowEZM = ethers.utils.parseUnits(String(leverageBorrowEZM.toFixed(7)), 8).toNumber()
 
-        console.log('leverage_yield_farming', tokenTypeX, tokenTypeY, amountInWeiSupplyPairX, amountInWeiSupplyPairY, amountInWeiSupplyEZM,
+        console.log('leverage_yield_farming', ezfinance, tokenTypeX, tokenTypeY, amountInWeiSupplyPairX, amountInWeiSupplyPairY, amountInWeiSupplyEZM,
             valueLeverage, amountInWeiBorrowPairX, amountInWeiBorrowPairY, amountInWeiBorrowEZM)
 
         const petraTransaction = {
             arguments: [amountInWeiSupplyPairX, amountInWeiSupplyPairY, amountInWeiSupplyEZM,
                 amountInWeiBorrowPairX, amountInWeiBorrowPairY, amountInWeiBorrowEZM],
-            function: ezfinance + '::router::leverage_yield_farming',
+            function: ezfinance + '::farming::leverage_yield_farming',
             type: 'entry_function_payload',
             type_arguments: [tokenTypeX, tokenTypeY],
         };
 
         const sender = address;
         const payload = {
-            function: ezfinance + '::router::leverage_yield_farming',
+            function: ezfinance + '::farming::leverage_yield_farming',
             arguments: [amountInWeiSupplyPairX, amountInWeiSupplyPairY, amountInWeiSupplyEZM,
                 amountInWeiBorrowPairX, amountInWeiBorrowPairY, amountInWeiBorrowEZM],
             type_arguments: [tokenTypeX, tokenTypeY],
@@ -640,14 +640,14 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
 
         const petraTransaction = {
             arguments: [amountInWeiX, amountInWeiY, 0, 0],
-            function: ezfinance + '::router::add_liquidity',
+            function: ezfinance + '::farming::add_liquidity',
             type: 'entry_function_payload',
             type_arguments: [tokenTypeX, tokenTypeY],
         };
 
         const sender = address;
         const payload = {
-            function: ezfinance + '::router::add_liquidity',
+            function: ezfinance + '::farming::add_liquidity',
             arguments: [amountInWeiX, amountInWeiY, 0, 0],
             type_arguments: [tokenTypeX, tokenTypeY],
         };

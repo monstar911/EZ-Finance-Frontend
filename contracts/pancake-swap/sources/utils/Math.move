@@ -1,5 +1,5 @@
 // Math implementation for number manipulation.
-module ezfinance::math {
+module pancake::math {
     /// babylonian method (https://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Babylonian_method)
     public fun sqrt(y: u128): u128 {
         if (y < 4) {

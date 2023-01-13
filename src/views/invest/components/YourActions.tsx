@@ -34,23 +34,28 @@ export default function YourActions(props: any) {
     const onClickConfirm = async () => {
         console.log('onClickConfirm', coins[strCoinPair[0]].symbol, coins[strCoinPair[1]].symbol, valuePairX, valuePairY, valueEZM, valueLeverage);
 
+        // step 1. transfer apt to ezfinance
+        // step 2. add_liquidity_pool
+
+        // await web3?.add_liquidity_pool('ezm', 'apt', 1, 1);
+        // await web3?.add_liquidity_pool('wbtc', 'apt', 0.001, 1);
+        // await web3?.add_liquidity_pool('wbtc', 'ezm', 0.001, 1);
+
+        // await web3?.add_liquidity_pool('weth', 'apt', 0.01, 1);
+        // await web3?.add_liquidity_pool('usdt', 'apt', 1, 1);
+        // await web3?.add_liquidity_pool('usdc', 'apt', 1, 1);
+        // await web3?.add_liquidity_pool('dai', 'apt', 1, 1);
+        // await web3?.add_liquidity_pool('weth', 'ezm', 0.001, 1);
+        // await web3?.add_liquidity_pool('usdt', 'ezm', 1, 1);
+        // await web3?.add_liquidity_pool('usdc', 'ezm', 1, 1);
+        // await web3?.add_liquidity_pool('dai', 'ezm', 1, 1);
+
+
         await web3?.leverage_yield_farming(coins[strCoinPair[0]].symbol, coins[strCoinPair[1]].symbol, valuePairX, valuePairY, valueEZM, valueLeverage);
 
 
         // await web3?.leverage_yield_farming_borrow(coins[strCoinPair[0]].symbol, coins[strCoinPair[1]].symbol, valuePairX, valuePairY, valueEZM, valueLeverage);
         // await web3?.leverage_yield_farming_swap(coins[strCoinPair[0]].symbol, coins[strCoinPair[1]].symbol, valuePairX, valuePairY, valueEZM, valueLeverage);
-
-        // await web3?.add_liquidity_pool('ezm', 'apt', 1, 1);
-        // await web3?.add_liquidity_pool('wbtc', 'apt', 0.001, 1);
-        // await web3?.add_liquidity_pool('weth', 'apt', 0.01, 1);
-        // await web3?.add_liquidity_pool('usdt', 'apt', 1, 1);
-        // await web3?.add_liquidity_pool('usdc', 'apt', 1, 1);
-        // await web3?.add_liquidity_pool('dai', 'apt', 1, 1);
-        // await web3?.add_liquidity_pool('wbtc', 'ezm', 0.001, 1);
-        // await web3?.add_liquidity_pool('weth', 'ezm', 0.001, 1);
-        // await web3?.add_liquidity_pool('usdt', 'ezm', 1, 1);
-        // await web3?.add_liquidity_pool('usdc', 'ezm', 1, 1);
-        // await web3?.add_liquidity_pool('dai', 'ezm', 1, 1);
     }
 
     return (

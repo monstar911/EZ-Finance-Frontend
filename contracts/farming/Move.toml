@@ -10,11 +10,13 @@ subdir = 'aptos-move/framework/aptos-framework'
 # AptosFramework = {git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-framework/", rev = "72421d32d77f1877ded478e96f5b95914de1df91"}
 AptosStdlib = {git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-stdlib/", rev = "72421d32d77f1877ded478e96f5b95914de1df91"}
 
+[dependencies.PancakeSwap]
+local = "../pancake-swap"
 
 [addresses]
-ezfinance="ac864f0ac98704df22572b04ba1cf5630046b5534c1cfd8bcc68d493f9ad6452"
-dev = "b42b67ddf880c958aa61a7b5524684b2cb997fac1ef4c02d62c960b2484b208a"
+ezfinance="6ae4bd49f36ff063d28b25215138bd31f0d91a0e12d2f5c1c9cdf331af9fb10d"
+default_account = "4ebe98e80b38a6b4dd7272dd6fc962ffba52d5289caec04376830ec51e75c2d6"
 
 zero = "0000000000000000000000000000000000000000000000000000000000000000"
-default_admin = "0000000000000000000000000000000000000000000000000000000000000000"
+# default_admin = "0000000000000000000000000000000000000000000000000000000000000000"
 test_coin = "0x16"

@@ -1,5 +1,5 @@
 /// Uniswap v2 like token swap program
-module ezfinance::swap_utils {
+module pancake::swap_utils {
     use std::string;
     use aptos_std::type_info;
     use aptos_std::comparator;

@@ -1,5 +1,5 @@
 /// Uniswap v2 like token swap program
-module ezfinance::swap {
+module pancake::swap {
     use std::signer;
     use std::option;
     use std::string;
@@ -12,15 +12,15 @@ module ezfinance::swap {
     use aptos_framework::resource_account;
     use aptos_framework::code;
 
-    use ezfinance::math;
-    use ezfinance::swap_utils;
-    use ezfinance::u256;
+    use pancake::math;
+    use pancake::swap_utils;
+    use pancake::u256;
 
-    friend ezfinance::router;
+    friend pancake::router;
 
     const ZERO_ACCOUNT: address = @zero;
     const DEFAULT_ADMIN: address = @default_admin;
-    const RESOURCE_ACCOUNT: address = @ezfinance;
+    const RESOURCE_ACCOUNT: address = @pancake;
     const DEV: address = @dev;
     const MINIMUM_LIQUIDITY: u128 = 1000;
     const MAX_COIN_NAME_LENGTH: u64 = 32;

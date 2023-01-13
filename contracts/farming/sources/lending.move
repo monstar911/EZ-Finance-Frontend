@@ -9,6 +9,15 @@ module ezfinance::lending {
     use aptos_framework::aptos_coin::AptosCoin;
     use aptos_framework::timestamp;
 
+    use aptos_framework::account;
+    use aptos_framework::resource_account;
+    use aptos_framework::account::SignerCapability;
+
+
+    const ZERO_ACCOUNT: address = @zero;
+    // const DEFAULT_ADMIN: address = @default_admin;
+    const RESOURCE_ACCOUNT: address = @ezfinance;
+    const DEV: address = @default_account;
 
     const MODULE_ADMIN: address = @ezfinance;
 
@@ -23,6 +32,7 @@ module ezfinance::lending {
     const REWARDS_NOT_EXIST:u64 = 8;
     const ROI: u64 = 100;
     const INCENTIVE_REWARD: u64 = 50;
+
 
     struct Ticket<phantom CoinType> has key {
         borrow_amount : u64,
@@ -41,36 +51,12 @@ module ezfinance::lending {
     }
 
     fun init_module(sender: &signer) {
-
         let account_addr = signer::address_of(sender);
         let amount = 1000000000000000000u64;
         let per_request = 10000000000u64;
         let period = 3000u64;
 
-        // if (!coin::is_account_registered<faucet_tokens::EZM>(account_addr)) {
-        //     coin::register<faucet_tokens::EZM>(sender);
-        // };
-
-        // if (!coin::is_account_registered<faucet_tokens::WBTC>(account_addr)) {
-        //     coin::register<faucet_tokens::WBTC>(sender);
-        // };
-
-        // if (!coin::is_account_registered<faucet_tokens::WETH>(account_addr)) {
-        //     coin::register<faucet_tokens::WETH>(sender);
-        // };
-
-        // if (!coin::is_account_registered<faucet_tokens::USDT>(account_addr)) {
-        //     coin::register<faucet_tokens::USDT>(sender);
-        // };
-
-        // if (!coin::is_account_registered<faucet_tokens::USDC>(account_addr)) {
-        //     coin::register<faucet_tokens::USDC>(sender);
-        // };
-
-        // if (!coin::is_account_registered<faucet_tokens::DAI>(account_addr)) {
-        //     coin::register<faucet_tokens::DAI>(sender);
-        // };
-
+     
         //Deposite Pool Token 8000 at the startup        
         // faucet_provider::create_faucet<AptosCoin>(sender,amount/2,per_request,period);
         let native_coin = coin::withdraw<AptosCoin>(sender, 0);
@@ -144,15 +130,16 @@ module ezfinance::lending {
     public entry fun lend<CoinType> (
         admin: &signer,
         _amount: u64
-    ) acquires Pool, Ticket{
-
+    ) acquires Pool, Ticket {
         let signer_addr = signer::address_of(admin);
+
+
         let coin = coin::withdraw<CoinType>(admin, _amount);                
 
-        assert!(exists<Pool<CoinType>>(MODULE_ADMIN), COIN_NOT_EXIST);
+        assert!(exists<Pool<CoinType>>(RESOURCE_ACCOUNT), COIN_NOT_EXIST);
         assert!(_amount > 0, AMOUNT_ZERO);
 
-        let pool_data = borrow_global_mut<Pool<CoinType>>(MODULE_ADMIN);        
+        let pool_data = borrow_global_mut<Pool<CoinType>>(RESOURCE_ACCOUNT);        
         let origin_deposit = pool_data.deposited_amount;
         let origin_coin = &mut pool_data.token;
         coin::merge(origin_coin, coin);
@@ -165,6 +152,7 @@ module ezfinance::lending {
             };
             move_to(admin, rewards);
         };
+
 
         if(!exists<Ticket<AptosCoin>>(signer_addr)){
             let ticket = Ticket<AptosCoin> {
@@ -222,6 +210,7 @@ module ezfinance::lending {
             move_to(admin, ticket);  
         };
 
+
         let ticket_data = borrow_global_mut<Ticket<CoinType>>(signer_addr);
         let origin = ticket_data.lend_amount;
         ticket_data.lend_amount = origin + _amount;
@@ -233,7 +222,8 @@ module ezfinance::lending {
     ) acquires Pool, Ticket {
         let signer_addr = signer::address_of(admin);
 
-        assert!(exists<Pool<CoinType>>(MODULE_ADMIN), COIN_NOT_EXIST);
+
+        assert!(exists<Pool<CoinType>>(RESOURCE_ACCOUNT), COIN_NOT_EXIST);
         assert!(_amount > 0, AMOUNT_ZERO);      
 
         let ticket_data = borrow_global_mut<Ticket<CoinType>>(signer_addr);
@@ -244,14 +234,17 @@ module ezfinance::lending {
           
         ticket_data.borrow_amount = ticket_data.borrow_amount + _amount + _amount * 25 / 1000  ;
 
-        let pool_data = borrow_global_mut<Pool<CoinType>>(MODULE_ADMIN);                        
+        let pool_data = borrow_global_mut<Pool<CoinType>>(RESOURCE_ACCOUNT);                        
         let origin_coin = &mut pool_data.token;        
         let extract_coin = coin::extract(origin_coin, _amount);
 
         pool_data.borrowed_amount = pool_data.borrowed_amount + _amount + _amount * 25 / 1000;
 
-        if(!coin::is_account_registered<CoinType>(signer_addr))
+
+        if (!coin::is_account_registered<CoinType>(signer_addr)) {
             coin::register<CoinType>(admin);
+        };
+
         coin::deposit(signer_addr, extract_coin);
     }
 
@@ -286,23 +279,27 @@ module ezfinance::lending {
         coin::deposit(signer_addr, extract_coin);
     }
   
-    public entry fun withdraw<CoinType>(admin: &signer, amount: u64) acquires Pool, Ticket {
-
+    public entry fun withdraw<CoinType>(
+        admin: &signer, 
+        amount: u64
+    ) acquires Pool, Ticket {
         let signer_addr = signer::address_of(admin);
-        assert!(exists<Pool<CoinType>>(MODULE_ADMIN), COIN_NOT_EXIST);
+        assert!(exists<Pool<CoinType>>(RESOURCE_ACCOUNT), COIN_NOT_EXIST);
         assert!(exists<Ticket<CoinType>>(signer_addr), TICKET_NOT_EXIST);
 
         let ticket_data = borrow_global_mut<Ticket<CoinType>>(signer_addr);
         assert!((ticket_data.lend_amount - ticket_data.borrow_amount) >= amount, INSUFFICIENT_TOKEN_SUPPLY);
 
         ticket_data.lend_amount = ticket_data.lend_amount - amount;
-        let pool_data = borrow_global_mut<Pool<CoinType>>(MODULE_ADMIN);                        
+        let pool_data = borrow_global_mut<Pool<CoinType>>(RESOURCE_ACCOUNT);                        
         let origin_coin = &mut pool_data.token;        
         let extract_coin = coin::extract(origin_coin, amount);
 
         pool_data.deposited_amount = pool_data.deposited_amount - amount;
-        if(!coin::is_account_registered<CoinType>(signer_addr))
+        if (!coin::is_account_registered<CoinType>(signer_addr)) {
             coin::register<CoinType>(admin);
+        };
+
         coin::deposit(signer_addr, extract_coin);
     }
 

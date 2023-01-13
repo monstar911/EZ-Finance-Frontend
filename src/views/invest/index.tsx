@@ -52,9 +52,9 @@ export default function Invest() {
     const { poolid } = useParams();
     const classes = useStyles();
 
-    const [valuePairX, setValuePairX] = useState('');
-    const [valuePairY, setValuePairY] = useState('');
-    const [valueEZM, setValueEZM] = useState('');
+    const [valuePairX, setValuePairX] = useState('0');
+    const [valuePairY, setValuePairY] = useState('0');
+    const [valueEZM, setValueEZM] = useState('0');
     const [valueDolarPairX, setValueDolarPairX] = useState(0);
     const [valueDolarPairY, setValueDolarPairY] = useState(0);
     const [valueDolarEZM, setValueDolarEZM] = useState(0);
