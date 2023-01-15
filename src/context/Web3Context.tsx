@@ -38,9 +38,6 @@ export interface IAptosInterface {
     getFaucet: any;
     checkBalance: any;
     leverage_yield_farming: any;
-    leverage_yield_farming_borrow: any;
-    leverage_yield_farming_swap: any;
-    add_liquidity: any;
     add_liquidity_pool: any;
 }
 
@@ -450,183 +447,6 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         await getPoolInfo();
     }
 
-    const leverage_yield_farming_borrow = async (coinX: string, coinY: string, valuePairX: number, valuePairY: number, valueEZM: number, valueLeverage: number) => {
-        if (wallet === '' || !isConnected) return;
-
-        const tokenTypeX = tokens[coinX]
-        const tokenTypeY = tokens[coinY]
-        const leverageBorrowPairX = (valueLeverage - 1) * valuePairX;
-        const leverageBorrowPairY = (valueLeverage - 1) * valuePairY;
-        const leverageBorrowEZM = (valueLeverage - 1) * valueEZM;
-
-        console.log('leverage_yield_farming_borrow', tokenTypeX, tokenTypeY, valuePairX, valuePairY, valueEZM,
-            valueLeverage, leverageBorrowPairX, leverageBorrowPairY, leverageBorrowEZM)
-
-        const amountInWeiSupplyPairX = ethers.utils.parseUnits(String(valuePairX), 8).toNumber()
-        const amountInWeiSupplyPairY = ethers.utils.parseUnits(String(valuePairY), 8).toNumber()
-        const amountInWeiSupplyEZM = ethers.utils.parseUnits(String(valueEZM), 8).toNumber()
-
-        const amountInWeiBorrowPairX = ethers.utils.parseUnits(String(leverageBorrowPairX.toFixed(7)), 8).toNumber()
-        const amountInWeiBorrowPairY = ethers.utils.parseUnits(String(leverageBorrowPairY.toFixed(7)), 8).toNumber()
-        const amountInWeiBorrowEZM = ethers.utils.parseUnits(String(leverageBorrowEZM.toFixed(7)), 8).toNumber()
-
-        console.log('leverage_yield_farming_borrow', tokenTypeX, tokenTypeY, amountInWeiSupplyPairX, amountInWeiSupplyPairY, amountInWeiSupplyEZM,
-            valueLeverage, amountInWeiBorrowPairX, amountInWeiBorrowPairY, amountInWeiBorrowEZM)
-
-        const petraTransaction = {
-            arguments: [amountInWeiBorrowPairY],
-            function: ezfinance + '::lending::borrow',
-            type: 'entry_function_payload',
-            // type_arguments: [tokenTypeX],
-            type_arguments: [tokenTypeY],
-            // type_arguments: [tokens['ezm']],
-        };
-
-        const sender = address;
-        const payload = {
-            function: ezfinance + '::lending::borrow',
-            arguments: [amountInWeiBorrowPairY],
-            // type_arguments: [tokenTypeX],
-            type_arguments: [tokenTypeY],
-            // type_arguments: [tokens['ezm']],
-        };
-
-        let transaction;
-        if (wallet === 'petra') {
-            transaction = petraTransaction;
-        } else if (wallet === 'martian') {
-            transaction = await window.martian.generateTransaction(sender, payload);
-        } else if (wallet === 'pontem') {
-            // transaction = await window.pontem.generateTransaction(sender, payload);
-        }
-
-        if (isConnected && wallet === 'petra') {
-            await window.aptos.signAndSubmitTransaction(transaction);
-        } else if (isConnected && wallet === 'martian') {
-            await window.martian.signAndSubmitTransaction(transaction);
-        } else if (isConnected && wallet === 'pontem') {
-            await window.pontem.signAndSubmit(payload);
-        }
-
-        await sleep(2)
-        await getUserInfo();
-        await getPoolInfo();
-    }
-
-    const leverage_yield_farming_swap = async (coinX: string, coinY: string, valuePairX: number, valuePairY: number, valueEZM: number, valueLeverage: number) => {
-        if (wallet === '' || !isConnected) return;
-
-        const tokenTypeX = tokens[coinX]
-        const tokenTypeY = tokens[coinY]
-        const leverageBorrowPairX = (valueLeverage - 1) * valuePairX;
-        const leverageBorrowPairY = (valueLeverage - 1) * valuePairY;
-        const leverageBorrowEZM = (valueLeverage - 1) * valueEZM;
-
-        console.log('leverage_yield_farming_swap', tokenTypeX, tokenTypeY, valuePairX, valuePairY, valueEZM,
-            valueLeverage, leverageBorrowPairX, leverageBorrowPairY, leverageBorrowEZM)
-
-        const amountInWeiSupplyPairX = ethers.utils.parseUnits(String(valuePairX), 8).toNumber()
-        const amountInWeiSupplyPairY = ethers.utils.parseUnits(String(valuePairY), 8).toNumber()
-        const amountInWeiSupplyEZM = ethers.utils.parseUnits(String(valueEZM), 8).toNumber()
-
-        const amountInWeiBorrowPairX = ethers.utils.parseUnits(String(leverageBorrowPairX.toFixed(7)), 8).toNumber()
-        const amountInWeiBorrowPairY = ethers.utils.parseUnits(String(leverageBorrowPairY.toFixed(7)), 8).toNumber()
-        const amountInWeiBorrowEZM = ethers.utils.parseUnits(String(leverageBorrowEZM.toFixed(7)), 8).toNumber()
-
-        console.log('leverage_yield_farming_swap', tokenTypeX, tokenTypeY, amountInWeiSupplyPairX, amountInWeiSupplyPairY, amountInWeiSupplyEZM,
-            valueLeverage, amountInWeiBorrowPairX, amountInWeiBorrowPairY, amountInWeiBorrowEZM)
-
-        const petraTransaction = {
-            arguments: [(amountInWeiSupplyEZM + amountInWeiBorrowEZM) / 2, 0],
-            function: ezfinance + '::router::swap_exact_input',
-            type: 'entry_function_payload',
-            // type_arguments: [tokenTypeX, tokenTypeY],
-            // type_arguments: [tokens['ezm'], tokenTypeX],
-            type_arguments: [tokens['ezm'], tokenTypeY],
-        };
-
-        const sender = address;
-        const payload = {
-            function: ezfinance + '::router::swap_exact_input',
-            arguments: [(amountInWeiSupplyEZM + amountInWeiBorrowEZM) / 2, 0],
-            // type_arguments: [tokenTypeX, tokenTypeY],
-            // type_arguments: [tokens['ezm'], tokenTypeX],
-            type_arguments: [tokens['ezm'], tokenTypeY],
-        };
-
-        let transaction;
-        if (wallet === 'petra') {
-            transaction = petraTransaction;
-        } else if (wallet === 'martian') {
-            transaction = await window.martian.generateTransaction(sender, payload);
-        } else if (wallet === 'pontem') {
-            // transaction = await window.pontem.generateTransaction(sender, payload);
-        }
-
-        if (isConnected && wallet === 'petra') {
-            await window.aptos.signAndSubmitTransaction(transaction);
-        } else if (isConnected && wallet === 'martian') {
-            await window.martian.signAndSubmitTransaction(transaction);
-        } else if (isConnected && wallet === 'pontem') {
-            await window.pontem.signAndSubmit(payload);
-        }
-
-        await sleep(2)
-        await getUserInfo();
-        await getPoolInfo();
-    }
-
-    const add_liquidity = async (coinX: string, coinY: string, coinZ: string, amount: number) => {
-
-        if (wallet === '' || !isConnected) return;
-
-        const tokenTypeX = tokens[coinX]
-        // const tokenTypeY = tokens[coinY]
-        const tokenTypeY = tokens['ezm']
-        const tokenTypeZ = tokens[coinZ]
-        const amountInWei = ethers.utils.parseUnits(String(0.01), 8).toNumber()
-
-        console.log(tokenTypeX)
-        console.log(tokenTypeY)
-        console.log(tokenTypeZ)
-        console.log(amountInWei)
-
-        const petraTransaction = {
-            arguments: [amountInWei, amountInWei, 0, 0],
-            function: ezfinance + '::router::add_liquidity',
-            type: 'entry_function_payload',
-            type_arguments: [tokenTypeX, tokenTypeY],
-        };
-
-        const sender = address;
-        const payload = {
-            function: ezfinance + '::router::add_liquidity',
-            arguments: [amountInWei, amountInWei, 0, 0],
-            type_arguments: [tokenTypeX, tokenTypeY],
-        };
-
-        let transaction;
-        if (wallet === 'petra') {
-            transaction = petraTransaction;
-        } else if (wallet === 'martian') {
-            transaction = await window.martian.generateTransaction(sender, payload);
-        } else if (wallet === 'pontem') {
-            // transaction = await window.pontem.generateTransaction(sender, payload);
-        }
-
-        if (isConnected && wallet === 'petra') {
-            await window.aptos.signAndSubmitTransaction(transaction);
-        } else if (isConnected && wallet === 'martian') {
-            await window.martian.signAndSubmitTransaction(transaction);
-        } else if (isConnected && wallet === 'pontem') {
-            await window.pontem.signAndSubmit(payload);
-        }
-
-        await sleep(2)
-        await getUserInfo();
-        await getPoolInfo();
-    }
-
     const add_liquidity_pool = async (coinX: string, coinY: string, amountX: number, amountY: number) => {
 
         if (wallet === '' || !isConnected) return;
@@ -690,9 +510,6 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         getFaucet,
         checkBalance,
         leverage_yield_farming,
-        leverage_yield_farming_borrow,
-        leverage_yield_farming_swap,
-        add_liquidity,
         add_liquidity_pool
     };
 

@@ -4,6 +4,7 @@ import { styled } from '@mui/system';
 import { trim } from "../../../helper/trim";
 import { coins } from '../../../context/constant';
 import { IUserInfo, Web3Context } from '../../../context/Web3Context';
+import { getValuePositionDolarX, getValuePositionDolarY, getValuePositionX, getValuePositionY } from '../../../helper/getValuePosition';
 
 
 const StyledSwitch = styled(Switch)(({ theme }) => ({
@@ -55,7 +56,10 @@ export default function SetLeverage(props: any) {
         valueSupplyPairX, setValueSupplyPairX, valueSupplyPairY, setValueSupplyPairY, valueSupplyEZM, setValueSupplyEZM,
         valueTotalSupply, setValueTotalSupply,
         valueDebtA, setValueDebtA, valueDebtB, setValueDebtB, valueDolarDebtA, setValueDolarDebtA,
-        valueDolarDebtB, setValueDolarDebtB, valueTotalDebt, setValueTotalDebt
+        valueDolarDebtB, setValueDolarDebtB, valueTotalDebt, setValueTotalDebt,
+        valuePositionPairX, setValuePositionPairX, valuePositionPairY, setValuePositionPairY,
+        valuePositionDolarPairX, setValuePositionDolarPairX, valuePositionDolarPairY, setValuePositionDolarPairY,
+        valuePositionDolarTotal, setValuePositionDolarTotal,
     } = props;
 
     const getDebtRatio = (balance: number, amountSupply: number, leverage: number) => {
@@ -84,13 +88,14 @@ export default function SetLeverage(props: any) {
         if (typeof newValue === 'number') {
             setValueLeverage(newValue);
 
-            console.log('handleSliderChange: ', newValue, valueEZM);
+            console.log('handleSliderChange: ', valuePairX, valuePairY, valueEZM, newValue);
             setDebt(getDebtRatio(userInfo.tokenBalance[selectValue], amount, newValue));
             setAPR(getEstimatedAPR(newValue));
 
             setValueBorrowPairX(trim(valuePairX * (newValue - 1), 3))
             setValueBorrowPairY(trim(valuePairY * (newValue - 1), 3))
             setValueBorrowEZM(trim(valueEZM * (newValue - 1), 3))
+
             setValueBorrowDolarPairX(trim(coins[strCoinPair[0]].price * valuePairX * (newValue - 1), 3))
             setValueBorrowDolarPairY(trim(coins[strCoinPair[1]].price * valuePairY * (newValue - 1), 3))
             setValueBorrowDolarEZM(trim(coins['ezm'].price * valueEZM * (newValue - 1), 3))
@@ -111,6 +116,17 @@ export default function SetLeverage(props: any) {
             setValueDolarDebtB(trim(coins[strCoinPair[1]].price * valueDebtB, 3))
 
             setValueTotalDebt(trim(parseFloat(valueDolarDebtA) + parseFloat(valueDolarDebtB), 3))
+
+            setValuePositionPairX(getValuePositionX(valuePairX, valuePairY, valueEZM, coins[strCoinPair[0]].price, coins[strCoinPair[1]].price, coins['ezm'].price, valueLeverage))
+            setValuePositionPairY(getValuePositionY(valuePairX, valuePairY, valueEZM, coins[strCoinPair[0]].price, coins[strCoinPair[1]].price, coins['ezm'].price, valueLeverage))
+
+            const posDolarX = getValuePositionDolarX(valuePairX, valuePairY, valueEZM, coins[strCoinPair[0]].price, coins[strCoinPair[1]].price, coins['ezm'].price, valueLeverage)
+            const posDolarY = getValuePositionDolarY(valuePairX, valuePairY, valueEZM, coins[strCoinPair[0]].price, coins[strCoinPair[1]].price, coins['ezm'].price, valueLeverage)
+            setValuePositionDolarPairX(posDolarX)
+            setValuePositionDolarPairY(posDolarY)
+
+            console.log('handleSliderChange', valueLeverage, posDolarX, posDolarY)
+            setValuePositionDolarTotal(trim((+posDolarX) + (+posDolarY), 2))
         }
     };
 

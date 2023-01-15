@@ -83,6 +83,12 @@ export default function Invest() {
     const [valueDolarDebtB, setValueDolarDebtB] = useState(0);
     const [valueTotalDebt, setValueTotalDebt] = useState(0);
 
+    const [valuePositionPairX, setValuePositionPairX] = useState(0);
+    const [valuePositionPairY, setValuePositionPairY] = useState(0);
+    const [valuePositionDolarPairX, setValuePositionDolarPairX] = useState(0);
+    const [valuePositionDolarPairY, setValuePositionDolarPairY] = useState(0);
+    const [valuePositionDolarTotal, setValuePositionDolarTotal] = useState(0);
+
     const [amount, setAmount] = useState(0);
     const [valueLeverage, setValueLeverage] = useState<number | string | Array<number | string>>(1);
     const [debt, setDebt] = useState<number | string | Array<number | string>>(0);
@@ -168,6 +174,20 @@ export default function Invest() {
                             valueDolarEZM={valueDolarEZM}
                             setValueDolarEZM={setValueDolarEZM}
 
+                            valueBorrowPairX={valueBorrowPairX}
+                            setValueBorrowPairX={setValueBorrowPairX}
+                            valueBorrowPairY={valueBorrowPairY}
+                            setValueBorrowPairY={setValueBorrowPairY}
+                            valueBorrowEZM={valueBorrowEZM}
+                            setValueBorrowEZM={setValueBorrowEZM}
+
+                            valueBorrowDolarPairX={valueBorrowDolarPairX}
+                            setValueBorrowDolarPairX={setValueBorrowDolarPairX}
+                            valueBorrowDolarPairY={valueBorrowDolarPairY}
+                            setValueBorrowDolarPairY={setValueBorrowDolarPairY}
+                            valueBorrowDolarEZM={valueBorrowDolarEZM}
+                            setValueBorrowDolarEZM={setValueBorrowDolarEZM}
+
                             valueLeverage={valueLeverage}
                             setValueLeverage={setValueLeverage}
                             amount={amount}
@@ -175,6 +195,17 @@ export default function Invest() {
 
                             valueTotalSupply={valueTotalSupply}
                             setValueTotalSupply={setValueTotalSupply}
+
+                            valuePositionPairX={valuePositionPairX}
+                            setValuePositionPairX={setValuePositionPairX}
+                            valuePositionPairY={valuePositionPairY}
+                            setValuePositionPairY={setValuePositionPairY}
+                            valuePositionDolarPairX={valuePositionDolarPairX}
+                            setValuePositionDolarPairX={setValuePositionDolarPairX}
+                            valuePositionDolarPairY={valuePositionDolarPairY}
+                            setValuePositionDolarPairY={setValuePositionDolarPairY}
+                            valuePositionDolarTotal={valuePositionDolarTotal}
+                            setValuePositionDolarTotal={setValuePositionDolarTotal}
                         />
                         <SetLeverage
                             strCoinPair={strCoinPair}
@@ -240,6 +271,17 @@ export default function Invest() {
                             setValueDolarDebtB={setValueDolarDebtB}
                             valueTotalDebt={valueTotalDebt}
                             setValueTotalDebt={setValueTotalDebt}
+
+                            valuePositionPairX={valuePositionPairX}
+                            setValuePositionPairX={setValuePositionPairX}
+                            valuePositionPairY={valuePositionPairY}
+                            setValuePositionPairY={setValuePositionPairY}
+                            valuePositionDolarPairX={valuePositionDolarPairX}
+                            setValuePositionDolarPairX={setValuePositionDolarPairX}
+                            valuePositionDolarPairY={valuePositionDolarPairY}
+                            setValuePositionDolarPairY={setValuePositionDolarPairY}
+                            valuePositionDolarTotal={valuePositionDolarTotal}
+                            setValuePositionDolarTotal={setValuePositionDolarTotal}
                         />
                         <BorrowAssets
                             strCoinPair={strCoinPair}
@@ -314,6 +356,17 @@ export default function Invest() {
                             setValueDolarDebtB={setValueDolarDebtB}
                             valueTotalDebt={valueTotalDebt}
                             setValueTotalDebt={setValueTotalDebt}
+
+                            valuePositionPairX={valuePositionPairX}
+                            setValuePositionPairX={setValuePositionPairX}
+                            valuePositionPairY={valuePositionPairY}
+                            setValuePositionPairY={setValuePositionPairY}
+                            valuePositionDolarPairX={valuePositionDolarPairX}
+                            setValuePositionDolarPairX={setValuePositionDolarPairX}
+                            valuePositionDolarPairY={valuePositionDolarPairY}
+                            setValuePositionDolarPairY={setValuePositionDolarPairY}
+                            valuePositionDolarTotal={valuePositionDolarTotal}
+                            setValuePositionDolarTotal={setValuePositionDolarTotal}
                         />
                     </Box>
                 </Box>

@@ -26,7 +26,11 @@ export default function YourActions(props: any) {
         valueSupplyEZM, setValueSupplyEZM, valueSupplyAPT, setValueSupplyAPT, valueSupplyLP, setValueSupplyLP,
         valueTotalSupply, setValueTotalSupply,
         valueDebtA, setValueDebtA, valueDebtB, setValueDebtB, valueDolarDebtA, setValueDolarDebtA,
-        valueDolarDebtB, setValueDolarDebtB, valueTotalDebt, setValueTotalDebt } = props;
+        valueDolarDebtB, setValueDolarDebtB, valueTotalDebt, setValueTotalDebt,
+        valuePositionPairX, setValuePositionPairX, valuePositionPairY, setValuePositionPairY,
+        valuePositionDolarPairX, setValuePositionDolarPairX, valuePositionDolarPairY, setValuePositionDolarPairY,
+        valuePositionDolarTotal, setValuePositionDolarTotal,
+    } = props;
 
     const classes = useStyles();
     const web3 = useContext(Web3Context)
@@ -37,10 +41,9 @@ export default function YourActions(props: any) {
         // step 1. transfer apt to ezfinance
         // step 2. add_liquidity_pool
 
-        // await web3?.add_liquidity_pool('ezm', 'apt', 1, 1);
-        // await web3?.add_liquidity_pool('wbtc', 'apt', 0.001, 1);
-        // await web3?.add_liquidity_pool('wbtc', 'ezm', 0.001, 1);
-
+        await web3?.add_liquidity_pool('ezm', 'apt', 1, 1);
+        await web3?.add_liquidity_pool('wbtc', 'apt', 0.001, 1);
+        await web3?.add_liquidity_pool('wbtc', 'ezm', 0.001, 1);
         // await web3?.add_liquidity_pool('weth', 'apt', 0.01, 1);
         // await web3?.add_liquidity_pool('usdt', 'apt', 1, 1);
         // await web3?.add_liquidity_pool('usdc', 'apt', 1, 1);
@@ -51,11 +54,8 @@ export default function YourActions(props: any) {
         // await web3?.add_liquidity_pool('dai', 'ezm', 1, 1);
 
 
-        await web3?.leverage_yield_farming(coins[strCoinPair[0]].symbol, coins[strCoinPair[1]].symbol, valuePairX, valuePairY, valueEZM, valueLeverage);
-
-
-        // await web3?.leverage_yield_farming_borrow(coins[strCoinPair[0]].symbol, coins[strCoinPair[1]].symbol, valuePairX, valuePairY, valueEZM, valueLeverage);
-        // await web3?.leverage_yield_farming_swap(coins[strCoinPair[0]].symbol, coins[strCoinPair[1]].symbol, valuePairX, valuePairY, valueEZM, valueLeverage);
+        // await web3?.leverage_yield_farming(coins[strCoinPair[0]].symbol, coins[strCoinPair[1]].symbol,
+        // valuePairX ?? 0, valuePairY ?? 0, valueEZM ?? 0, valueLeverage ?? 1);
     }
 
     return (
@@ -163,6 +163,42 @@ export default function YourActions(props: any) {
                     </Typography>
                     <Typography variant="h6">${valueDolarDebtA}</Typography>
                     <Typography variant="h6">${valueDolarDebtB}</Typography>
+                </Box>
+            </Box>
+
+            <Box className={classes.devideLine} />
+
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    mt: 3,
+                }}
+            >
+                <Box sx={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    <Stack direction={'row'} alignItems="center" gap={1}>
+                        <Typography variant="h5" sx={{ fontSize: '18px', py: 2 }}>
+                            Position Value(After Swap)
+                        </Typography>
+                    </Stack>
+
+                    <Stack direction={'row'} alignItems="center" gap={1}>
+                        <img src={coins[strCoinPair[0]].logo} alt={coins[strCoinPair[0]].symbol} width={25} height={25} style={{ borderRadius: '50%' }} />
+                        <Typography variant={'h6'}>{valuePositionPairX} {coins[strCoinPair[0]].name}</Typography>
+                    </Stack>
+
+                    <Stack direction={'row'} alignItems="center" gap={1}>
+                        <img src={coins[strCoinPair[1]].logo} alt={coins[strCoinPair[1]].symbol} width={25} height={25} style={{ borderRadius: '50%' }} />
+                        <Typography variant={'h6'}>{valuePositionPairY} {coins[strCoinPair[1]].name}</Typography>
+                    </Stack>
+                </Box>
+
+                <Box sx={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    <Typography variant="h5" sx={{ fontSize: '18px', py: 2 }}>
+                        ~${valuePositionDolarTotal}
+                    </Typography>
+                    <Typography variant="h6">${valuePositionDolarPairX}</Typography>
+                    <Typography variant="h6">${valuePositionDolarPairY}</Typography>
                 </Box>
             </Box>
 

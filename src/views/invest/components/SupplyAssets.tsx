@@ -14,6 +14,7 @@ import { IUserInfo, Web3Context } from '../../../context/Web3Context';
 
 import { trim } from '../../../helper/trim';
 import { coins } from '../../../context/constant';
+import { getValuePositionDolarX, getValuePositionDolarY, getValuePositionX, getValuePositionY } from '../../../helper/getValuePosition';
 
 
 const useStyles = makeStyles(() => ({
@@ -69,9 +70,14 @@ export default function SupplyAssets(props: any) {
         strCoinPair,
         valuePairX, setValuePairX, valuePairY, setValuePairY, valueEZM, setValueEZM,
         valueDolarPairX, setValueDolarPairX, valueDolarPairY, setValueDolarPairY, valueDolarEZM, setValueDolarEZM,
+        valueBorrowPairX, setValueBorrowPairX, valueBorrowPairY, setValueBorrowPairY, valueBorrowEZM, setValueBorrowEZM,
+        valueBorrowDolarPairX, setValueBorrowDolarPairX, valueBorrowDolarPairY, setValueBorrowDolarPairY, valueBorrowDolarEZM, setValueBorrowDolarEZM,
         valueLeverage, setValueLeverage,
         amount, setAmount,
-        valueTotalSupply, setValueTotalSupply
+        valueTotalSupply, setValueTotalSupply,
+        valuePositionPairX, setValuePositionPairX, valuePositionPairY, setValuePositionPairY,
+        valuePositionDolarPairX, setValuePositionDolarPairX, valuePositionDolarPairY, setValuePositionDolarPairY,
+        valuePositionDolarTotal, setValuePositionDolarTotal,
     } = props;
 
     const classes = useStyles();
@@ -130,7 +136,21 @@ export default function SupplyAssets(props: any) {
                     onChange={(e: any) => {
                         setValuePairX(e.target.value)
                         setValueDolarPairX(coins[strCoinPair[0]].price * valueLeverage * e.target.value)
-                        setValueTotalSupply(coins[strCoinPair[0]].price * valueLeverage * e.target.value + valueDolarPairY + valueDolarEZM)
+                        setValueBorrowPairX(trim(valuePairX * (valueLeverage - 1), 3))
+                        setValueBorrowDolarPairX(trim(coins[strCoinPair[0]].price * valuePairX * (valueLeverage - 1), 2))
+
+                        setValueTotalSupply(trim(coins[strCoinPair[0]].price * valueLeverage * e.target.value + valueDolarPairY + valueDolarEZM, 2))
+
+                        setValuePositionPairX(getValuePositionX(e.target.value, valuePairY, valueEZM, coins[strCoinPair[0]].price, coins[strCoinPair[1]].price, coins['ezm'].price, valueLeverage))
+                        setValuePositionPairY(getValuePositionY(e.target.value, valuePairY, valueEZM, coins[strCoinPair[0]].price, coins[strCoinPair[1]].price, coins['ezm'].price, valueLeverage))
+
+                        const posDolarX = getValuePositionDolarX(e.target.value, valuePairY, valueEZM, coins[strCoinPair[0]].price, coins[strCoinPair[1]].price, coins['ezm'].price, valueLeverage)
+                        const posDolarY = getValuePositionDolarY(e.target.value, valuePairY, valueEZM, coins[strCoinPair[0]].price, coins[strCoinPair[1]].price, coins['ezm'].price, valueLeverage)
+                        setValuePositionDolarPairX(posDolarX)
+                        setValuePositionDolarPairY(posDolarY)
+
+                        console.log('StyledInput', posDolarX, posDolarY)
+                        setValuePositionDolarTotal(trim((+posDolarX) + (+posDolarY), 2))
                     }
                     }
                     endAdornment={<InputAdornment position="end"></InputAdornment>}
@@ -171,7 +191,20 @@ export default function SupplyAssets(props: any) {
                     onChange={(e: any) => {
                         setValuePairY(e.target.value)
                         setValueDolarPairY(coins[strCoinPair[1]].price * e.target.value)
-                        setValueTotalSupply(coins[strCoinPair[1]].price * e.target.value + valueDolarPairX + valueDolarEZM)
+                        setValueBorrowPairY(trim(valuePairY * (valueLeverage - 1), 2))
+                        setValueBorrowDolarPairY(trim(coins[strCoinPair[1]].price * valuePairY * (valueLeverage - 1), 2))
+
+                        setValueTotalSupply(trim(coins[strCoinPair[1]].price * e.target.value + valueDolarPairX + valueDolarEZM, 2))
+
+                        setValuePositionPairX(getValuePositionX(valuePairX, e.target.value, valueEZM, coins[strCoinPair[0]].price, coins[strCoinPair[1]].price, coins['ezm'].price, valueLeverage))
+                        setValuePositionPairY(getValuePositionY(valuePairX, e.target.value, valueEZM, coins[strCoinPair[0]].price, coins[strCoinPair[1]].price, coins['ezm'].price, valueLeverage))
+                        const posDolarX = getValuePositionDolarX(valuePairX, e.target.value, valueEZM, coins[strCoinPair[0]].price, coins[strCoinPair[1]].price, coins['ezm'].price, valueLeverage)
+                        const posDolarY = getValuePositionDolarY(valuePairX, e.target.value, valueEZM, coins[strCoinPair[0]].price, coins[strCoinPair[1]].price, coins['ezm'].price, valueLeverage)
+                        setValuePositionDolarPairX(posDolarX)
+                        setValuePositionDolarPairY(posDolarY)
+
+                        console.log('StyledInput', posDolarX, posDolarY)
+                        setValuePositionDolarTotal(trim((+posDolarX) + (+posDolarY), 2))
                     }
                     }
                     endAdornment={<InputAdornment position="end"></InputAdornment>}
@@ -212,7 +245,20 @@ export default function SupplyAssets(props: any) {
                     onChange={(e: any) => {
                         setValueEZM(e.target.value)
                         setValueDolarEZM(coins['ezm'].price * e.target.value)
-                        setValueTotalSupply(coins['ezm'].price * e.target.value + valueDolarPairX + valueDolarPairY)
+                        setValueBorrowEZM(trim(valueEZM * (valueLeverage - 1), 3))
+                        setValueBorrowDolarEZM(trim(coins['ezm'].price * valueEZM * (valueLeverage - 1), 2))
+
+                        setValueTotalSupply(trim(coins['ezm'].price * e.target.value + valueDolarPairX + valueDolarPairY, 2))
+
+                        setValuePositionPairX(getValuePositionX(valuePairX, valuePairY, e.target.value, coins[strCoinPair[0]].price, coins[strCoinPair[1]].price, coins['ezm'].price, valueLeverage))
+                        setValuePositionPairY(getValuePositionY(valuePairX, valuePairY, e.target.value, coins[strCoinPair[0]].price, coins[strCoinPair[1]].price, coins['ezm'].price, valueLeverage))
+                        const posDolarX = getValuePositionDolarX(valuePairX, valuePairY, e.target.value, coins[strCoinPair[0]].price, coins[strCoinPair[1]].price, coins['ezm'].price, valueLeverage)
+                        const posDolarY = getValuePositionDolarY(valuePairX, valuePairY, e.target.value, coins[strCoinPair[0]].price, coins[strCoinPair[1]].price, coins['ezm'].price, valueLeverage)
+                        setValuePositionDolarPairX(posDolarX)
+                        setValuePositionDolarPairY(posDolarY)
+
+                        console.log('StyledInput', posDolarX, posDolarY)
+                        setValuePositionDolarTotal(trim((+posDolarX) + (+posDolarY), 2))
                     }
                     }
                     endAdornment={<InputAdornment position="end"></InputAdornment>}
