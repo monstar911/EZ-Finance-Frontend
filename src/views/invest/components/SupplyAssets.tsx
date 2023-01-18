@@ -10,11 +10,11 @@ import {
     InputAdornment,
 } from '@mui/material';
 
-import { IUserInfo, Web3Context } from '../../../context/Web3Context';
+import { ITokenPrice3, IUserInfo, Web3Context } from '../../../context/Web3Context';
 
 import { trim } from '../../../helper/trim';
 import { coins } from '../../../context/constant';
-import { getValuePositionDolarX, getValuePositionDolarY, getValuePositionX, getValuePositionY } from '../../../helper/getValuePosition';
+import { getDebtX, getDebtY, getValuePositionDolarX, getValuePositionDolarY, getValuePositionX, getValuePositionY } from '../../../helper/getValuePosition';
 
 
 const useStyles = makeStyles(() => ({
@@ -75,6 +75,8 @@ export default function SupplyAssets(props: any) {
         valueLeverage, setValueLeverage,
         amount, setAmount,
         valueTotalSupply, setValueTotalSupply,
+        valueDebtA, setValueDebtA, valueDebtB, setValueDebtB, valueDolarDebtA, setValueDolarDebtA,
+        valueDolarDebtB, setValueDolarDebtB, valueTotalDebt, setValueTotalDebt,
         valuePositionPairX, setValuePositionPairX, valuePositionPairY, setValuePositionPairY,
         valuePositionDolarPairX, setValuePositionDolarPairX, valuePositionDolarPairY, setValuePositionDolarPairY,
         valuePositionDolarTotal, setValuePositionDolarTotal,
@@ -83,6 +85,7 @@ export default function SupplyAssets(props: any) {
     const classes = useStyles();
     const web3 = useContext(Web3Context)
     const userInfo = web3?.userInfo as IUserInfo
+    const tokenPrice3 = web3?.tokenPrice3 as ITokenPrice3
     const poolInfo = web3?.poolInfo
 
     const [tvl, setTVL] = useState(0)
@@ -99,12 +102,9 @@ export default function SupplyAssets(props: any) {
                 1. Supply Assets
             </Typography>
 
-            <Typography variant="subtitle1" sx={{ pt: 2, pb: 2 }}>
-                Turn on the toggle for the assets you wish to supply in
-            </Typography>
-
             <Box
                 sx={{
+                    pt: 2,
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
@@ -135,17 +135,32 @@ export default function SupplyAssets(props: any) {
                     placeholder="e.g 1.83"
                     onChange={(e: any) => {
                         setValuePairX(e.target.value)
-                        setValueDolarPairX(coins[strCoinPair[0]].price * valueLeverage * e.target.value)
-                        setValueBorrowPairX(trim(valuePairX * (valueLeverage - 1), 3))
-                        setValueBorrowDolarPairX(trim(coins[strCoinPair[0]].price * valuePairX * (valueLeverage - 1), 2))
+                        setValueDolarPairX(tokenPrice3[strCoinPair[0]] * valueLeverage * e.target.value)
 
-                        setValueTotalSupply(trim(coins[strCoinPair[0]].price * valueLeverage * e.target.value + valueDolarPairY + valueDolarEZM, 2))
+                        setValueTotalSupply(trim(tokenPrice3[strCoinPair[0]] * valueLeverage * e.target.value + (+valueDolarPairY) + (+valueDolarEZM), 2))
 
-                        setValuePositionPairX(getValuePositionX(e.target.value, valuePairY, valueEZM, coins[strCoinPair[0]].price, coins[strCoinPair[1]].price, coins['ezm'].price, valueLeverage))
-                        setValuePositionPairY(getValuePositionY(e.target.value, valuePairY, valueEZM, coins[strCoinPair[0]].price, coins[strCoinPair[1]].price, coins['ezm'].price, valueLeverage))
+                        const debtX = getDebtX(e.target.value, valuePairY, valueEZM, tokenPrice3[strCoinPair[0]], tokenPrice3[strCoinPair[1]], tokenPrice3['ezm'], valueLeverage);
+                        const debtY = getDebtY(e.target.value, valuePairY, valueEZM, tokenPrice3[strCoinPair[0]], tokenPrice3[strCoinPair[1]], tokenPrice3['ezm'], valueLeverage);
+                        const debtDolarX = tokenPrice3[strCoinPair[0]] * (+debtX);
+                        const debtDolarY = tokenPrice3[strCoinPair[1]] * (+debtY);
 
-                        const posDolarX = getValuePositionDolarX(e.target.value, valuePairY, valueEZM, coins[strCoinPair[0]].price, coins[strCoinPair[1]].price, coins['ezm'].price, valueLeverage)
-                        const posDolarY = getValuePositionDolarY(e.target.value, valuePairY, valueEZM, coins[strCoinPair[0]].price, coins[strCoinPair[1]].price, coins['ezm'].price, valueLeverage)
+                        setValueDebtA(debtX);
+                        setValueDebtB(debtY);
+                        setValueDolarDebtA(trim(debtDolarX, 2))
+                        setValueDolarDebtB(trim(debtDolarY, 2))
+
+                        setValueTotalDebt(trim(debtDolarX + debtDolarY, 2))
+
+                        setValueBorrowPairX(trim(+debtX, 5))
+                        setValueBorrowPairY(trim(+debtY, 5))
+                        setValueBorrowDolarPairX(trim(+debtDolarX, 2))
+                        setValueBorrowDolarPairY(trim(+debtDolarY, 2))
+
+                        setValuePositionPairX(getValuePositionX(e.target.value, valuePairY, valueEZM, tokenPrice3[strCoinPair[0]], tokenPrice3[strCoinPair[1]], tokenPrice3['ezm'], valueLeverage))
+                        setValuePositionPairY(getValuePositionY(e.target.value, valuePairY, valueEZM, tokenPrice3[strCoinPair[0]], tokenPrice3[strCoinPair[1]], tokenPrice3['ezm'], valueLeverage))
+
+                        const posDolarX = getValuePositionDolarX(e.target.value, valuePairY, valueEZM, tokenPrice3[strCoinPair[0]], tokenPrice3[strCoinPair[1]], tokenPrice3['ezm'], valueLeverage)
+                        const posDolarY = getValuePositionDolarY(e.target.value, valuePairY, valueEZM, tokenPrice3[strCoinPair[0]], tokenPrice3[strCoinPair[1]], tokenPrice3['ezm'], valueLeverage)
                         setValuePositionDolarPairX(posDolarX)
                         setValuePositionDolarPairY(posDolarY)
 
@@ -190,16 +205,31 @@ export default function SupplyAssets(props: any) {
                     placeholder="e.g 1.83"
                     onChange={(e: any) => {
                         setValuePairY(e.target.value)
-                        setValueDolarPairY(coins[strCoinPair[1]].price * e.target.value)
-                        setValueBorrowPairY(trim(valuePairY * (valueLeverage - 1), 2))
-                        setValueBorrowDolarPairY(trim(coins[strCoinPair[1]].price * valuePairY * (valueLeverage - 1), 2))
+                        setValueDolarPairY(tokenPrice3[strCoinPair[1]] * e.target.value)
 
-                        setValueTotalSupply(trim(coins[strCoinPair[1]].price * e.target.value + valueDolarPairX + valueDolarEZM, 2))
+                        setValueTotalSupply(trim(tokenPrice3[strCoinPair[1]] * e.target.value + (+valueDolarPairX) + (+valueDolarEZM), 2))
 
-                        setValuePositionPairX(getValuePositionX(valuePairX, e.target.value, valueEZM, coins[strCoinPair[0]].price, coins[strCoinPair[1]].price, coins['ezm'].price, valueLeverage))
-                        setValuePositionPairY(getValuePositionY(valuePairX, e.target.value, valueEZM, coins[strCoinPair[0]].price, coins[strCoinPair[1]].price, coins['ezm'].price, valueLeverage))
-                        const posDolarX = getValuePositionDolarX(valuePairX, e.target.value, valueEZM, coins[strCoinPair[0]].price, coins[strCoinPair[1]].price, coins['ezm'].price, valueLeverage)
-                        const posDolarY = getValuePositionDolarY(valuePairX, e.target.value, valueEZM, coins[strCoinPair[0]].price, coins[strCoinPair[1]].price, coins['ezm'].price, valueLeverage)
+                        const debtX = getDebtX(valuePairX, e.target.value, valueEZM, tokenPrice3[strCoinPair[0]], tokenPrice3[strCoinPair[1]], tokenPrice3['ezm'], valueLeverage);
+                        const debtY = getDebtY(valuePairX, e.target.value, valueEZM, tokenPrice3[strCoinPair[0]], tokenPrice3[strCoinPair[1]], tokenPrice3['ezm'], valueLeverage);
+                        const debtDolarX = tokenPrice3[strCoinPair[0]] * (+debtX);
+                        const debtDolarY = tokenPrice3[strCoinPair[1]] * (+debtY);
+
+                        setValueDebtA(debtX);
+                        setValueDebtB(debtY);
+                        setValueDolarDebtA(trim(debtDolarX, 2))
+                        setValueDolarDebtB(trim(debtDolarY, 2))
+
+                        setValueTotalDebt(trim(debtDolarX + debtDolarY, 2))
+
+                        setValueBorrowPairX(trim(+debtX, 5))
+                        setValueBorrowPairY(trim(+debtY, 5))
+                        setValueBorrowDolarPairX(trim(+debtDolarX, 2))
+                        setValueBorrowDolarPairY(trim(+debtDolarY, 2))
+
+                        setValuePositionPairX(getValuePositionX(valuePairX, e.target.value, valueEZM, tokenPrice3[strCoinPair[0]], tokenPrice3[strCoinPair[1]], tokenPrice3['ezm'], valueLeverage))
+                        setValuePositionPairY(getValuePositionY(valuePairX, e.target.value, valueEZM, tokenPrice3[strCoinPair[0]], tokenPrice3[strCoinPair[1]], tokenPrice3['ezm'], valueLeverage))
+                        const posDolarX = getValuePositionDolarX(valuePairX, e.target.value, valueEZM, tokenPrice3[strCoinPair[0]], tokenPrice3[strCoinPair[1]], tokenPrice3['ezm'], valueLeverage)
+                        const posDolarY = getValuePositionDolarY(valuePairX, e.target.value, valueEZM, tokenPrice3[strCoinPair[0]], tokenPrice3[strCoinPair[1]], tokenPrice3['ezm'], valueLeverage)
                         setValuePositionDolarPairX(posDolarX)
                         setValuePositionDolarPairY(posDolarY)
 
@@ -244,16 +274,31 @@ export default function SupplyAssets(props: any) {
                     placeholder="e.g 1.83"
                     onChange={(e: any) => {
                         setValueEZM(e.target.value)
-                        setValueDolarEZM(coins['ezm'].price * e.target.value)
-                        setValueBorrowEZM(trim(valueEZM * (valueLeverage - 1), 3))
-                        setValueBorrowDolarEZM(trim(coins['ezm'].price * valueEZM * (valueLeverage - 1), 2))
+                        setValueDolarEZM(tokenPrice3['ezm'] * e.target.value)
 
-                        setValueTotalSupply(trim(coins['ezm'].price * e.target.value + valueDolarPairX + valueDolarPairY, 2))
+                        setValueTotalSupply(trim(tokenPrice3['ezm'] * e.target.value + (+valueDolarPairX) + (+valueDolarPairY), 2))
 
-                        setValuePositionPairX(getValuePositionX(valuePairX, valuePairY, e.target.value, coins[strCoinPair[0]].price, coins[strCoinPair[1]].price, coins['ezm'].price, valueLeverage))
-                        setValuePositionPairY(getValuePositionY(valuePairX, valuePairY, e.target.value, coins[strCoinPair[0]].price, coins[strCoinPair[1]].price, coins['ezm'].price, valueLeverage))
-                        const posDolarX = getValuePositionDolarX(valuePairX, valuePairY, e.target.value, coins[strCoinPair[0]].price, coins[strCoinPair[1]].price, coins['ezm'].price, valueLeverage)
-                        const posDolarY = getValuePositionDolarY(valuePairX, valuePairY, e.target.value, coins[strCoinPair[0]].price, coins[strCoinPair[1]].price, coins['ezm'].price, valueLeverage)
+                        const debtX = getDebtX(valuePairX, valuePairY, e.target.value, tokenPrice3[strCoinPair[0]], tokenPrice3[strCoinPair[1]], tokenPrice3['ezm'], valueLeverage);
+                        const debtY = getDebtY(valuePairX, valuePairY, e.target.value, tokenPrice3[strCoinPair[0]], tokenPrice3[strCoinPair[1]], tokenPrice3['ezm'], valueLeverage);
+                        const debtDolarX = tokenPrice3[strCoinPair[0]] * (+debtX);
+                        const debtDolarY = tokenPrice3[strCoinPair[1]] * (+debtY);
+
+                        setValueDebtA(debtX);
+                        setValueDebtB(debtY);
+                        setValueDolarDebtA(trim(debtDolarX, 2))
+                        setValueDolarDebtB(trim(debtDolarY, 2))
+
+                        setValueTotalDebt(trim(debtDolarX + debtDolarY, 2))
+
+                        setValueBorrowPairX(trim(+debtX, 5))
+                        setValueBorrowPairY(trim(+debtY, 5))
+                        setValueBorrowDolarPairX(trim(+debtDolarX, 2))
+                        setValueBorrowDolarPairY(trim(+debtDolarY, 2))
+
+                        setValuePositionPairX(getValuePositionX(valuePairX, valuePairY, e.target.value, tokenPrice3[strCoinPair[0]], tokenPrice3[strCoinPair[1]], tokenPrice3['ezm'], valueLeverage))
+                        setValuePositionPairY(getValuePositionY(valuePairX, valuePairY, e.target.value, tokenPrice3[strCoinPair[0]], tokenPrice3[strCoinPair[1]], tokenPrice3['ezm'], valueLeverage))
+                        const posDolarX = getValuePositionDolarX(valuePairX, valuePairY, e.target.value, tokenPrice3[strCoinPair[0]], tokenPrice3[strCoinPair[1]], tokenPrice3['ezm'], valueLeverage)
+                        const posDolarY = getValuePositionDolarY(valuePairX, valuePairY, e.target.value, tokenPrice3[strCoinPair[0]], tokenPrice3[strCoinPair[1]], tokenPrice3['ezm'], valueLeverage)
                         setValuePositionDolarPairX(posDolarX)
                         setValuePositionDolarPairY(posDolarY)
 

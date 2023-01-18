@@ -15,6 +15,9 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import { SWRConfig } from 'swr';
+import axios from 'axios';
+
 
 import {
     PontemWalletAdapter,
@@ -53,31 +56,44 @@ export default function App() {
         },
     });
 
+    const fetcher = (url) => axios.get(url).then((res) => res.data);
+
+
     return (
-        <Web3ContextProvider>
-            <WalletProvider
-                wallets={wallets}
-                onError={(error: Error) => {
-                    console.log('Handle Error Message', error)
-                }}
-            >
-                <BrowserRouter>
-                    <ThemeProvider theme={theme}>
-                        <ViewBase>
-                            <ToastContainer autoClose={3000} limit={3} />
-                            <Routes>
-                                <Route path="/" element={<Navigate to="/home" replace />} />
-                                <Route path={'/lend'} element={<Lend />} />
-                                <Route path={'/farm'} element={<Farm />} />
-                                <Route path={'/farm/:poolid'} element={<Invest />} />
-                                <Route path={'/home'} element={<Home />} />
-                                <Route path={'/position'} element={<Position />} />
-                                <Route path={'/tvl'} element={<TVL />} />
-                            </Routes>
-                        </ViewBase>
-                    </ThemeProvider>
-                </BrowserRouter>
-            </WalletProvider>
-        </Web3ContextProvider>
+        <SWRConfig
+            value={{
+                refreshInterval: 10000,
+                fetcher,
+            }}
+        >
+            <Web3ContextProvider>
+                <WalletProvider
+                    wallets={wallets}
+                    onError={(error: Error) => {
+                        console.log('Handle Error Message', error)
+                    }}
+                >
+                    <BrowserRouter>
+
+                        <ThemeProvider theme={theme}>
+                            <ViewBase>
+                                <ToastContainer autoClose={3000} limit={3} />
+                                <Routes>
+                                    <Route path="/" element={<Navigate to="/home" replace />} />
+                                    <Route path={'/lend'} element={<Lend />} />
+                                    <Route path={'/farm'} element={<Farm />} />
+                                    <Route path={'/farm/:poolid'} element={<Invest />} />
+                                    <Route path={'/home'} element={<Home />} />
+                                    <Route path={'/position'} element={<Position />} />
+                                    <Route path={'/tvl'} element={<TVL />} />
+                                </Routes>
+                            </ViewBase>
+                        </ThemeProvider>
+
+                    </BrowserRouter>
+                </WalletProvider>
+            </Web3ContextProvider >
+        </SWRConfig>
+
     );
 }

@@ -3,8 +3,9 @@ import { Box, Typography, Stack, Slider, Switch, Input } from '@mui/material';
 import { styled } from '@mui/system';
 import { trim } from "../../../helper/trim";
 import { coins } from '../../../context/constant';
-import { IUserInfo, Web3Context } from '../../../context/Web3Context';
-import { getValuePositionDolarX, getValuePositionDolarY, getValuePositionX, getValuePositionY } from '../../../helper/getValuePosition';
+import { ITokenPrice3, IUserInfo, Web3Context } from '../../../context/Web3Context';
+import { getDebtX, getDebtY, getValuePositionDolarX, getValuePositionDolarY, getValuePositionX, getValuePositionY } from '../../../helper/getValuePosition';
+import { calculateDebtRatio } from '../../../helper/calculate';
 
 
 const StyledSwitch = styled(Switch)(({ theme }) => ({
@@ -83,45 +84,50 @@ export default function SetLeverage(props: any) {
 
     const web3 = useContext(Web3Context)
     const userInfo = web3?.userInfo as IUserInfo
+    const tokenPrice3 = web3?.tokenPrice3 as ITokenPrice3
 
     const handleSliderChange = (event: Event, newValue: number | number[]) => {
         if (typeof newValue === 'number') {
             setValueLeverage(newValue);
 
             console.log('handleSliderChange: ', valuePairX, valuePairY, valueEZM, newValue);
-            setDebt(getDebtRatio(userInfo.tokenBalance[selectValue], amount, newValue));
+            // setDebt(getDebtRatio(userInfo.tokenBalance[selectValue], amount, newValue));
+            setDebt(calculateDebtRatio(valuePairX, valuePairY, newValue));
             setAPR(getEstimatedAPR(newValue));
 
-            setValueBorrowPairX(trim(valuePairX * (newValue - 1), 3))
-            setValueBorrowPairY(trim(valuePairY * (newValue - 1), 3))
-            setValueBorrowEZM(trim(valueEZM * (newValue - 1), 3))
+            // setValueSupplyPairX(trim(valuePairX * newValue, 3))
+            // setValueSupplyPairY(trim(valuePairY * newValue, 3))
+            // setValueSupplyEZM(trim(valueEZM * newValue, 3))
 
-            setValueBorrowDolarPairX(trim(coins[strCoinPair[0]].price * valuePairX * (newValue - 1), 3))
-            setValueBorrowDolarPairY(trim(coins[strCoinPair[1]].price * valuePairY * (newValue - 1), 3))
-            setValueBorrowDolarEZM(trim(coins['ezm'].price * valueEZM * (newValue - 1), 3))
+            // setValueDolarPairX(trim(coins[strCoinPair[0]].price * valuePairX * newValue, 3))
+            // setValueDolarPairY(trim(coins[strCoinPair[1]].price * valuePairY * newValue, 3))
+            // setValueDolarEZM(trim(coins['ezm'].price * valueEZM * newValue, 3))
 
-            setValueSupplyPairX(trim(valuePairX * newValue, 3))
-            setValueSupplyPairY(trim(valuePairY * newValue, 3))
-            setValueSupplyEZM(trim(valueEZM * newValue, 3))
+            // setValueTotalSupply(trim(parseFloat(valueDolarPairX) + parseFloat(valueDolarPairY) + parseFloat(valueDolarEZM), 3))
 
-            setValueDolarPairX(trim(coins[strCoinPair[0]].price * valuePairX * newValue, 3))
-            setValueDolarPairY(trim(coins[strCoinPair[1]].price * valuePairY * newValue, 3))
-            setValueDolarEZM(trim(coins['ezm'].price * valueEZM * newValue, 3))
 
-            setValueTotalSupply(trim(parseFloat(valueDolarPairX) + parseFloat(valueDolarPairY) + parseFloat(valueDolarEZM), 3))
+            const debtX = getDebtX(valuePairX, valuePairY, valueEZM, tokenPrice3[strCoinPair[0]], tokenPrice3[strCoinPair[1]], tokenPrice3['ezm'], newValue);
+            const debtY = getDebtY(valuePairX, valuePairY, valueEZM, tokenPrice3[strCoinPair[0]], tokenPrice3[strCoinPair[1]], tokenPrice3['ezm'], newValue);
+            const debtDolarX = tokenPrice3[strCoinPair[0]] * (+debtX);
+            const debtDolarY = tokenPrice3[strCoinPair[1]] * (+debtY);
 
-            // setValueDebtA();
-            // setValueDebtB();
-            setValueDolarDebtA(trim(coins[strCoinPair[0]].price * valueDebtA, 3))
-            setValueDolarDebtB(trim(coins[strCoinPair[1]].price * valueDebtB, 3))
+            setValueDebtA(debtX);
+            setValueDebtB(debtY);
+            setValueDolarDebtA(trim(debtDolarX, 2))
+            setValueDolarDebtB(trim(debtDolarY, 2))
 
-            setValueTotalDebt(trim(parseFloat(valueDolarDebtA) + parseFloat(valueDolarDebtB), 3))
+            setValueTotalDebt(trim(debtDolarX + debtDolarY, 2))
 
-            setValuePositionPairX(getValuePositionX(valuePairX, valuePairY, valueEZM, coins[strCoinPair[0]].price, coins[strCoinPair[1]].price, coins['ezm'].price, valueLeverage))
-            setValuePositionPairY(getValuePositionY(valuePairX, valuePairY, valueEZM, coins[strCoinPair[0]].price, coins[strCoinPair[1]].price, coins['ezm'].price, valueLeverage))
+            setValueBorrowPairX(trim(+debtX, 5))
+            setValueBorrowPairY(trim(+debtY, 5))
+            setValueBorrowDolarPairX(trim(+debtDolarX, 2))
+            setValueBorrowDolarPairY(trim(+debtDolarY, 2))
 
-            const posDolarX = getValuePositionDolarX(valuePairX, valuePairY, valueEZM, coins[strCoinPair[0]].price, coins[strCoinPair[1]].price, coins['ezm'].price, valueLeverage)
-            const posDolarY = getValuePositionDolarY(valuePairX, valuePairY, valueEZM, coins[strCoinPair[0]].price, coins[strCoinPair[1]].price, coins['ezm'].price, valueLeverage)
+            setValuePositionPairX(getValuePositionX(valuePairX, valuePairY, valueEZM, tokenPrice3[strCoinPair[0]], tokenPrice3[strCoinPair[1]], tokenPrice3['ezm'], valueLeverage))
+            setValuePositionPairY(getValuePositionY(valuePairX, valuePairY, valueEZM, tokenPrice3[strCoinPair[0]], tokenPrice3[strCoinPair[1]], tokenPrice3['ezm'], valueLeverage))
+
+            const posDolarX = getValuePositionDolarX(valuePairX, valuePairY, valueEZM, tokenPrice3[strCoinPair[0]], tokenPrice3[strCoinPair[1]], tokenPrice3['ezm'], valueLeverage)
+            const posDolarY = getValuePositionDolarY(valuePairX, valuePairY, valueEZM, tokenPrice3[strCoinPair[0]], tokenPrice3[strCoinPair[1]], tokenPrice3['ezm'], valueLeverage)
             setValuePositionDolarPairX(posDolarX)
             setValuePositionDolarPairY(posDolarY)
 
@@ -138,7 +144,7 @@ export default function SetLeverage(props: any) {
         return `${value}`;
     }
 
-    const [checked, setChecked] = React.useState(true);
+    const [checked, setChecked] = React.useState(false);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setChecked(event.target.checked);
@@ -171,7 +177,7 @@ export default function SetLeverage(props: any) {
         const collateralFactor = 0.8;
         const cappedDebtRatio = 0.95;
 
-        const maxLeverage = Number(trim(borrowFactor / (borrowFactor - (collateralFactor * cappedDebtRatio)), 2));
+        const maxLeverage = Number(trim(borrowFactor / (borrowFactor - (collateralFactor * cappedDebtRatio)), 2)) + 1;
         marks.push({ value: maxLeverage, label: maxLeverage + 'x' })
         return maxLeverage;
     }

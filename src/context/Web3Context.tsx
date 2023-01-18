@@ -1,8 +1,9 @@
 import React, { ReactNode, useEffect, useState, createContext } from 'react';
 import { AptosClient, CoinClient } from 'aptos';
-import { ezfinance, pancake, TokenPrice, tokens } from './constant'
+import { BACKEND_TOKEN_PRICE, ezfinance, pancake, TokenPrice, tokens } from './constant'
 import { sleep } from '../helper/sleep';
 import { ethers } from 'ethers';
+import useSWR from 'swr';
 
 const client = new AptosClient('https://fullnode.testnet.aptoslabs.com/v1');
 const coinClient = new CoinClient(client);
@@ -22,12 +23,23 @@ export interface ICoinRate {
     USDC: number;
 }
 
+export interface ITokenPrice3 {
+    ezm: number;
+    apt: number;
+    wbtc: number;
+    weth: number;
+    usdt: number;
+    usdc: number;
+    dai: number;
+}
+
 export interface IAptosInterface {
     arcTotalSupply: number;
     poolInfo: any;
     userInfo: IUserInfo;
     coinRate: ICoinRate;
     tokenPrice: Record<string, number>;
+    tokenPrice3: ITokenPrice3;
     address: string | null;
     isConnected: boolean;
     connect: any;
@@ -38,7 +50,9 @@ export interface IAptosInterface {
     getFaucet: any;
     checkBalance: any;
     leverage_yield_farming: any;
-    add_liquidity_pool: any;
+    add_liquidity: any;
+    swap: any;
+    borrow: any;
 }
 
 interface Props {
@@ -48,10 +62,44 @@ interface Props {
 export const Web3Context = createContext<IAptosInterface | null>(null);
 
 export const Web3ContextProvider = ({ children, ...props }: Props) => {
+
+    const { data } = useSWR(BACKEND_TOKEN_PRICE);
+
+    console.log('data:', data);
+    // console.log('data:', data.date);
+
     const [, setLoading] = useState(false);
     const [wallet, setWallet] = useState<string>('');
     const [address, setAddress] = useState<string | null>(null);
     const [isConnected, setIsConnected] = useState<boolean>(false);
+    const [tokenPrice3, setTokenPrice] = useState<ITokenPrice3>({
+        ezm: 10,
+        apt: 8.2,
+        wbtc: 21167.33,
+        weth: 1568.66,
+        usdt: 1,
+        usdc: 1,
+        dai: 1,
+    });
+
+    // get token price
+    const getTokenPrice = async () => {
+        console.log('token price:', data);
+
+        if (data) {
+            Object.keys(data).map((symbol) => {
+                console.log('data item:', symbol);
+
+                tokenPrice3[symbol] = data[symbol]
+            })
+
+            setTokenPrice(tokenPrice3);
+        }
+    };
+
+    useEffect(() => {
+        getTokenPrice();
+    }, [data]);
 
     const [userInfo, setUserInfo] = useState<IUserInfo>({
         tokenBalance: {},
@@ -447,7 +495,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         await getPoolInfo();
     }
 
-    const add_liquidity_pool = async (coinX: string, coinY: string, amountX: number, amountY: number) => {
+    const add_liquidity = async (coinX: string, coinY: string, amountX: number, amountY: number) => {
 
         if (wallet === '' || !isConnected) return;
 
@@ -456,20 +504,112 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         const amountInWeiX = ethers.utils.parseUnits(String(amountX), 8).toNumber()
         const amountInWeiY = ethers.utils.parseUnits(String(amountY), 8).toNumber()
 
-        console.log('add_liquidity_pool', tokenTypeX, tokenTypeY, amountInWeiX, amountInWeiY)
+        console.log('add_liquidity', tokenTypeX, tokenTypeY, amountInWeiX, amountInWeiY)
 
         const petraTransaction = {
             arguments: [amountInWeiX, amountInWeiY, 0, 0],
-            function: ezfinance + '::farming::add_liquidity',
+            function: pancake + '::router::add_liquidity',
             type: 'entry_function_payload',
             type_arguments: [tokenTypeX, tokenTypeY],
         };
 
         const sender = address;
         const payload = {
-            function: ezfinance + '::farming::add_liquidity',
+            function: pancake + '::router::add_liquidity',
             arguments: [amountInWeiX, amountInWeiY, 0, 0],
             type_arguments: [tokenTypeX, tokenTypeY],
+        };
+
+        let transaction;
+        if (wallet === 'petra') {
+            transaction = petraTransaction;
+        } else if (wallet === 'martian') {
+            transaction = await window.martian.generateTransaction(sender, payload);
+        } else if (wallet === 'pontem') {
+            // transaction = await window.pontem.generateTransaction(sender, payload);
+        }
+
+        if (isConnected && wallet === 'petra') {
+            await window.aptos.signAndSubmitTransaction(transaction);
+        } else if (isConnected && wallet === 'martian') {
+            await window.martian.signAndSubmitTransaction(transaction);
+        } else if (isConnected && wallet === 'pontem') {
+            await window.pontem.signAndSubmit(payload);
+        }
+
+        await sleep(2)
+        await getUserInfo();
+        await getPoolInfo();
+    }
+
+    const swap = async (coinX: string, coinY: string, amountX: number, amountY: number) => {
+
+        if (wallet === '' || !isConnected) return;
+
+        const tokenTypeX = tokens[coinX]
+        const tokenTypeY = tokens[coinY]
+        const amountInWeiX = ethers.utils.parseUnits(String(amountX), 8).toNumber()
+        const amountInWeiY = ethers.utils.parseUnits(String(amountY), 8).toNumber()
+
+        console.log('swap', tokenTypeX, tokenTypeY, amountInWeiX, amountInWeiY)
+
+        const petraTransaction = {
+            arguments: [amountInWeiX, 0],
+            function: pancake + '::router::swap_exact_input',
+            type: 'entry_function_payload',
+            type_arguments: [tokenTypeX, tokenTypeY],
+        };
+
+        const sender = address;
+        const payload = {
+            function: pancake + '::router::swap_exact_input',
+            arguments: [amountInWeiX, 0],
+            type_arguments: [tokenTypeX, tokenTypeY],
+        };
+
+        let transaction;
+        if (wallet === 'petra') {
+            transaction = petraTransaction;
+        } else if (wallet === 'martian') {
+            transaction = await window.martian.generateTransaction(sender, payload);
+        } else if (wallet === 'pontem') {
+            // transaction = await window.pontem.generateTransaction(sender, payload);
+        }
+
+        if (isConnected && wallet === 'petra') {
+            await window.aptos.signAndSubmitTransaction(transaction);
+        } else if (isConnected && wallet === 'martian') {
+            await window.martian.signAndSubmitTransaction(transaction);
+        } else if (isConnected && wallet === 'pontem') {
+            await window.pontem.signAndSubmit(payload);
+        }
+
+        await sleep(2)
+        await getUserInfo();
+        await getPoolInfo();
+    }
+
+    const borrow = async (coin: string, amount: number) => {
+
+        if (wallet === '' || !isConnected) return;
+
+        const tokenType = tokens[coin]
+        const amountInWei = ethers.utils.parseUnits(String(amount), 8).toNumber()
+
+        console.log('borrow', tokenType, amountInWei)
+
+        const petraTransaction = {
+            arguments: [amountInWei],
+            function: ezfinance + '::lending::borrow',
+            type: 'entry_function_payload',
+            type_arguments: [tokenType],
+        };
+
+        const sender = address;
+        const payload = {
+            function: ezfinance + '::lending::borrow',
+            arguments: [amountInWei],
+            type_arguments: [tokenType],
         };
 
         let transaction;
@@ -500,6 +640,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         userInfo,
         coinRate,
         tokenPrice: TokenPrice,
+        tokenPrice3,
         address,
         isConnected,
         connect,
@@ -510,7 +651,9 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         getFaucet,
         checkBalance,
         leverage_yield_farming,
-        add_liquidity_pool
+        add_liquidity,
+        swap,
+        borrow,
     };
 
     return <Web3Context.Provider value={contextValue}> {children} </Web3Context.Provider>;

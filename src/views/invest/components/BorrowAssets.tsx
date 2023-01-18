@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 
 import { Box, Typography, Stack, Slider } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 
 import { trim } from '../../../helper/trim';
 import { coins } from '../../../context/constant';
+import { ITokenPrice3, Web3Context } from '../../../context/Web3Context';
 
 
 const useStyles = makeStyles((theme: any) => ({
@@ -33,6 +34,9 @@ export default function BorrowAssets(props: any) {
         setRectCheck(!rectCheck);
     };
 
+    const web3 = useContext(Web3Context)
+    const tokenPrice3 = web3?.tokenPrice3 as ITokenPrice3
+
     return (
         <Box
             sx={{
@@ -57,9 +61,9 @@ export default function BorrowAssets(props: any) {
             />
 
             <Box sx={{ p: 4, border: '1px solid rgba(255,255,255,.3)', borderRadius: '13px', mt: 3 }}>
-                <Typography variant="body1" sx={{ fontSize: '21px' }}>
+                {/* <Typography variant="body1" sx={{ fontSize: '21px' }}>
                     Liquidiation Conditions
-                </Typography>
+                </Typography> */}
                 {/* <Typography variant="h6" sx={{ lineHeight: '40px' }}>
                     Blandit at ornare sagittis in tortor tempus morbi dolor. Consectetur.
                 </Typography>
@@ -69,7 +73,7 @@ export default function BorrowAssets(props: any) {
                 <Typography variant="h6" sx={{ lineHeight: '40px', mb: 3 }}>
                     Morbi molestie ac posuere iaculis commodo lectus nec. Vulputate.
                 </Typography> */}
-                <hr />
+                {/* <hr /> */}
 
                 <Stack
                     direction="row"
@@ -84,17 +88,17 @@ export default function BorrowAssets(props: any) {
 
                     <Stack direction="row" alignItems={'center'} gap={1}>
                         <img src={coins[strCoinPair[0]].logo} alt={coins[strCoinPair[0]].name} style={{ width: '20px', height: '20px', borderRadius: '50%' }} />
-                        <Typography variant="h6">${coins[strCoinPair[0]].price}</Typography>
+                        <Typography variant="h6">${tokenPrice3[strCoinPair[0]]}</Typography>
                     </Stack>
 
                     <Stack direction="row" alignItems={'center'} gap={1}>
                         <img src={coins[strCoinPair[1]].logo} alt={coins[strCoinPair[1]].name} style={{ width: '20px', height: '20px', borderRadius: '50%' }} />
-                        <Typography variant="h6">${coins[strCoinPair[1]].price}</Typography>
+                        <Typography variant="h6">${tokenPrice3[strCoinPair[1]]}</Typography>
                     </Stack>
 
                     <Stack direction="row" alignItems={'center'} gap={1}>
                         <img src={coins['ezm'].logo} alt={coins['ezm'].name} style={{ width: '20px', height: '20px', borderRadius: '50%' }} />
-                        <Typography variant="h6">${coins['ezm'].price}</Typography>
+                        <Typography variant="h6">${tokenPrice3['ezm']}</Typography>
                     </Stack>
                 </Stack>
             </Box>
@@ -138,13 +142,13 @@ export default function BorrowAssets(props: any) {
                         <img src={coins[strCoinPair[1]].logo} alt={coins[strCoinPair[1].symbol]} style={{ width: '30px', height: '30px', borderRadius: '50%' }} />
                         <Stack direction={'column'}>
                             <Typography variant="h5" sx={{ fontSize: '22px', fontWeight: 700 }}>
-                                {valueBorrowPairY} {coins[strCoinPair[1].name]}
+                                {valueBorrowPairY} {coins[strCoinPair[1]].name}
                             </Typography>
                             <Typography variant="h6">~${valueBorrowDolarPairY}</Typography>
                         </Stack>
                     </Stack>
 
-                    <Stack direction={'row'} alignItems="center" gap={2}>
+                    {/* <Stack direction={'row'} alignItems="center" gap={2}>
                         <img src={coins['ezm'].logo} alt='ezm' style={{ width: '30px', height: '30px', borderRadius: '50%' }} />
                         <Stack direction={'column'}>
                             <Typography variant="h5" sx={{ fontSize: '22px', fontWeight: 700 }}>
@@ -152,7 +156,7 @@ export default function BorrowAssets(props: any) {
                             </Typography>
                             <Typography variant="h6">~${valueBorrowDolarEZM}</Typography>
                         </Stack>
-                    </Stack>
+                    </Stack> */}
                 </Stack>
             </Box>
         </Box>

@@ -66,7 +66,7 @@ export default function Invest() {
     const [valueBorrowDolarPairY, setValueBorrowDolarPairY] = useState(0);
     const [valueBorrowDolarEZM, setValueBorrowDolarEZM] = useState(0);
 
-    const [selectValue, setSelectValue] = useState('dai');
+    const [selectValue, setSelectValue] = useState('apt');
 
     const [index, setIndex] = useState(0);
     const [token, setToken] = useState('dai');
@@ -77,8 +77,8 @@ export default function Invest() {
 
     const [valueTotalSupply, setValueTotalSupply] = useState(0);
 
-    const [valueDebtA, setValueDebtA] = useState(0.056432);
-    const [valueDebtB, setValueDebtB] = useState(0.056432);
+    const [valueDebtA, setValueDebtA] = useState(0);
+    const [valueDebtB, setValueDebtB] = useState(0);
     const [valueDolarDebtA, setValueDolarDebtA] = useState(0);
     const [valueDolarDebtB, setValueDolarDebtB] = useState(0);
     const [valueTotalDebt, setValueTotalDebt] = useState(0);
@@ -195,6 +195,17 @@ export default function Invest() {
 
                             valueTotalSupply={valueTotalSupply}
                             setValueTotalSupply={setValueTotalSupply}
+
+                            valueDebtA={valueDebtA}
+                            setValueDebtA={setValueDebtA}
+                            valueDebtB={valueDebtB}
+                            setValueDebtB={setValueDebtB}
+                            valueDolarDebtA={valueDolarDebtA}
+                            setValueDolarDebtA={setValueDolarDebtA}
+                            valueDolarDebtB={valueDolarDebtB}
+                            setValueDolarDebtB={setValueDolarDebtB}
+                            valueTotalDebt={valueTotalDebt}
+                            setValueTotalDebt={setValueTotalDebt}
 
                             valuePositionPairX={valuePositionPairX}
                             setValuePositionPairX={setValuePositionPairX}

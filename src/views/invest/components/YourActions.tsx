@@ -6,6 +6,7 @@ import { IUserInfo, Web3Context } from '../../../context/Web3Context';
 import { trim } from '../../../helper/trim';
 import { coins } from '../../../context/constant';
 
+import useSWR from 'swr';
 
 const useStyles = makeStyles((theme: any) => ({
     devideLine: {
@@ -32,30 +33,37 @@ export default function YourActions(props: any) {
         valuePositionDolarTotal, setValuePositionDolarTotal,
     } = props;
 
+    // const { data } = useSWR('http://localhost:5000/api/prices');
+
+    // console.log("data", data)
+
     const classes = useStyles();
     const web3 = useContext(Web3Context)
 
     const onClickConfirm = async () => {
         console.log('onClickConfirm', coins[strCoinPair[0]].symbol, coins[strCoinPair[1]].symbol, valuePairX, valuePairY, valueEZM, valueLeverage);
 
-        // step 1. transfer apt to ezfinance
-        // step 2. add_liquidity_pool
+        // await web3?.borrow('ezm', 0.001);
+        // await web3?.swap('ezm', 'wbtc', 0.01, 0);
+        // await web3?.swap('ezm', 'apt', 0.01, 0);
+        // await web3?.swap('weth', 'apt', 0.001, 0);
+        // await web3?.swap('ezm', 'weth', 0.001, 0);
 
-        await web3?.add_liquidity_pool('ezm', 'apt', 1, 1);
-        await web3?.add_liquidity_pool('wbtc', 'apt', 0.001, 1);
-        await web3?.add_liquidity_pool('wbtc', 'ezm', 0.001, 1);
-        // await web3?.add_liquidity_pool('weth', 'apt', 0.01, 1);
-        // await web3?.add_liquidity_pool('usdt', 'apt', 1, 1);
-        // await web3?.add_liquidity_pool('usdc', 'apt', 1, 1);
-        // await web3?.add_liquidity_pool('dai', 'apt', 1, 1);
-        // await web3?.add_liquidity_pool('weth', 'ezm', 0.001, 1);
-        // await web3?.add_liquidity_pool('usdt', 'ezm', 1, 1);
-        // await web3?.add_liquidity_pool('usdc', 'ezm', 1, 1);
-        // await web3?.add_liquidity_pool('dai', 'ezm', 1, 1);
+        // await web3?.add_liquidity('ezm', 'apt', 1, 0.1);
+        // await web3?.add_liquidity('wbtc', 'apt', 0.001, 0.1);
+        // await web3?.add_liquidity('wbtc', 'ezm', 0.001, 0.1);
+        // await web3?.add_liquidity('weth', 'apt', 0.01, 0.1);
+        // await web3?.add_liquidity('usdt', 'apt', 1, 0.1);
+        // await web3?.add_liquidity('usdc', 'apt', 1, 0.1);
+        // await web3?.add_liquidity('dai', 'apt', 1, 0.1);
+        // await web3?.add_liquidity('weth', 'ezm', 0.001, 0.1);
+        // await web3?.add_liquidity('usdt', 'ezm', 1, 0.1);
+        // await web3?.add_liquidity('usdc', 'ezm', 1, 0.1);
+        // await web3?.add_liquidity('dai', 'ezm', 1, 0.1);
 
 
-        // await web3?.leverage_yield_farming(coins[strCoinPair[0]].symbol, coins[strCoinPair[1]].symbol,
-        // valuePairX ?? 0, valuePairY ?? 0, valueEZM ?? 0, valueLeverage ?? 1);
+        await web3?.leverage_yield_farming(coins[strCoinPair[0]].symbol, coins[strCoinPair[1]].symbol,
+            valuePairX ?? 0, valuePairY ?? 0, valueEZM ?? 0, valueLeverage ?? 1);
     }
 
     return (
@@ -108,17 +116,17 @@ export default function YourActions(props: any) {
 
                     <Stack direction={'row'} alignItems="center" gap={1}>
                         <img src={coins[strCoinPair[0]].logo} alt={coins[strCoinPair[0]].symbol} width={25} height={25} style={{ borderRadius: '50%' }} />
-                        <Typography variant={'h6'}> {trim(valuePairX * valueLeverage, 3)} {coins[strCoinPair[0]].name}</Typography>
+                        <Typography variant={'h6'}> {trim(valuePairX, 5)} {coins[strCoinPair[0]].name}</Typography>
                     </Stack>
 
                     <Stack direction={'row'} alignItems="center" gap={1}>
                         <img src={coins[strCoinPair[1]].logo} alt={coins[strCoinPair[1]].symbol} width={25} height={25} style={{ borderRadius: '50%' }} />
-                        <Typography variant={'h6'}> {trim(valuePairY * valueLeverage, 3)} {coins[strCoinPair[1]].name}</Typography>
+                        <Typography variant={'h6'}> {trim(valuePairY, 5)} {coins[strCoinPair[1]].name}</Typography>
                     </Stack>
 
                     <Stack direction={'row'} alignItems="center" gap={1}>
                         <img src={coins['ezm'].logo} alt="lp" width={25} height={25} style={{ borderRadius: '50%' }} />
-                        <Typography variant={'h6'}> {trim(valueEZM * valueLeverage, 3)} {coins['ezm'].name}</Typography>
+                        <Typography variant={'h6'}> {trim(valueEZM, 5)} {coins['ezm'].name}</Typography>
                     </Stack>
                 </Box>
 
@@ -148,12 +156,12 @@ export default function YourActions(props: any) {
 
                     <Stack direction={'row'} alignItems="center" gap={1}>
                         <img src={coins[strCoinPair[0]].logo} alt={coins[strCoinPair[0]].symbol} width={25} height={25} style={{ borderRadius: '50%' }} />
-                        <Typography variant={'h6'}>0.056432 {coins[strCoinPair[0]].name}</Typography>
+                        <Typography variant={'h6'}> {valueDebtA} {coins[strCoinPair[0]].name}</Typography>
                     </Stack>
 
                     <Stack direction={'row'} alignItems="center" gap={1}>
                         <img src={coins[strCoinPair[1]].logo} alt={coins[strCoinPair[1]].symbol} width={25} height={25} style={{ borderRadius: '50%' }} />
-                        <Typography variant={'h6'}>0.056432 {coins[strCoinPair[1]].name}</Typography>
+                        <Typography variant={'h6'}>{valueDebtB} {coins[strCoinPair[1]].name}</Typography>
                     </Stack>
                 </Box>
 
