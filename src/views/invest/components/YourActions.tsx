@@ -3,7 +3,7 @@ import { makeStyles } from '@mui/styles';
 import { Box, Typography, Stack, Button } from '@mui/material';
 
 import { trim } from '../../../helper/trim';
-import { coins, farming_addr, protocols, swap_aux, swap_liquid, swap_pancake } from '../../../context/constant';
+import { coins, protocols, } from '../../../context/constant';
 import { Web3Context } from '../../../context/Web3Context';
 
 

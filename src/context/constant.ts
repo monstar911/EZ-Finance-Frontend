@@ -21,24 +21,6 @@ export const swap_pancake = "0xc4911c40cf758ec21c0ebf0e547933ef6bb0f53ad581c08d2
 export const swap_liquid = "0x4649d843c7fe546a580aaebc58db6d242a3ce381545e13a5d0888ac1a35dd4f1";
 //aux-exchange
 export const swap_aux = "0xf97e20653eb6765182275d11adb8ebe62d1456b3d73780e9e59925d7305c595e";
-//farming-pancake
-export const farming_pancake = "0x4693df4f2f343d86716d7027e3003a34d4989b44ae43034f67a5e66862303727"
-//farming-liquid
-export const farming_liquid = "0x571d1efcd203bc1b795398b6e70728fcda50bc1767ed7da846c3b66cec68cc7a"
-//farming-aux
-export const farming_aux = "0x46a475647dbfc6f9d769e031703cbbe7f0c172c278372e5449955f0d6261a473"
-
-export const swap_addr = {
-    pancake: swap_pancake,
-    liquid: swap_liquid,
-    aux: swap_aux,
-}
-
-export const farming_addr = {
-    pancake: farming_pancake,
-    liquid: farming_liquid,
-    aux: farming_aux,
-}
 
 // export const BACKEND_TOKEN_PRICE = "https://82.180.160.21:4000/api/prices";
 // export const BACKEND_VOLUME_DATA = "https://82.180.160.21:4000/api/dexes";

@@ -363,7 +363,13 @@ module ezfinance::farming {
                     }
                 );
 
-                moduleData.position_count_pan = moduleData.position_count_pan + 1;
+                if (dex == 0) {
+                    moduleData.position_count_pan = moduleData.position_count_pan + 1;
+                } else if (dex == 1) {
+                    moduleData.position_count_liq = moduleData.position_count_liq + 1;
+                } else if (dex == 2) {
+                    moduleData.position_count_aux = moduleData.position_count_aux + 1;                    
+                }
             };
         };
     }
