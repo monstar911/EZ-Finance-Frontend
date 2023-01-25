@@ -5,7 +5,8 @@ import { Typography, Box, Grid } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { Common_FillButton } from '../../../components/button';
-import { coins } from '../../../context/constant';
+import { coins, protocols } from '../../../context/constant';
+
 
 const useStyles = makeStyles((theme: any) => ({
     root: {
@@ -63,14 +64,12 @@ const useStyles = makeStyles((theme: any) => ({
 }));
 
 function PoolCard(props: any) {
-    const classes = useStyles();
-    const [dropOpen, setDropOpen] = useState(false);
-    const { param } = props;
     const {
+        dex,
         property,
-        pool_total,
-        from_percent,
+        pool_tvl,
         from_multi,
+        from_percent,
         max_apr,
         trade_fee,
         borrow,
@@ -78,8 +77,12 @@ function PoolCard(props: any) {
         acheive,
         farm_apr,
         trade_volume,
-        tvl,
+        ezm_tvl,
+        pair,
     } = props.poolInfo;
+
+    const classes = useStyles();
+    const [dropOpen, setDropOpen] = useState(false);
 
     const navigate = useNavigate();
 
@@ -105,11 +108,19 @@ function PoolCard(props: any) {
                             }}
                         >
 
-                            <img src={coins[property].logo} />
-                            <img src={coins['apt'].logo} style={{ marginLeft: '-8px' }} />
-                            <Typography sx={{ wordBreak: 'keep-all', marginLeft: '16px' }}>
-                                {coins[property].name}-APT
-                            </Typography>
+                            <img src={property.x.logo} alt={property.x.name} />
+                            <img src={property.y.logo} alt={property.y.name} style={{ marginLeft: '-8px' }} />
+                            <Box>
+                                <Typography sx={{ wordBreak: 'keep-all', marginLeft: '16px' }}>
+                                    {property.x.name}-{property.y.name}
+                                </Typography>
+                                <Typography
+                                    variant="subtitle1"
+                                    sx={{ opacity: '.5', fontSize: '12px', wordBreak: 'keep-all' }}
+                                >
+                                    {protocols[dex].name}
+                                </Typography>
+                            </Box>
                         </Box>
                     </Box>
 
@@ -119,20 +130,20 @@ function PoolCard(props: any) {
                         </Typography>
 
                         <Typography sx={{ fontSize: '18px' }}>
-                            {(Number(from_percent) + Number(Math.random() * 0.5 + 0.5)).toFixed(2)}%
+                            {(Number(max_apr)).toFixed(2)}%
                         </Typography>
                     </Box>
 
                     <Box className={classes.textContent}>
-                        <Typography sx={{ opacity: '.5', wordBreak: 'keep-all' }}>From {from_multi}x up to</Typography>
+                        <Typography sx={{ opacity: '.5', wordBreak: 'keep-all' }}>From 1.00x up to</Typography>
                         <Typography sx={{ fontSize: '18px' }}>
-                            {(Number(from_multi) + Number(Math.random() * 0.5 + 1)).toFixed(2)}x
+                            {Number(from_multi)}x
                         </Typography>
                     </Box>
 
                     <Box className={classes.textContent}>
                         <Typography sx={{ opacity: '.5', wordBreak: 'keep-all' }}>Pool TVL</Typography>
-                        <Typography sx={{ fontSize: '18px' }}>{pool_total}</Typography>
+                        <Typography sx={{ fontSize: '18px' }}>${pool_tvl}</Typography>
                     </Box>
 
                     <Box
@@ -147,7 +158,7 @@ function PoolCard(props: any) {
                     >
                         <Common_FillButton
                             content={'Farm up to ' + '1.00x'}
-                            onClick={() => navigate(`/farm/${param}`)}
+                            onClick={() => navigate(`/farm/${pair}`)}
                         />
 
                         <Box
@@ -197,7 +208,7 @@ function PoolCard(props: any) {
                             <Grid item xs={12} sm={6} md={4} lg={3}>
                                 <Box sx={{ p: 1.5 }}>
                                     <Typography variant="subtitle1">Acheived From</Typography>
-                                    <Typography variant="h5">{acheive}X</Typography>
+                                    <Typography variant="h5">{acheive}x</Typography>
                                 </Box>
                             </Grid>
                             <Grid item xs={12} sm={6} md={4} lg={3}>
@@ -215,7 +226,7 @@ function PoolCard(props: any) {
                             <Grid item xs={12} sm={6} md={4} lg={3} p={1}>
                                 <Box sx={{ p: 1.5 }}>
                                     <Typography variant="subtitle1">TVL via EZ</Typography>
-                                    <Typography variant="h5">${tvl}</Typography>
+                                    <Typography variant="h5">${ezm_tvl}</Typography>
                                 </Box>
                             </Grid>
                         </Grid>

@@ -5,7 +5,6 @@ import {
     styled,
     experimental_sx as sx,
 } from '@mui/system';
-// import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { IUserInfo, Web3Context } from '../../../context/Web3Context';
 import { trim } from '../../../helper/trim';
@@ -19,7 +18,6 @@ const useStyles = makeStyles((theme) => ({
         },
         '& .MuiTypography-root': {
             //color: '#333'
-
         },
         '& .valueText': {
             color: '#FFFFFF'
@@ -33,7 +31,6 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: 'transparent',
         zIndex: 20,
     }
-
 })) as any;
 
 const CustomBox = styled('div')(
@@ -105,12 +102,9 @@ function OverView() {
             <Box
                 sx={{
                     display: 'flex',
-                    // bgcolor: '#342D55',
                     color: '#FFFFFF80',
                     padding: '20px',
-                    // borderRadius: '20px',
                     background: '#16162d', borderRadius: '24px',
-
                     boxShadow: '0px 1px 4px #ccc',
                     flexDirection: 'column',
                 }}
@@ -139,7 +133,7 @@ function OverView() {
                     </Box>
                     <Box>
                         <Typography sx={{ mb: 2, color: '#FFFFFF80' }}>Net APY</Typography>
-                        <Typography sx={{ fontSize: '28px' }} className='valueText'>2.5 %</Typography>
+                        <Typography sx={{ fontSize: '28px' }} className='valueText'>7 %</Typography>
                     </Box>
                 </Box>
             </Box>

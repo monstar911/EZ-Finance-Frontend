@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/system';
+import { Web3Context } from '../../../context/Web3Context';
+import { coins } from '../../../context/constant';
+import { trim } from '../../../helper/trim';
 
 const Back = styled(Box)({
     position: 'absolute',
@@ -8,7 +11,6 @@ const Back = styled(Box)({
     left: '0',
     width: '100%',
     height: '100%',
-    // background: 'linear-gradient(104.45deg, #6452DE 0%, #F76CC5 73.89%, #FF6F6F 112.74%)',
     background: 'linear-gradient(90deg,#6e42ca,#8d29c1)',
     zIndex: '-1',
     borderRadius: '10px',
@@ -17,14 +19,25 @@ const Back = styled(Box)({
 export default function ProtocolModal(props: any) {
     const { title } = props;
 
+    const web3 = useContext(Web3Context)
+    const pairTVLInfo = web3?.pairTVLInfo
+
+    var allPoolsTVL = 0;
+    for (var key in coins) {
+        if (key === 'ezm' || key === 'apt') continue;
+        allPoolsTVL = allPoolsTVL + pairTVLInfo[key];
+    }
+    // console.log('allPoolsTVL', allPoolsTVL);
+
+    const all_PoolsTVL = (title === 'PancakeSwap') ? allPoolsTVL : 0
+
+
     return (
         <Box
             sx={{
                 flex: '1',
-                // background: '#342D55',
                 position: 'relative',
                 padding: '30px 50px',
-                // borderRadius: '13px',
                 background: '#16162d', borderRadius: '24px',
                 boxShadow: '0px 1px 4px #ccc',
 
@@ -38,7 +51,7 @@ export default function ProtocolModal(props: any) {
         >
             <Typography variant="subtitle1">{title}</Typography>
             <Typography variant="h5" sx={{ marginBottom: '20px' }}>
-                $0
+                ${trim(all_PoolsTVL, 2)}
             </Typography>
             {/* <Back /> */}
         </Box>

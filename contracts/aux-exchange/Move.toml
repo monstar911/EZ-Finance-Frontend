@@ -1,0 +1,14 @@
+[package]
+name = "AUX-Exchange"
+version = "0.0.1"
+
+[dependencies]
+AptosFramework = {git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-framework/", rev = "72421d32d77f1877ded478e96f5b95914de1df91"}
+AptosStdlib = {git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-stdlib/", rev = "72421d32d77f1877ded478e96f5b95914de1df91"}
+
+[addresses]
+auxexchange = "f97e20653eb6765182275d11adb8ebe62d1456b3d73780e9e59925d7305c595e"
+dev_aux = "f7e38cc1dd40b39546571a7e7b27628caf1e6f68c8bd1ece765ccbab169eb3a6"
+zero_aux = "0000000000000000000000000000000000000000000000000000000000000000"
+default_admin_aux = "a2c656b06aeff1406fd5ff837fa5b07825437a5f1ce6d75cad3f4e5c39ea955b"
+test_coin_aux = "0x16"

@@ -1,12 +1,11 @@
-import React, { useContext, useState } from 'react';
-import { Box, Typography, Stack, Button } from '@mui/material';
+import React, { useContext } from 'react';
 import { makeStyles } from '@mui/styles';
+import { Box, Typography, Stack, Button } from '@mui/material';
 
-import { IUserInfo, Web3Context } from '../../../context/Web3Context';
 import { trim } from '../../../helper/trim';
-import { coins } from '../../../context/constant';
+import { coins, farming_addr, protocols, swap_aux, swap_liquid, swap_pancake } from '../../../context/constant';
+import { Web3Context } from '../../../context/Web3Context';
 
-import useSWR from 'swr';
 
 const useStyles = makeStyles((theme: any) => ({
     devideLine: {
@@ -20,28 +19,21 @@ const useStyles = makeStyles((theme: any) => ({
 export default function YourActions(props: any) {
     const {
         strCoinPair,
-        valuePairX, setValuePairX, valuePairY, setValuePairY, valueEZM, setValueEZM,
-        valueDolarPairX, setValueDolarPairX, valueDolarPairY, setValueDolarPairY, valueDolarEZM, setValueDolarEZM,
-        index, setIndex, token, amount, valueLeverage, setValueLeverage, debt, setDebt,
-        estimatiedAPR, setAPR,
-        valueSupplyEZM, setValueSupplyEZM, valueSupplyAPT, setValueSupplyAPT, valueSupplyLP, setValueSupplyLP,
-        valueTotalSupply, setValueTotalSupply,
-        valueDebtA, setValueDebtA, valueDebtB, setValueDebtB, valueDolarDebtA, setValueDolarDebtA,
-        valueDolarDebtB, setValueDolarDebtB, valueTotalDebt, setValueTotalDebt,
-        valuePositionPairX, setValuePositionPairX, valuePositionPairY, setValuePositionPairY,
-        valuePositionDolarPairX, setValuePositionDolarPairX, valuePositionDolarPairY, setValuePositionDolarPairY,
-        valuePositionDolarTotal, setValuePositionDolarTotal,
+        valuePairX, valuePairY, valueEZM,
+        valueDolarPairX, valueDolarPairY, valueDolarEZM,
+        valueLeverage, estimatiedAPR, valueTotalSupply,
+        valueDebtA, valueDebtB,
+        valueDolarDebtA, valueDolarDebtB, valueTotalDebt,
+        valuePositionPairX, valuePositionPairY,
+        valuePositionDolarPairX, valuePositionDolarPairY,
+        valuePositionDolarTotal,
     } = props;
-
-    // const { data } = useSWR('http://localhost:5000/api/prices');
-
-    // console.log("data", data)
 
     const classes = useStyles();
     const web3 = useContext(Web3Context)
 
     const onClickConfirm = async () => {
-        console.log('onClickConfirm', coins[strCoinPair[0]].symbol, coins[strCoinPair[1]].symbol, valuePairX, valuePairY, valueEZM, valueLeverage);
+        console.log('onClickConfirm', protocols[strCoinPair[2]].name, coins[strCoinPair[0]].symbol, coins[strCoinPair[1]].symbol, valuePairX, valuePairY, valueEZM, valueLeverage);
 
         // await web3?.borrow('ezm', 0.001);
         // await web3?.swap('ezm', 'wbtc', 0.01, 0);
@@ -49,21 +41,55 @@ export default function YourActions(props: any) {
         // await web3?.swap('weth', 'apt', 0.001, 0);
         // await web3?.swap('ezm', 'weth', 0.001, 0);
 
-        // await web3?.add_liquidity('ezm', 'apt', 1, 0.1);
-        // await web3?.add_liquidity('wbtc', 'apt', 0.001, 0.1);
-        // await web3?.add_liquidity('wbtc', 'ezm', 0.001, 0.1);
-        // await web3?.add_liquidity('weth', 'apt', 0.01, 0.1);
-        // await web3?.add_liquidity('usdt', 'apt', 1, 0.1);
-        // await web3?.add_liquidity('usdc', 'apt', 1, 0.1);
-        // await web3?.add_liquidity('dai', 'apt', 1, 0.1);
-        // await web3?.add_liquidity('weth', 'ezm', 0.001, 0.1);
-        // await web3?.add_liquidity('usdt', 'ezm', 1, 0.1);
-        // await web3?.add_liquidity('usdc', 'ezm', 1, 0.1);
-        // await web3?.add_liquidity('dai', 'ezm', 1, 0.1);
+        // Pools
+        // PancakeSwap: 1. APT/USDC, 2. WETH/USDC, 3. Cake/APT, 4. BNB/USDC, 5. USDC/USDT
+        // LiquidSwap: 1. APT/USDC, 2. Weth/USDC, 3. Weth/apt, 4. Wbtc/apt
+        // AUX: 1. APT/USDC, 2. Sol/USDC, 3. Weth/USDC, 4. Wbtc/USDC, 5. USDC/USDT
+
+        // await web3?.add_liquidity(swap_pancake, 'apt', 'usdc', 0.1, 5);
+        // await web3?.add_liquidity(swap_pancake, 'weth', 'usdc', 0.1, 5);
+        // // await web3?.add_liquidity(swap_pancake, 'cake', 'apt', 0.1, 0.1);
+        // await web3?.add_liquidity(swap_pancake, 'bnb', 'usdc', 5, 5);
+        // await web3?.add_liquidity(swap_pancake, 'usdc', 'usdt', 5, 5);
+        // await web3?.add_liquidity(swap_pancake, 'ezm', 'apt', 5, 0.1);
+        // await web3?.add_liquidity(swap_pancake, 'ezm', 'usdc', 5, 5);
+        // // await web3?.add_liquidity(swap_pancake, 'ezm', 'cake', 5, 5);
+        // await web3?.add_liquidity(swap_pancake, 'ezm', 'usdt', 5, 5);
+        // await web3?.add_liquidity(swap_pancake, 'ezm', 'bnb', 5, 5);
+        // await web3?.add_liquidity(swap_pancake, 'ezm', 'weth', 5, 0.1);
+
+        // await web3?.add_liquidity(swap_liquid, 'apt', 'usdc', 0.1, 5);
+        // await web3?.add_liquidity(swap_liquid, 'weth', 'usdc', 0.1, 5);
+        // await web3?.add_liquidity(swap_liquid, 'weth', 'apt', 0.1, 0.1);
+        // await web3?.add_liquidity(swap_liquid, 'wbtc', 'apt', 0.01, 0.1);
+        // await web3?.add_liquidity(swap_liquid, 'ezm', 'apt', 5, 0.1);
+        // await web3?.add_liquidity(swap_liquid, 'ezm', 'weth', 5, 0.1);
+        // await web3?.add_liquidity(swap_liquid, 'ezm', 'wbtc', 5, 0.01);
+        // await web3?.add_liquidity(swap_liquid, 'ezm', 'usdc', 5, 5);
+
+        // await web3?.add_liquidity(swap_aux, 'apt', 'usdc', 0.1, 5);
+        // await web3?.add_liquidity(swap_aux, 'sol', 'usdc', 5, 5);
+        // await web3?.add_liquidity(swap_aux, 'weth', 'usdc', 0.1, 5);
+        // await web3?.add_liquidity(swap_aux, 'wbtc', 'usdc', 0.01, 5);
+        // await web3?.add_liquidity(swap_aux, 'usdt', 'usdc', 5, 5);
+        // await web3?.add_liquidity(swap_aux, 'ezm', 'apt', 5, 0.1);
+        // await web3?.add_liquidity(swap_aux, 'ezm', 'weth', 5, 0.1);
+        // await web3?.add_liquidity(swap_aux, 'ezm', 'wbtc', 5, 0.01);
+        // await web3?.add_liquidity(swap_aux, 'ezm', 'usdc', 5, 5);
+        // await web3?.add_liquidity(swap_aux, 'ezm', 'usdt', 5, 5);
+        // await web3?.add_liquidity(swap_aux, 'ezm', 'sol', 5, 5);
 
 
-        await web3?.leverage_yield_farming(coins[strCoinPair[0]].symbol, coins[strCoinPair[1]].symbol,
-            valuePairX ?? 0, valuePairY ?? 0, valueEZM ?? 0, valueLeverage ?? 1);
+        if (strCoinPair[2] === "pancake") {
+            await web3?.leverage_yield_farming(0, coins[strCoinPair[0]].symbol, coins[strCoinPair[1]].symbol,
+                valuePairX ?? 0, valuePairY ?? 0, valueEZM ?? 0, valueLeverage ?? 1);
+        } else if (strCoinPair[2] === "liquid") {
+            await web3?.leverage_yield_farming(1, coins[strCoinPair[0]].symbol, coins[strCoinPair[1]].symbol,
+                valuePairX ?? 0, valuePairY ?? 0, valueEZM ?? 0, valueLeverage ?? 1);
+        } else if (strCoinPair[2] === "aux") {
+            await web3?.leverage_yield_farming(2, coins[strCoinPair[0]].symbol, coins[strCoinPair[1]].symbol,
+                valuePairX ?? 0, valuePairY ?? 0, valueEZM ?? 0, valueLeverage ?? 1);
+        }
     }
 
     return (

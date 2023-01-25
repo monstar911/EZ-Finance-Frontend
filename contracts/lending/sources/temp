@@ -1,0 +1,10 @@
+aptos account fund-with-faucet --account 7314b0906ec9f1938782ddb2403d0e71719c99b21f8e767f56a7623fb9471fa1 --amount 100000000
+
+
+aptos move run --function-id '0x1::resource_account::create_resource_account_and_fund' --args 'string:any string you want' 'hex:7314b0906ec9f1938782ddb2403d0e71719c99b21f8e767f56a7623fb9471fa1' 'u64:5000000'
+	
+	
+aptos account list --account 7314b0906ec9f1938782ddb2403d0e71719c99b21f8e767f56a7623fb9471fa1
+
+
+9ff56be1fb43f6bdb628f7b3842560300beb9e1f7026ec618ba35b8e5cec39de

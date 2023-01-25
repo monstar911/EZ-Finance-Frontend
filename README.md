@@ -3,6 +3,12 @@
 https://docs.alphaventuredao.io/homora-v2/additional-information/how-to-calculate-estimated-apr-debt-ratio-and-liquidation-price
 
 How to calculate estimated APR, Debt ratio, and Liquidation price
+Leveraged APR = Leveraged liquidity providing trading fee APY + Yield farming APR - Borrowing APY.
+cappedDebtRatio  = 0.95
+tokenMaxLeverage = borrowFactor / (borrowFactor - (collateralFactor * cappedDebtRatio))
+
+totalAPY = ((farmingAPR + tradingFeeAPY) * tokenMaxLeverage) + (totalRewardAPY * (tokenMaxLeverage - 1)) - (tokenBorrowApy * (tokenMaxLeverage - 1))
+
 
 
 https://github.com/ClaudeF4491/defi_leveraged_yield_farming_sim/blob/main/farming_simulator.ipynb
@@ -37,3 +43,4 @@ https://www.bybithelp.com/bybitHC_Article?language=en_US&id=000001850#d
 
 https://learn.bybit.com/investing/apr-vs-apy-crypto/
 Some of the current offers on Bybit Savings
+

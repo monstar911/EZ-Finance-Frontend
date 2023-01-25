@@ -21,12 +21,10 @@ const useStyles = makeStyles((theme) => ({
         top: 0,
         left: 0,
         display: 'flex',
-        // backgroundColor: 'rgba(52, 45, 85, 1)',
         backgroundColor: '#241F3E',
         width: '100%',
         padding: '15px 0',
         zIndex: 100,
-        // borderBottom: "2px solid #eee",
     },
     topBarShift: {
         transition: theme.transitions.create('margin', {
@@ -41,13 +39,11 @@ const useStyles = makeStyles((theme) => ({
     selectbutton: {
         '& .MuiInputBase-root': {
             textAlign: 'right',
-            //minWidth: '170px',
             color: 'white',
             border: 'none',
             borderRadius: '100px',
             padding: '0 20px',
             justifyContent: 'center',
-            // background: 'linear-gradient(93.57deg, #543DFB 0.71%, #F76CC5 50.59%, #FF4848 97.83%)',
             background: 'linear-gradient(90deg,#6e42ca,#8d29c1)',
         },
         '& .MuiOutlinedInput-input': {

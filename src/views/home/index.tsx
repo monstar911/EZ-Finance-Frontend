@@ -14,11 +14,7 @@ import part2_img from '../../asset/icons/wallet.png';
 import part3_img from '../../asset/icons/Private Key.png';
 import SmartContract from '../../asset/icons/Smart_Contract.png';
 
-import EthIcon from '../../asset/icons/crypto-ethereum.png';
-import USDCIcon from '../../asset/icons/crypto-usdc.png';
-import USDTIcon from '../../asset/icons/crypto-usdt.png';
-import BTCIcon from '../../asset/icons/crypto-btc.png';
-import DaiIcon from '../../asset/icons/crypto-dai.svg';
+import { coins, pairs, protocols } from '../../context/constant';
 
 const useStyles = makeStyles((theme: any) => ({
     root: {
@@ -48,9 +44,6 @@ const useStyles = makeStyles((theme: any) => ({
         },
         justifyContent: 'space-between',
         width: '100%',
-        // backgroundImage: 'linear-gradient(93.57deg, #543DFB 0.71%, #F76CC5 50.59%, #FF4848 97.83%)',
-        // background: 'linear-gradient(90deg,#6e42ca,#8d29c1)',
-        // borderRadius: '10px',
         background: '#16162d', borderRadius: '24px',
         boxShadow: '0px 1px 4px #ccc',
 
@@ -143,8 +136,6 @@ const useStyles = makeStyles((theme: any) => ({
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            // borderRadius: '10px',
-            // backgroundColor: '#342D55',
             background: '#16162d', borderRadius: '24px',
             boxShadow: '0px 1px 4px #ccc',
 
@@ -183,11 +174,9 @@ const useStyles = makeStyles((theme: any) => ({
         },
         '& > div': {
             padding: '20px 10px',
-            // background: '#342D55',
             display: 'flex',
             justifyContent: 'space-around',
             alignItems: 'flex-start',
-            // borderRadius: '15px',
             background: '#16162d', borderRadius: '24px',
             boxShadow: '0px 1px 4px #ccc',
 
@@ -245,9 +234,7 @@ const useStyles = makeStyles((theme: any) => ({
             },
         },
         '& .slide_card': {
-            // background: '#342D55',
             padding: '35px',
-            // borderRadius: '15px',
             background: '#16162d', borderRadius: '24px',
             boxShadow: '0px 1px 4px #ccc',
 
@@ -282,9 +269,6 @@ const useStyles = makeStyles((theme: any) => ({
             marginBottom: '50px',
         },
         '& .card': {
-            // background: 'linear-gradient(104.45deg, #6452DE 0%, #F76CC5 73.89%, #FF6F6F 112.74%)',
-            // background: 'linear-gradient(90deg,#6e42ca,#8d29c1)',
-            // borderRadius: '10px',
             background: '#16162d', borderRadius: '24px',
             boxShadow: '0px 1px 4px #ccc',
 
@@ -313,12 +297,10 @@ const useStyles = makeStyles((theme: any) => ({
     },
     part6: {
         marginTop: '80px',
-        // background: '#342D55',
         width: '100%',
         padding: '20px',
         display: 'flex',
         alignItems: 'center',
-        // borderRadius: '10px',
         background: '#16162d', borderRadius: '24px',
         boxShadow: '0px 1px 4px #ccc',
 
@@ -357,7 +339,6 @@ const useStyles = makeStyles((theme: any) => ({
         left: '0',
         width: '100%',
         height: '100%',
-        // background: 'linear-gradient(104.45deg, #6452DE 0%, #F76CC5 73.89%, #FF6F6F 112.74%)',
         background: 'linear-gradient(90deg,#6e42ca,#8d29c1)',
         zIndex: '-1',
         borderRadius: '10px',
@@ -414,46 +395,23 @@ const slide_settings = {
 function Home() {
     const classes = useStyles();
 
-    const coins = [
-        {
-            name: 'WBTC',
-            img: BTCIcon,
-        },
-        {
-            name: 'WETH',
-            img: EthIcon,
-        },
-        {
-            name: 'DAI',
-            img: DaiIcon,
-        },
-        {
-            name: 'USDC',
-            img: USDCIcon,
-        },
-        {
-            name: 'USDT',
-            img: USDTIcon,
-        },
-        {
-            name: 'ceUSDC',
-            img: USDCIcon,
-        },
-    ];
-
     const poolData = React.useMemo(() => {
         const bump: any = [];
-        for (let i = 0; i < coins.length; i++) {
-            for (let j = i - 1; j >= 0; j--) {
+
+        Object.keys(pairs).forEach((dex) => {
+            for (let pair in pairs[dex]) {
                 const obj = {
-                    aTokenIcon: coins[i].img,
-                    bTokenIcon: coins[j].img,
-                    aname: coins[i].name,
-                    bname: coins[j].name,
+                    dex: dex,
+                    aTokenIcon: pairs[dex][pair].x.logo,
+                    bTokenIcon: pairs[dex][pair].y.logo,
+                    aname: pairs[dex][pair].x.name,
+                    bname: pairs[dex][pair].y.name,
                 };
-                bump.push(obj);
+
+                bump.push(obj)
             }
-        }
+        })
+
         return bump;
     }, []);
 
@@ -520,7 +478,7 @@ function Home() {
                         >
                             <Box>
                                 <Typography variant="h3">Lend</Typography>
-                                <Typography variant="subtitle1">Earn up to 24.65% APR</Typography>
+                                <Typography variant="subtitle1">Earn up to 6% APR</Typography>
                                 <Typography variant="body1">Boost farming yield from top exchanges</Typography>
                             </Box>
                             <Common_FillButton content="Deposit Now"></Common_FillButton>
@@ -574,7 +532,7 @@ function Home() {
                             {poolData.map((item: any, index: any) => (
                                 <Box sx={{ padding: '20px' }} key={index}>
                                     <Box className="slide_card">
-                                        <Typography variant="subtitle1">Liquidswap</Typography>
+                                        <Typography variant="subtitle1">{protocols[item.dex].name}</Typography>
                                         <Stack direction={'row'} alignContent={'center'} gap="20px">
                                             <Stack direction={'row'} alignItems="center" justifyContent={'center'}>
                                                 <img
@@ -617,13 +575,13 @@ function Home() {
                     <Typography variant="h3">Lend with EZ</Typography>
                     <Typography variant="subtitle1">Earn more than HODLing in your wallets</Typography>
                     <Grid container spacing={4}>
-                        {coins.map((item: any, index: any) => (
+                        {Object.keys(coins).map((item: any, index: any) => (
                             <Grid item xs={12} sm={12} md={6} lg={4} key={index}>
                                 <Box className="card">
-                                    <img src={item.img} alt="" />
+                                    <img src={coins[item].logo} alt="" />
                                     <Box mr={2}>
                                         <Typography variant="subtitle1">Lend</Typography>
-                                        <Typography variant="h5">{item.name}</Typography>
+                                        <Typography variant="h5">{coins[item].name}</Typography>
                                     </Box>
                                     <Box>
                                         <Typography variant="subtitle1">APY</Typography>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Box, Typography, Stack } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { makeStyles } from '@mui/styles';
@@ -9,7 +9,9 @@ import SetLeverage from './components/SetLeverage';
 import BorrowAssets from './components/BorrowAssets';
 import YourActions from './components/YourActions';
 
-import { coins } from '../../context/constant';
+import { coins, protocols } from '../../context/constant';
+import { IUserInfo, Web3Context } from '../../context/Web3Context';
+import { trim } from '../../helper/trim';
 
 
 const useStyles = makeStyles((theme: any) => ({
@@ -66,15 +68,6 @@ export default function Invest() {
     const [valueBorrowDolarPairY, setValueBorrowDolarPairY] = useState(0);
     const [valueBorrowDolarEZM, setValueBorrowDolarEZM] = useState(0);
 
-    const [selectValue, setSelectValue] = useState('apt');
-
-    const [index, setIndex] = useState(0);
-    const [token, setToken] = useState('dai');
-
-    const [valueSupplyPairX, setValueSupplyPairX] = useState(0);
-    const [valueSupplyPairY, setValueSupplyPairY] = useState(0);
-    const [valueSupplyEZM, setValueSupplyEZM] = useState(0);
-
     const [valueTotalSupply, setValueTotalSupply] = useState(0);
 
     const [valueDebtA, setValueDebtA] = useState(0);
@@ -98,6 +91,11 @@ export default function Invest() {
         return poolid?.split('-');
     }, [poolid]);
 
+    const web3 = useContext(Web3Context)
+    const ezmTVLInfo = web3?.ezmTVLInfo
+    const userInfo = web3?.userInfo as IUserInfo
+
+
     return (
         <Container>
             <Box className={classes.root}>
@@ -116,7 +114,7 @@ export default function Invest() {
                                 {coins[strCoinPair[0]].name}/{coins[strCoinPair[1]].name}
                             </Typography>
                         </Stack>
-                        <Typography variant="subtitle1">Yield farming on PancakeSwap</Typography>
+                        <Typography variant="subtitle1">Yield farming on {protocols[strCoinPair[2]].name}</Typography>
                     </Stack>
 
                     <Stack
@@ -133,14 +131,14 @@ export default function Invest() {
                     >
                         <Box>
                             <Typography variant="subtitle1">Positions</Typography>
-                            <Typography variant="h5">0</Typography>
+                            <Typography variant="h5">{userInfo.position_count[strCoinPair[0]] ?? 0}</Typography>
                         </Box>
                         <Box>
                             <Typography variant="subtitle1">TVL via EZ</Typography>
-                            <Typography variant="h5">$0</Typography>
+                            <Typography variant="h5">${trim(ezmTVLInfo[strCoinPair[0]] ?? 0, 3)}</Typography>
                         </Box>
                         <Box>
-                            <Typography variant="subtitle1">TVL on PancakeSwap</Typography>
+                            <Typography variant="subtitle1">TVL on {protocols[strCoinPair[2]].name}</Typography>
                             <Typography variant="h5">$0</Typography>
                         </Box>
                     </Stack>
@@ -222,76 +220,32 @@ export default function Invest() {
                             strCoinPair={strCoinPair}
 
                             valuePairX={valuePairX}
-                            setValuePairX={setValuePairX}
                             valuePairY={valuePairY}
-                            setValuePairY={setValuePairY}
                             valueEZM={valueEZM}
-                            setValueEZM={setValueEZM}
 
-                            valueDolarPairX={valueDolarPairX}
-                            setValueDolarPairX={setValueDolarPairX}
-                            valueDolarPairY={valueDolarPairY}
-                            setValueDolarPairY={setValueDolarPairY}
-                            valueDolarEZM={valueDolarEZM}
-                            setValueDolarEZM={setValueDolarEZM}
-
-                            valueBorrowPairX={valueBorrowPairX}
                             setValueBorrowPairX={setValueBorrowPairX}
-                            valueBorrowPairY={valueBorrowPairY}
                             setValueBorrowPairY={setValueBorrowPairY}
-                            valueBorrowEZM={valueBorrowEZM}
-                            setValueBorrowEZM={setValueBorrowEZM}
 
-                            valueBorrowDolarPairX={valueBorrowDolarPairX}
                             setValueBorrowDolarPairX={setValueBorrowDolarPairX}
-                            valueBorrowDolarPairY={valueBorrowDolarPairY}
                             setValueBorrowDolarPairY={setValueBorrowDolarPairY}
-                            valueBorrowDolarEZM={valueBorrowDolarEZM}
-                            setValueBorrowDolarEZM={setValueBorrowDolarEZM}
 
-                            selectValue={selectValue}
-                            setSelectValue={setSelectValue}
                             valueLeverage={valueLeverage}
                             setValueLeverage={setValueLeverage}
-                            token={token}
-                            amount={amount}
-                            setToken={setToken}
-                            setAmount={setAmount}
-                            debt={debt}
                             setDebt={setDebt}
-                            estimatiedAPR={estimatiedAPR}
                             setAPR={setAPR}
 
-                            valueSupplyPairX={valueSupplyPairX}
-                            setValueSupplyPairX={setValueSupplyPairX}
-                            valueSupplyPairY={valueSupplyPairY}
-                            setValueSupplyPairY={setValueSupplyPairY}
-                            valueSupplyEZM={valueSupplyEZM}
-                            setValueSupplyEZM={setValueSupplyEZM}
-
-                            valueTotalSupply={valueTotalSupply}
-                            setValueTotalSupply={setValueTotalSupply}
-
-                            valueDebtA={valueDebtA}
                             setValueDebtA={setValueDebtA}
-                            valueDebtB={valueDebtB}
                             setValueDebtB={setValueDebtB}
-                            valueDolarDebtA={valueDolarDebtA}
                             setValueDolarDebtA={setValueDolarDebtA}
-                            valueDolarDebtB={valueDolarDebtB}
                             setValueDolarDebtB={setValueDolarDebtB}
-                            valueTotalDebt={valueTotalDebt}
+
                             setValueTotalDebt={setValueTotalDebt}
 
-                            valuePositionPairX={valuePositionPairX}
                             setValuePositionPairX={setValuePositionPairX}
-                            valuePositionPairY={valuePositionPairY}
                             setValuePositionPairY={setValuePositionPairY}
-                            valuePositionDolarPairX={valuePositionDolarPairX}
                             setValuePositionDolarPairX={setValuePositionDolarPairX}
-                            valuePositionDolarPairY={valuePositionDolarPairY}
                             setValuePositionDolarPairY={setValuePositionDolarPairY}
-                            valuePositionDolarTotal={valuePositionDolarTotal}
+
                             setValuePositionDolarTotal={setValuePositionDolarTotal}
                         />
                         <BorrowAssets
@@ -323,61 +277,28 @@ export default function Invest() {
                             strCoinPair={strCoinPair}
 
                             valuePairX={valuePairX}
-                            setValuePairX={setValuePairX}
                             valuePairY={valuePairY}
-                            setValuePairY={setValuePairY}
                             valueEZM={valueEZM}
-                            setValueEZM={setValueEZM}
 
                             valueDolarPairX={valueDolarPairX}
-                            setValueDolarPairX={setValueDolarPairX}
                             valueDolarPairY={valueDolarPairY}
-                            setValueDolarPairY={setValueDolarPairY}
                             valueDolarEZM={valueDolarEZM}
-                            setValueDolarEZM={setValueDolarEZM}
 
-                            index={index}
-                            setIndex={setIndex}
-                            token={token}
-                            amount={amount}
                             valueLeverage={valueLeverage}
-                            setValueLeverage={setValueLeverage}
-                            debt={debt}
-                            setDebt={setDebt}
                             estimatiedAPR={estimatiedAPR}
-                            setAPR={setAPR}
-
-                            valueSupplyPairX={valueSupplyPairX}
-                            setValueSupplyPairX={setValueSupplyPairX}
-                            valueSupplyPairY={valueSupplyPairY}
-                            setValueSupplyPairY={setValueSupplyPairY}
-                            valueSupplyEZM={valueSupplyEZM}
-                            setValueSupplyEZM={setValueSupplyEZM}
-
                             valueTotalSupply={valueTotalSupply}
-                            setValueTotalSupply={setValueTotalSupply}
 
                             valueDebtA={valueDebtA}
-                            setValueDebtA={setValueDebtA}
                             valueDebtB={valueDebtB}
-                            setValueDebtB={setValueDebtB}
                             valueDolarDebtA={valueDolarDebtA}
-                            setValueDolarDebtA={setValueDolarDebtA}
                             valueDolarDebtB={valueDolarDebtB}
-                            setValueDolarDebtB={setValueDolarDebtB}
                             valueTotalDebt={valueTotalDebt}
-                            setValueTotalDebt={setValueTotalDebt}
 
                             valuePositionPairX={valuePositionPairX}
-                            setValuePositionPairX={setValuePositionPairX}
                             valuePositionPairY={valuePositionPairY}
-                            setValuePositionPairY={setValuePositionPairY}
                             valuePositionDolarPairX={valuePositionDolarPairX}
-                            setValuePositionDolarPairX={setValuePositionDolarPairX}
                             valuePositionDolarPairY={valuePositionDolarPairY}
-                            setValuePositionDolarPairY={setValuePositionDolarPairY}
                             valuePositionDolarTotal={valuePositionDolarTotal}
-                            setValuePositionDolarTotal={setValuePositionDolarTotal}
                         />
                     </Box>
                 </Box>

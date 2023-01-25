@@ -13,6 +13,13 @@ AptosStdlib = {git = "https://github.com/aptos-labs/aptos-core.git", subdir = "a
 [dependencies.PancakeSwap]
 local = "../pancake-swap"
 
+[dependencies.LiquidSwap]
+local = "../liquidswap"
+
+[dependencies.AUX-Exchange]
+local = "../aux-exchange"
+
+
 [addresses]
 ezfinance="6ae4bd49f36ff063d28b25215138bd31f0d91a0e12d2f5c1c9cdf331af9fb10d"
 default_account = "4ebe98e80b38a6b4dd7272dd6fc962ffba52d5289caec04376830ec51e75c2d6"

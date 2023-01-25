@@ -9,7 +9,8 @@ module ezfinance::faucet_tokens {
     struct WETH {}
     struct USDT {}
     struct USDC {}
-    struct DAI {}
+    struct SOL {}
+    struct BNB {}
     
     fun init_module(sender: &signer) {
         // let account = account::create_account_for_test(@test_coin);
@@ -59,10 +60,18 @@ module ezfinance::faucet_tokens {
             false,
         );
 
-        managed_coin::initialize<DAI>(
+        managed_coin::initialize<SOL>(
             sender,
-            b"DAI Coin",
-            b"DAI",
+            b"SOL Coin",
+            b"SOL",
+            8,
+            false,
+        );
+
+        managed_coin::initialize<BNB>(
+            sender,
+            b"BNB Coin",
+            b"BNB",
             8,
             false,
         );

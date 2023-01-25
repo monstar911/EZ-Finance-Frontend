@@ -1,0 +1,14 @@
+[package]
+name = "LiquidSwap"
+version = "0.0.1"
+
+[dependencies]
+AptosFramework = {git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-framework/", rev = "72421d32d77f1877ded478e96f5b95914de1df91"}
+AptosStdlib = {git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-stdlib/", rev = "72421d32d77f1877ded478e96f5b95914de1df91"}
+
+[addresses]
+liquid = "4649d843c7fe546a580aaebc58db6d242a3ce381545e13a5d0888ac1a35dd4f1"
+dev_liquid = "cee2f936305bdb39692b5125803f3408ba0a33e5f85dfe0a87fc7fb2ab4d3bd6"
+zero_liquid = "0000000000000000000000000000000000000000000000000000000000000000"
+default_admin_liquid = "a2c656b06aeff1406fd5ff837fa5b07825437a5f1ce6d75cad3f4e5c39ea955b"
+test_coin_liquid = "0x16"

@@ -86,7 +86,7 @@ function Market() {
             asset: 'EZM',
             symbol: 'ezm',
             depositAPY: 1.3,
-            totalDeposited: trim(poolInfo?.apt ?? 0, 3),
+            totalDeposited: trim(poolInfo?.ezm ?? 0, 3),
             depositBalance: trim(userInfo?.deposit['ezm'] ?? 0, 3),
             walletBalance: trim(userInfo?.tokenBalance['ezm'] ?? 0, 3)
         }, {
@@ -114,13 +114,13 @@ function Market() {
             depositBalance: userInfo?.deposit['weth'] ?? 0,
             walletBalance: trim(userInfo?.tokenBalance['weth'] ?? 0, 3)
         }, {
-            icon: coins['dai'].logo,
-            asset: 'DAI',
-            symbol: 'dai',
-            depositAPY: 1.1,
-            totalDeposited: trim(poolInfo?.dai ?? 0, 3),
-            depositBalance: userInfo?.deposit['dai'] ?? 0,
-            walletBalance: trim(userInfo?.tokenBalance['dai'] ?? 0, 3)
+            icon: coins['usdt'].logo,
+            asset: 'USDT',
+            symbol: 'usdt',
+            depositAPY: 1.0,
+            totalDeposited: trim(poolInfo?.usdt ?? 0, 3),
+            depositBalance: userInfo?.deposit['usdt'] ?? 0,
+            walletBalance: trim(userInfo?.tokenBalance['usdt'] ?? 0, 3)
         }, {
             icon: coins['usdc'].logo,
             asset: 'USDC',
@@ -130,13 +130,21 @@ function Market() {
             depositBalance: userInfo?.deposit['usdc'] ?? 0,
             walletBalance: trim(userInfo?.tokenBalance['usdc'] ?? 0, 3)
         }, {
-            icon: coins['usdt'].logo,
-            asset: 'USDT',
-            symbol: 'usdt',
-            depositAPY: 1.0,
-            totalDeposited: trim(poolInfo?.usdt ?? 0, 3),
-            depositBalance: userInfo?.deposit['usdt'] ?? 0,
-            walletBalance: trim(userInfo?.tokenBalance['usdt'] ?? 0, 3)
+            icon: coins['sol'].logo,
+            asset: 'SOL',
+            symbol: 'sol',
+            depositAPY: 1.1,
+            totalDeposited: trim(poolInfo?.sol ?? 0, 3),
+            depositBalance: userInfo?.deposit['sol'] ?? 0,
+            walletBalance: trim(userInfo?.tokenBalance['sol'] ?? 0, 3)
+        }, {
+            icon: coins['bnb'].logo,
+            asset: 'BNB',
+            symbol: 'bnb',
+            depositAPY: 1.1,
+            totalDeposited: trim(poolInfo?.bnb ?? 0, 3),
+            depositBalance: userInfo?.deposit['bnb'] ?? 0,
+            walletBalance: trim(userInfo?.tokenBalance['bnb'] ?? 0, 3)
         }
     ];
 

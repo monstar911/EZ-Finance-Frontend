@@ -196,7 +196,7 @@ export default function SupplyAssets(props: any) {
                 </Box>
 
                 <Typography
-                    variant="subtitle1" sx={{ fontSize: '14px !important', whiteSpace: "nowrap" }} textAlign='right'>Balance: {userInfo?.tokenBalance['apt']?.toFixed(4) ?? 0}
+                    variant="subtitle1" sx={{ fontSize: '14px !important', whiteSpace: "nowrap" }} textAlign='right'>Balance: {userInfo?.tokenBalance[coins[strCoinPair[1]].symbol]?.toFixed(4) ?? 0}
                 </Typography>
 
                 <StyledInput
