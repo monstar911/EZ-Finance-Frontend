@@ -5,11 +5,12 @@ import { makeStyles } from '@mui/styles';
 import Container from '../../components/container';
 import PoolCard from './components/PoolCard';
 import { coins, pairs, protocols } from '../../context/constant';
-import { ITokenPosition, ITokenVolume, IUserInfo, Web3Context } from '../../context/Web3Context';
+import { ITokenPosition, IUserInfo, Web3Context } from '../../context/Web3Context';
 import { trim } from '../../helper/trim';
 import { tokenMaxLeverage } from '../../helper/getMaxLeverage';
 import { getEstimatedAPR, getMaxAPR } from '../../helper/getEstimateAPR';
 import { tradingFee } from '../../helper/tradingFee';
+import { formatValue } from '../../helper/formatValue';
 
 
 const useStyles = makeStyles((theme: any) => ({
@@ -100,43 +101,57 @@ function Farm() {
     const userInfo = web3?.userInfo as IUserInfo
     const tokenPosition = web3?.tokenPosition as ITokenPosition
     const pairTVLInfo = web3?.pairTVLInfo
-    const ezmTVLInfo = web3?.ezmTVLInfo
-    const tokenVolume = web3?.tokenVolume as ITokenVolume
+    const tokenVolume = web3?.tokenVolume
 
-    var allPoolsTVL = 0;
+    console.log('Farm tokenVolume', tokenVolume);
+
     let farmPools: any = [];
 
-    for (var key in coins) {
-        if (key === 'ezm' || key === 'apt') continue;
-        allPoolsTVL = allPoolsTVL + pairTVLInfo[key];
-    }
+    var allPoolsTVL = 0;
+    Object.keys(pairs).forEach((dex) => {
+        for (let pair in pairs[dex]) {
+            let _liquidityInfo = tokenVolume?.[dex]?.[pair]?.['liquidity']
+            const _liquidity = _liquidityInfo ??= 0
+
+            allPoolsTVL = allPoolsTVL + Number(_liquidity);
+        }
+    })
 
     const allPositions = tokenPosition['all_positions'] ?? 0;
 
     // useEffect(() => {
     Object.keys(pairs).forEach((dex) => {
         for (let pair in pairs[dex]) {
+            let _tvlInfo = pairTVLInfo?.[dex]?.[pair]
+            const _tvl = _tvlInfo ??= 0
+
+            let _volumeInfo = tokenVolume?.[dex]?.[pair]?.['vol']
+            const _volume = _volumeInfo ??= 0
+
+            let _liquidityInfo = tokenVolume?.[dex]?.[pair]?.['liquidity']
+            const _liquidity = _liquidityInfo ??= 0
+
             const pool = {
                 dex: dex,
                 property: pairs[dex][pair],
-                pool_tvl: '0',//trim(pairTVLInfo[key] ?? 0, 3),
-                from_multi: '0', //tokenMaxLeverage(key),
-                from_percent: '0', //getEstimatedAPR(key, 1.0),
-                max_apr: '0', //getMaxAPR(key, tokenMaxLeverage(key))[1],
-                trade_fee: '0', //tradingFee(tokenVolume[key]['vol'] ?? 0, tokenVolume[key]['liquidity'] ?? 0),
+                pool_tvl: formatValue(_liquidity, 2),
+                from_multi: tokenMaxLeverage(pairs[dex][pair].x.symbol),
+                from_percent: getEstimatedAPR(pairs[dex][pair].x.symbol, 1.0),
+                max_apr: getMaxAPR(pairs[dex][pair].x.symbol, tokenMaxLeverage(pairs[dex][pair].x.symbol))[1],
+                trade_fee: tradingFee(_volume, _liquidity),
                 borrow: '0.25',
                 position: '0', //userInfo.position_count[key] ?? 0,
                 acheive: '0',
                 farm_apr: '0',
-                trade_volume: '0', //trim(tokenVolume[key]['vol'], 2),
-                ezm_tvl: '0', //trim(ezmTVLInfo[key] ?? 0, 3),
+                trade_volume: formatValue(_volume, 2),
+                ezm_tvl: '0',
                 pair: pairs[dex][pair].x.symbol + '-' + pairs[dex][pair].y.symbol + '-' + dex,
             };
 
             farmPools.push(pool)
         }
     })
-    // }, [pairTVLInfo, ezmTVLInfo])
+    // }, [pairTVLInfo])
 
     return (
         <Container>
@@ -164,7 +179,7 @@ function Farm() {
 
                     <Box sx={{ textAlign: 'right' }}>
                         <Typography variant="subtitle1">Total Value Locked</Typography>
-                        <Typography variant="h5">${trim(allPoolsTVL, 2)}</Typography>
+                        <Typography variant="h5">${formatValue(allPoolsTVL, 2)}</Typography>
                     </Box>
                 </Box>
             </Box>

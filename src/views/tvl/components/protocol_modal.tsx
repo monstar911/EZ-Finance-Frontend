@@ -2,8 +2,8 @@ import React, { useContext } from 'react';
 import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import { Web3Context } from '../../../context/Web3Context';
-import { coins } from '../../../context/constant';
-import { trim } from '../../../helper/trim';
+import { formatValue } from '../../../helper/formatValue';
+import { pairs, protocols } from '../../../context/constant';
 
 const Back = styled(Box)({
     position: 'absolute',
@@ -17,19 +17,20 @@ const Back = styled(Box)({
 });
 
 export default function ProtocolModal(props: any) {
-    const { title } = props;
+    const { dex } = props;
 
     const web3 = useContext(Web3Context)
-    const pairTVLInfo = web3?.pairTVLInfo
+    const tokenVolume = web3?.tokenVolume
 
     var allPoolsTVL = 0;
-    for (var key in coins) {
-        if (key === 'ezm' || key === 'apt') continue;
-        allPoolsTVL = allPoolsTVL + pairTVLInfo[key];
-    }
-    // console.log('allPoolsTVL', allPoolsTVL);
 
-    const all_PoolsTVL = (title === 'PancakeSwap') ? allPoolsTVL : 0
+    for (let pair in pairs[dex]) {
+
+        let _liquidityInfo = tokenVolume?.[dex]?.[pair]?.['liquidity']
+        const _liquidity = _liquidityInfo ??= 0
+
+        allPoolsTVL += Number(_liquidity);
+    }
 
 
     return (
@@ -49,9 +50,9 @@ export default function ProtocolModal(props: any) {
                 },
             }}
         >
-            <Typography variant="subtitle1">{title}</Typography>
+            <Typography variant="subtitle1">{protocols[dex].name}</Typography>
             <Typography variant="h5" sx={{ marginBottom: '20px' }}>
-                ${trim(all_PoolsTVL, 2)}
+                ${formatValue(allPoolsTVL, 2)}
             </Typography>
             {/* <Back /> */}
         </Box>

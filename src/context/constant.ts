@@ -13,14 +13,18 @@ import LiquidIcon from '../asset/icons/logo-swap-liquid.png'
 import PancakeIcon from '../asset/icons/logo-swap-pancake.png'
 import AuxIcon from '../asset/icons/logo-swap-aux.png'
 
-//lending
+//lending, farming
 export const ezfinance = "0x9f9398105e1a0367d9d92b48cf36570e8e323b5a5fa73b94b3e4ddc106960351";
-//pancake-swap
+
 export const swap_pancake = "0xc4911c40cf758ec21c0ebf0e547933ef6bb0f53ad581c08d2ecc7ad11364be1b";
-//liquid-swap
 export const swap_liquid = "0x4649d843c7fe546a580aaebc58db6d242a3ce381545e13a5d0888ac1a35dd4f1";
-//aux-exchange
 export const swap_aux = "0xf97e20653eb6765182275d11adb8ebe62d1456b3d73780e9e59925d7305c595e";
+
+export const swap_addr = {
+    pancake: swap_pancake,
+    liquid: swap_liquid,
+    aux: swap_aux,
+}
 
 // export const BACKEND_TOKEN_PRICE = "https://82.180.160.21:4000/api/prices";
 // export const BACKEND_VOLUME_DATA = "https://82.180.160.21:4000/api/dexes";
@@ -52,6 +56,7 @@ export const coins = {
     weth: { name: 'WETH', symbol: 'weth', logo: EthIcon },
     usdt: { name: 'USDT', symbol: 'usdt', logo: UsdtIcon },
     usdc: { name: 'USDC', symbol: 'usdc', logo: UsdcIcon },
+    // cake: {name:'Cake', symbol:'cake', logo:},
     sol: { name: 'SOL', symbol: 'sol', logo: SolIcon },
     bnb: { name: 'BNB', symbol: 'bnb', logo: BnbIcon },
 }
@@ -116,9 +121,9 @@ export const pairs = {
             x: coins.weth,
             y: coins.usdc
         },
-        'wbtc-apt': {
+        'wbtc-usdc': {
             x: coins.wbtc,
-            y: coins.apt
+            y: coins.usdc
         },
         'usdc-usdt': {
             x: coins.usdc,
@@ -132,13 +137,15 @@ export const TokenPrice = {
     ezm: 10,
     usdc: 1,
     usdt: 1,
-    dai: 1,
+    sol: 23.81,
     weth: 1200,
     wbtc: 17000,
-    apt: 4
+    apt: 4,
+    bnb: 305.24,
 }
 
 //https://docs.alphaventuredao.io/homora-v2/additional-information/collateral-factor-and-borrow-factor/ethereum
+// https://homora-v2.alphaventuredao.io/positions
 export const tokenColBorFactor = {
     apt: { col: 0.61, bor: 1.37 },
     ezm: { col: 0.67, bor: 1.49 },

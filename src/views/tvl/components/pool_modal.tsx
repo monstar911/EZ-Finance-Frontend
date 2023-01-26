@@ -14,7 +14,7 @@ const Back = styled(Box)({
 });
 
 export default function PoolModal(props: any) {
-    const { title, number, imga, namea, imgb, nameb, position } = props;
+    const { title, tvl, imga, namea, imgb, nameb, position } = props;
 
     return (
         <Grid item xs={12} md={6} lg={4} sx={{ p: 2 }}>
@@ -72,7 +72,7 @@ export default function PoolModal(props: any) {
                     >
                         <Box>
                             <Typography variant="subtitle1">TVL</Typography>
-                            <Typography variant="h5">${number}</Typography>
+                            <Typography variant="h5">${tvl}</Typography>
                         </Box>
 
                         <Box>

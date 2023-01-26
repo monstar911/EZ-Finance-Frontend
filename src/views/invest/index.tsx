@@ -12,6 +12,7 @@ import YourActions from './components/YourActions';
 import { coins, protocols } from '../../context/constant';
 import { IUserInfo, Web3Context } from '../../context/Web3Context';
 import { trim } from '../../helper/trim';
+import { formatValue } from '../../helper/formatValue';
 
 
 const useStyles = makeStyles((theme: any) => ({
@@ -92,8 +93,16 @@ export default function Invest() {
     }, [poolid]);
 
     const web3 = useContext(Web3Context)
-    const ezmTVLInfo = web3?.ezmTVLInfo
     const userInfo = web3?.userInfo as IUserInfo
+    const tokenVolume = web3?.tokenVolume
+
+    console.log('Invest', strCoinPair[0], strCoinPair[1], strCoinPair[2])
+
+    const dex = strCoinPair[2]
+    const pair = strCoinPair[0] + '-' + strCoinPair[1]
+
+    let _liquidityInfo = tokenVolume?.[dex]?.[pair]?.['liquidity']
+    const _liquidity = _liquidityInfo ??= 0
 
 
     return (
@@ -135,11 +144,11 @@ export default function Invest() {
                         </Box>
                         <Box>
                             <Typography variant="subtitle1">TVL via EZ</Typography>
-                            <Typography variant="h5">${trim(ezmTVLInfo[strCoinPair[0]] ?? 0, 3)}</Typography>
+                            <Typography variant="h5">$0</Typography>
                         </Box>
                         <Box>
                             <Typography variant="subtitle1">TVL on {protocols[strCoinPair[2]].name}</Typography>
-                            <Typography variant="h5">$0</Typography>
+                            <Typography variant="h5">${formatValue(_liquidity, 2)}</Typography>
                         </Box>
                     </Stack>
                 </Box>

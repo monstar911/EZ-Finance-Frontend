@@ -1,9 +1,10 @@
-import React, { ReactNode, useEffect, useState, createContext } from 'react';
-import { AptosClient, CoinClient } from 'aptos';
-import { BACKEND_TOKEN_PRICE, BACKEND_VOLUME_DATA, ezfinance, swap_pancake, TokenPrice, tokens } from './constant'
-import { sleep } from '../helper/sleep';
-import { ethers } from 'ethers';
-import useSWR from 'swr';
+import React, { ReactNode, useEffect, useState, createContext } from 'react'
+import { AptosClient, CoinClient } from 'aptos'
+import { BACKEND_TOKEN_PRICE, BACKEND_VOLUME_DATA, ezfinance, pairs, swap_addr, swap_pancake, TokenPrice, tokens } from './constant'
+import { sleep } from '../helper/sleep'
+import { ethers } from 'ethers'
+import useSWR from 'swr'
+import _ from 'lodash'
 
 const client = new AptosClient('https://fullnode.testnet.aptoslabs.com/v1');
 const coinClient = new CoinClient(client);
@@ -17,19 +18,6 @@ export interface IUserInfo {
     all_positions: number;
 }
 
-// export interface IPairTVLInfo {
-//     balance_x: number;
-//     balance_y: number;
-// }
-
-export interface ICoinRate {
-    APTOS: number;
-    USDT: number;
-    BTC: number;
-    WETH: number;
-    USDC: number;
-}
-
 export interface ITokenPrice3 {
     ezm: number;
     apt: number;
@@ -37,19 +25,14 @@ export interface ITokenPrice3 {
     weth: number;
     usdt: number;
     usdc: number;
-    dai: number;
-}
-
-export interface ITokenVolume {
-    wbtc: { vol: number, liquidity: number },
-    weth: { vol: number, liquidity: number },
-    usdt: { vol: number, liquidity: number },
-    usdc: { vol: number, liquidity: number },
-    dai: { vol: number, liquidity: number },
+    sol: number;
+    bnb: number;
 }
 
 export interface ITokenPosition {
-    all_positions: number;
+    pancake: number;
+    liquid: number;
+    aux: number;
 }
 
 export interface IAptosInterface {
@@ -57,11 +40,9 @@ export interface IAptosInterface {
     poolInfo: any;
     userInfo: IUserInfo;
     pairTVLInfo: any;
-    ezmTVLInfo: any;
-    coinRate: ICoinRate;
     tokenPrice: Record<string, number>;
     tokenPrice3: ITokenPrice3;
-    tokenVolume: ITokenVolume;
+    tokenVolume: any;
     tokenPosition: ITokenPosition;
     address: string | null;
     isConnected: boolean;
@@ -103,30 +84,28 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         weth: 1568.66,
         usdt: 1,
         usdc: 1,
-        dai: 1,
+        sol: 23.81,
+        bnb: 305.24,
     });
-    const [tokenVolume, setTokenVolume] = useState<ITokenVolume>({
-        wbtc: { vol: 0, liquidity: 0 },
-        weth: { vol: 0, liquidity: 0 },
-        usdt: { vol: 0, liquidity: 0 },
-        usdc: { vol: 0, liquidity: 0 },
-        dai: { vol: 0, liquidity: 0 },
-    })
 
     // get token volume
     const getTokenVolume = async () => {
         console.log('token volume:', dataVolume);
 
-        if (dataVolume) {
-            Object.keys(dataVolume).map((symbol) => {
-                console.log('dataVolume item:', symbol);
+        Object.keys(dataVolume).forEach((dex) => {
+            for (let pair in dataVolume[dex]) {
+                setTokenVolume((tokenVolume) => (_.merge(
+                    tokenVolume, {
+                    [dex]: {
+                        [pair]: {
+                            ['vol']: dataVolume[dex][pair]['vol'],
+                            ['liquidity']: dataVolume[dex][pair]['liquidity']
+                        }
+                    }
+                })))
 
-                tokenVolume[symbol]['vol'] = dataVolume[symbol]['vol']
-                tokenVolume[symbol]['liquidity'] = dataVolume[symbol]['liquidity']
-            })
-
-            setTokenVolume(tokenVolume);
-        }
+            }
+        })
     };
 
     useEffect(() => {
@@ -161,19 +140,13 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         all_positions: 0,
     });
 
-    const [coinRate, setCoinRate] = useState<ICoinRate>({
-        APTOS: 1,
-        USDT: 1,
-        BTC: 1,
-        WETH: 1,
-        USDC: 1,
-    });
-
     const [poolInfo, setPoolInfo] = useState({});
     const [pairTVLInfo, setPairTVLInfo] = useState({});
-    const [ezmTVLInfo, setEZMTVLInfo] = useState({});
+    const [tokenVolume, setTokenVolume] = useState({});
     const [tokenPosition, setTokenPosition] = useState({
-        all_positions: 0,
+        pancake: 0,
+        liquid: 0,
+        aux: 0,
     })
 
     // Type: 0x1144baa18fd0f3cbf2d40d49f8bedcd7afc8eeca4f6c73be5e073db45aa16f55::farming::ModuleData
@@ -190,14 +163,14 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         )
 
         console.log('getTokenPosition tokenPosition', tokenPositionInfo);
-        Object.keys(tokens).map((symbol) => {
-            console.log('getTokenPosition symbol', symbol);
-            if (tokenPositionInfo) {
-                const tokenData = tokenPositionInfo.data as { position_count: number }
-                tokenPosition.all_positions = tokenData.position_count;
-                setTokenPosition(tokenPosition);
-            }
-        })
+
+        if (tokenPositionInfo) {
+            const tokenData = tokenPositionInfo.data as { position_count_pan: number, position_count_liq: number, position_count_aux: number }
+            tokenPosition['pancake'] = tokenData.position_count_pan;
+            tokenPosition['liquid'] = tokenData.position_count_liq;
+            tokenPosition['aux'] = tokenData.position_count_aux;
+            setTokenPosition(tokenPosition);
+        }
     }
 
     useEffect(() => {
@@ -235,6 +208,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         const resOfPool = await client.getAccountResources(ezfinance);
         Object.keys(tokens).map((symbol) => {
             const tokenPoolInfo = resOfPool.find((item) => item.type === `${ezfinance}::lending::Pool<${tokens[symbol]}>`)
+            // console.log('getPoolInfo', tokenPoolInfo)
             if (tokenPoolInfo) {
                 const tokenData = tokenPoolInfo.data as { borrowed_amount: number; deposited_amount: number }
                 setPoolInfo((poolInfo) => ({
@@ -250,90 +224,45 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
     }, []);
 
     // get total value locked information
-    // await web3?.add_liquidity('ezm', 'apt', 1, 0.1);
-    // await web3?.add_liquidity('wbtc', 'apt', 0.001, 0.1);
-    // await web3?.add_liquidity('wbtc', 'ezm', 0.001, 0.1);
-    // await web3?.add_liquidity('weth', 'apt', 0.01, 0.1);
-    // await web3?.add_liquidity('usdt', 'apt', 1, 0.1);
-    // await web3?.add_liquidity('usdc', 'apt', 1, 0.1);
-    // await web3?.add_liquidity('dai', 'apt', 1, 0.1);
-    // await web3?.add_liquidity('weth', 'ezm', 0.001, 0.1);
-    // await web3?.add_liquidity('usdt', 'ezm', 1, 0.1);
-    // await web3?.add_liquidity('usdc', 'ezm', 1, 0.1);
-    // await web3?.add_liquidity('dai', 'ezm', 1, 0.1);
-
     // 0xc4911c40cf758ec21c0ebf0e547933ef6bb0f53ad581c08d2ecc7ad11364be1b::swap::TokenPairMetadata
     // <
     //     0xb0b237b5df754b80d46d27616e63252305e7724dc2bb304a7db4cbc5adb0a97b::faucet_tokens::DAI, 
     //     0xb0b237b5df754b80d46d27616e63252305e7724dc2bb304a7db4cbc5adb0a97b::faucet_tokens::EZM
     // >
-    const getTVLInfo = async () => {
-        const resOfPair = await client.getAccountResources(swap_pancake);
-        Object.keys(tokens).map((symbol) => {
-            console.log('getTVLInfo symbol', symbol);
-            const tokenPairInfo = resOfPair.find((item) => (
-                (item.type === `${swap_pancake}::swap::TokenPairMetadata<${tokens[symbol]}, ${tokens['apt']}>`) ||
-                (item.type === `${swap_pancake}::swap::TokenPairMetadata<${tokens['apt']}, ${tokens[symbol]}>`)
-            )
-            )
+    const getTVLInfoByDex = async (dex: string) => {
+        const resOfPair = await client.getAccountResources(swap_addr[dex]);
 
-            console.log('getTVLInfo tokenPairInfo', tokenPairInfo);
+        for (let pair in pairs[dex]) {
+            const tokenPairInfo = resOfPair.find((item) => (
+                (item.type === `${swap_addr[dex]}::swap::TokenPairMetadata<${tokens[pairs[dex][pair].x.symbol]}, ${tokens[pairs[dex][pair].y.symbol]}>`) ||
+                (item.type === `${swap_addr[dex]}::swap::TokenPairMetadata<${tokens[pairs[dex][pair].y.symbol]}, ${tokens[pairs[dex][pair].x.symbol]}>`)
+            ))
+
+            // console.log('getTVLInfo tokenPairInfo', pair, tokenPairInfo);
             if (tokenPairInfo) {
                 const tokenData = tokenPairInfo.data as { balance_x: { value: number }; balance_y: { value: number } }
-                console.log('getTVLInfo tokenData.balance_x', tokenData.balance_x.value);
-                setPairTVLInfo((pairTVLInfo) => ({
-                    ...pairTVLInfo,
-                    [symbol]: (tokenPrice3['apt'] * tokenData.balance_x.value / Math.pow(10, 8) +
-                        tokenPrice3[symbol] * tokenData.balance_y.value / Math.pow(10, 8))
-                }))
+                // console.log('getTVLInfo tokenData.balance_x', tokenData.balance_x.value);
+                const tvl = (tokenPrice3[pairs[dex][pair].x.symbol] * tokenData.balance_x.value / Math.pow(10, 8) +
+                    tokenPrice3[pairs[dex][pair].y.symbol] * tokenData.balance_y.value / Math.pow(10, 8))
+                setPairTVLInfo((pairTVLInfo) => (_.merge(
+                    pairTVLInfo, {
+                    [dex]: {
+                        [pair]: tvl
+                    }
+                })))
                 console.log('getTVLInfo pairTVLInfo', pairTVLInfo);
             }
+        }
+    }
+
+    const getTVLInfo = () => {
+        Object.keys(pairs).forEach((dex) => {
+            getTVLInfoByDex(dex);
         })
     }
 
     useEffect(() => {
         getTVLInfo();
-    }, []);
-
-    // 0x1::coin::CoinStore<0x7a6d99f2e04a61e62a29cdb2e9029fd7d6ec0e4072678c006e6683ce2f57d000::swap::LPToken
-    // <
-    // 0x7a6d99f2e04a61e62a29cdb2e9029fd7d6ec0e4072678c006e6683ce2f57d000::faucet_tokens::DAI, 
-    // 0x7a6d99f2e04a61e62a29cdb2e9029fd7d6ec0e4072678c006e6683ce2f57d000::faucet_tokens::EZM>
-    // >
-    const getEZMTVLInfo = async () => {
-        console.log('getEZMTVLInfo address:', address);
-
-        if (address) {
-            const resOfPair = await client.getAccountResources(swap_pancake);
-            Object.keys(tokens).map((symbol) => {
-                console.log('getEZMTVLInfo symbol', symbol);
-                const tokenEZMInfo = resOfPair.find((item) => (
-                    // (item.type.includes(`${tokens['ezm']}`))
-                    (item.type === `${swap_pancake}::swap::TokenPairMetadata<${tokens[symbol]}, ${tokens['ezm']}>`) ||
-                    (item.type === `${swap_pancake}::swap::TokenPairMetadata<${tokens['ezm']}, ${tokens[symbol]}>`)
-                )
-                )
-
-                console.log('getEZMTVLInfo tokenEZMInfo', tokenEZMInfo);
-                if (tokenEZMInfo) {
-                    const tokenData = tokenEZMInfo.data as { balance_x: { value: number }; balance_y: { value: number }; creator: string }
-                    // if (tokenData.creator === address)
-                    {
-                        console.log('getEZMTVLInfo tokenData.balance_x', tokenData.balance_x.value);
-                        setEZMTVLInfo((ezmTVLInfo) => ({
-                            ...ezmTVLInfo,
-                            [symbol]: (tokenPrice3['ezm'] * tokenData.balance_x.value / Math.pow(10, 8) +
-                                tokenPrice3[symbol] * tokenData.balance_y.value / Math.pow(10, 8))
-                        }))
-                        console.log('getEZMTVLInfo ezmTVLInfo', ezmTVLInfo);
-                    }
-                }
-            })
-        }
-    }
-
-    useEffect(() => {
-        getEZMTVLInfo();
     }, []);
 
     // get user information
@@ -433,8 +362,6 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
             }
             setWallet(wallet);
             checkIsConnected(wallet);
-
-            getEZMTVLInfo();
         } catch (e) {
             console.log(e);
         }
@@ -847,8 +774,6 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         poolInfo,
         userInfo,
         pairTVLInfo,
-        ezmTVLInfo,
-        coinRate,
         tokenPrice: TokenPrice,
         tokenPrice3,
         tokenVolume,

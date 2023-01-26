@@ -6,7 +6,7 @@ import {
     experimental_sx as sx,
 } from '@mui/system';
 import 'react-circular-progressbar/dist/styles.css';
-import { IUserInfo, Web3Context } from '../../../context/Web3Context';
+import { ITokenPrice3, IUserInfo, Web3Context } from '../../../context/Web3Context';
 import { trim } from '../../../helper/trim';
 import { formatValue } from '../../../helper/formatValue';
 
@@ -65,7 +65,7 @@ function OverView() {
     const web3 = useContext(Web3Context)
     const userInfo = web3?.userInfo as IUserInfo
     const poolInfo = web3?.poolInfo
-    const tokenPrice = web3?.tokenPrice as any
+    const tokenPrice3 = web3?.tokenPrice3 as ITokenPrice3
 
     const [tvl, setTVL] = useState(0)
     const [supBalance, setSupplyBalance] = useState(0)
@@ -74,13 +74,13 @@ function OverView() {
         let _tvl = 0;
         let _sup = 0;
         Object.keys(poolInfo).map((item) => {
-            _tvl += poolInfo[item] * tokenPrice[item]
-            _sup += (userInfo.deposit[item] ?? 0) * tokenPrice[item]
+            _tvl += poolInfo[item] * tokenPrice3[item]
+            _sup += (userInfo.deposit[item] ?? 0) * tokenPrice3[item]
 
         })
         setTVL(_tvl)
         setSupplyBalance(_sup)
-    }, [poolInfo, tokenPrice, userInfo])
+    }, [poolInfo, tokenPrice3, userInfo])
 
     // const borrowLimit = supplyBalance > 0 ? borrowBalance * 100 / (supplyBalance * 0.8) > 100 ? 100 : borrowBalance * 100 / (supplyBalance * 0.8) : 0;
     // const totalRewards = userInfo.totalRewards * 10;

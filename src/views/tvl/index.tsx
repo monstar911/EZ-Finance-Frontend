@@ -7,6 +7,7 @@ import PoolModal from './components/pool_modal';
 import { coins, pairs, protocols } from '../../context/constant';
 import { ITokenPosition, IUserInfo, Web3Context } from '../../context/Web3Context';
 import { trim } from '../../helper/trim';
+import { formatValue } from '../../helper/formatValue';
 
 const useStyles = makeStyles((theme: any) => ({
     root: {
@@ -40,53 +41,55 @@ const useStyles = makeStyles((theme: any) => ({
 export default function TVL() {
     const classes = useStyles();
 
-    const protocolData = ['PancakeSwap', 'LiquidSwap', 'AUX Exchange'];
+    const protocolData = ['pancake', 'liquid', 'aux'];
 
     const web3 = useContext(Web3Context)
     const userInfo = web3?.userInfo as IUserInfo
     const tokenPosition = web3?.tokenPosition as ITokenPosition
-    const allPositions = tokenPosition['all_positions'] ?? 0;
+    const allPositions = Number(tokenPosition['pancake']) + Number(tokenPosition['liquid']) + Number(tokenPosition['aux']);
+    console.log('TVL', tokenPosition['pancake'], tokenPosition['liquid'], tokenPosition['aux'])
+
     const pairTVLInfo = web3?.pairTVLInfo
+    const tokenVolume = web3?.tokenVolume
 
     var allPoolsTVL = 0;
-    for (var key in coins) {
-        if (key === 'ezm' || key === 'apt') continue;
-        allPoolsTVL = allPoolsTVL + pairTVLInfo[key];
-    }
+
+
+    Object.keys(pairs).forEach((dex) => {
+        for (let pair in pairs[dex]) {
+            let _liquidityInfo = tokenVolume?.[dex]?.[pair]?.['liquidity']
+            const _liquidity = _liquidityInfo ??= 0
+
+            allPoolsTVL = allPoolsTVL + Number(_liquidity);
+        }
+    })
+
     // console.log('allPoolsTVL', allPoolsTVL);
     const poolData = React.useMemo(() => {
         const bump: any = [];
 
         Object.keys(pairs).forEach((dex) => {
             for (let pair in pairs[dex]) {
+                let _liquidityInfo = tokenVolume?.[dex]?.[pair]?.['liquidity']
+                const _liquidity = _liquidityInfo ??= 0
+
+                // console.log('TVL', _tvlInfo, _tvl)
                 const obj = {
                     title: protocols[dex].name,
                     aTokenIcon: pairs[dex][pair].x.logo,
                     aname: pairs[dex][pair].x.name,
                     bTokenIcon: pairs[dex][pair].y.logo,
                     bname: pairs[dex][pair].y.name,
-                    number: 0.00,
-                    position: 0,
+                    tvl: formatValue(_liquidity, 2),
+                    position: 0, //tokenPosition[dex],
                 };
-                // for (var key in coins) {
-                //     if (key === 'ezm' || key === 'apt') continue;
 
-                //     protocolData.map((item: string) => {
-                //         const obj = {
-                //             title: item,
-                //             aTokenIcon: coins[key].logo,
-                //             aname: coins[key].name,
-                //             bTokenIcon: coins['apt'].logo,
-                //             bname: coins['apt'].name,
-                //             number: (item === 'PancakeSwap') ? trim(pairTVLInfo[key], 2) : '0.00',
-                //             position: (item === 'PancakeSwap') ? userInfo.position_count[key] : 0,
-                //         };
                 bump.push(obj);
             }
         });
 
         return bump;
-    }, []);
+    }, [pairTVLInfo]);
 
     return (
         <Container>
@@ -121,7 +124,7 @@ export default function TVL() {
                     >
                         <Box sx={{ textAlign: 'right' }}>
                             <Typography variant="subtitle1">Protocol pools TVL</Typography>
-                            <Typography variant="h5">${trim(allPoolsTVL, 2)}</Typography>
+                            <Typography variant="h5">${formatValue(allPoolsTVL, 2)}</Typography>
                         </Box>
                         <Box sx={{ textAlign: 'right' }}>
                             <Typography variant="subtitle1">Protocol positions</Typography>
@@ -135,7 +138,7 @@ export default function TVL() {
 
                 <Box className={'protocol_card'}>
                     {protocolData.map((item: any, index: number) => (
-                        <ProtocolModal title={item} key={index} />
+                        <ProtocolModal dex={item} key={index} />
                     ))}
                 </Box>
 
@@ -171,7 +174,7 @@ export default function TVL() {
                     {poolData.map((item: any, index: number) => (
                         <PoolModal
                             title={item.title}
-                            number={item.number}
+                            tvl={item.tvl}
                             imga={item.aTokenIcon}
                             namea={item.aname}
                             imgb={item.bTokenIcon}
