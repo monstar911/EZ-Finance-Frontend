@@ -112,6 +112,13 @@ module ezfinance::lending {
         let coin8 = coin::withdraw<faucet_tokens::BNB>(sender, deposit_amount);        
         let pool8 = Pool<faucet_tokens::BNB> {borrowed_amount: 0, deposited_amount: deposit_amount, token: coin8};
         move_to(sender, pool8);
+
+        managed_coin::register<faucet_tokens::CAKE>(sender);
+        managed_coin::mint<faucet_tokens::CAKE>(sender,account_addr,amount);
+        faucet_provider::create_faucet<faucet_tokens::CAKE>(sender,amount/2,per_request,period);
+        let coin9 = coin::withdraw<faucet_tokens::CAKE>(sender, deposit_amount);        
+        let pool9 = Pool<faucet_tokens::CAKE> {borrowed_amount: 0, deposited_amount: deposit_amount, token: coin9};
+        move_to(sender, pool9);
     }
 
     public entry fun manage_pool<CoinType> (
@@ -226,6 +233,14 @@ module ezfinance::lending {
             move_to(admin, ticket);  
         };
 
+        if(!exists<Ticket<faucet_tokens::CAKE>>(signer_addr)){
+            let ticket = Ticket<faucet_tokens::CAKE> {
+                borrow_amount: 0,
+                lend_amount: 0,               
+            };
+            move_to(admin, ticket);  
+        };
+
 
         let ticket_data = borrow_global_mut<Ticket<CoinType>>(signer_addr);
         let origin = ticket_data.lend_amount;
@@ -306,6 +321,13 @@ module ezfinance::lending {
             move_to(admin, ticket);  
         };
 
+        if(!exists<Ticket<faucet_tokens::CAKE>>(signer_addr)){
+            let ticket = Ticket<faucet_tokens::CAKE> {
+                borrow_amount: 0,
+                lend_amount: 0,               
+            };
+            move_to(admin, ticket);  
+        };
 
         let ticket_data = borrow_global_mut<Ticket<CoinType>>(signer_addr);
                  

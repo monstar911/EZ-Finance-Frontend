@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Box, Typography, Paper, Grid, IconButton, Stack } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import EastIcon from '@mui/icons-material/East';
@@ -15,6 +15,8 @@ import part3_img from '../../asset/icons/Private Key.png';
 import SmartContract from '../../asset/icons/Smart_Contract.png';
 
 import { coins, pairs, protocols } from '../../context/constant';
+import { ITokenPrice3, Web3Context } from '../../context/Web3Context';
+import { formatValue } from '../../helper/formatValue';
 
 const useStyles = makeStyles((theme: any) => ({
     root: {
@@ -415,6 +417,31 @@ function Home() {
         return bump;
     }, []);
 
+    const web3 = useContext(Web3Context)
+    const tokenVolume = web3?.tokenVolume
+    const tokenPrice3 = web3?.tokenPrice3 as ITokenPrice3
+    const tokenPosition = web3?.tokenPosition
+
+    console.log('Farm tokenVolume', tokenVolume);
+
+    let farmPools: any = [];
+
+    var allPoolsTVL = 0;
+    var allPositions = 0;
+    Object.keys(pairs).forEach((dex) => {
+        for (let pair in pairs[dex]) {
+            let _liquidityInfo = tokenVolume?.[dex]?.[pair]?.['liquidity']
+            const _liquidity = _liquidityInfo ??= 0
+
+            allPoolsTVL = allPoolsTVL + Number(_liquidity);
+
+            let _tokenPositionInfo = tokenPosition?.[dex]?.[pair]?.['length']
+            const _position = _tokenPositionInfo ??= 0
+            allPositions = allPositions + Number(_position)
+        }
+    })
+
+
     return (
         <Container>
             <Box className={classes.root}>
@@ -427,7 +454,7 @@ function Home() {
                         <Box>
                             <Paper>
                                 <Typography variant="subtitle1">Aptos TVL</Typography>
-                                <Typography variant="h2">$0</Typography>
+                                <Typography variant="h2">${formatValue(allPoolsTVL, 2)}</Typography>
                             </Paper>
                             <Paper>
                                 <Typography variant="subtitle1">Sui TVL</Typography>

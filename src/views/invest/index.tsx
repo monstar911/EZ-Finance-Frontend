@@ -9,8 +9,8 @@ import SetLeverage from './components/SetLeverage';
 import BorrowAssets from './components/BorrowAssets';
 import YourActions from './components/YourActions';
 
-import { coins, protocols } from '../../context/constant';
-import { IUserInfo, Web3Context } from '../../context/Web3Context';
+import { coins, pairs, protocols } from '../../context/constant';
+import { ITokenPrice3, IUserInfo, Web3Context } from '../../context/Web3Context';
 import { trim } from '../../helper/trim';
 import { formatValue } from '../../helper/formatValue';
 
@@ -96,6 +96,12 @@ export default function Invest() {
     const userInfo = web3?.userInfo as IUserInfo
     const tokenVolume = web3?.tokenVolume
 
+    const tokenPosition = web3?.tokenPosition
+    const pairTVLInfo = web3?.pairTVLInfo
+    const tokenPrice3 = web3?.tokenPrice3 as ITokenPrice3
+
+    console.log('Farm tokenVolume', tokenVolume);
+
     console.log('Invest', strCoinPair[0], strCoinPair[1], strCoinPair[2])
 
     const dex = strCoinPair[2]
@@ -103,6 +109,30 @@ export default function Invest() {
 
     let _liquidityInfo = tokenVolume?.[dex]?.[pair]?.['liquidity']
     const _liquidity = _liquidityInfo ??= 0
+
+    let farmPools: any = [];
+
+    var allPoolsTVL = 0;
+    var allPositions = 0;
+
+    allPoolsTVL = allPoolsTVL + Number(_liquidity);
+
+    let _tokenPositionInfo = tokenPosition?.[dex]?.[pair]?.['length']
+    const _position = _tokenPositionInfo ??= 0
+    allPositions = allPositions + Number(_position)
+
+
+    let tvl = 0;
+    for (let i = 0; i < _position; i++) {
+        let _tvlInfo_amountAdd_x = tokenPosition?.[dex]?.[pair]?.[i]?.amountAdd_x / Math.pow(10, 8)
+        let _tvlInfo_amountAdd_y = tokenPosition?.[dex]?.[pair]?.[i]?.amountAdd_y / Math.pow(10, 8)
+        const _tvl_x = _tvlInfo_amountAdd_x ??= 0
+        const _tvl_y = _tvlInfo_amountAdd_y ??= 0
+
+        console.log(_tvl_x, _tvl_y, tokenPrice3[strCoinPair[0]], tokenPrice3[strCoinPair[1]], Number(_tvl_x) * Number(tokenPrice3[strCoinPair[0]]), Number(_tvl_y) * Number(tokenPrice3[strCoinPair[1]]))
+        tvl = Number(tvl) + Number(_tvl_x) * Number(tokenPrice3[strCoinPair[0]]) + Number(_tvl_y) * Number(tokenPrice3[strCoinPair[1]]);
+    }
+
 
 
     return (
@@ -140,11 +170,11 @@ export default function Invest() {
                     >
                         <Box>
                             <Typography variant="subtitle1">Positions</Typography>
-                            <Typography variant="h5">{userInfo.position_count[strCoinPair[0]] ?? 0}</Typography>
+                            <Typography variant="h5">{allPositions}</Typography>
                         </Box>
                         <Box>
                             <Typography variant="subtitle1">TVL via EZ</Typography>
-                            <Typography variant="h5">$0</Typography>
+                            <Typography variant="h5">${formatValue(tvl, 2)}</Typography>
                         </Box>
                         <Box>
                             <Typography variant="subtitle1">TVL on {protocols[strCoinPair[2]].name}</Typography>

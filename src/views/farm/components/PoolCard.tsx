@@ -6,6 +6,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { Common_FillButton } from '../../../components/button';
 import { coins, protocols } from '../../../context/constant';
+import { formatValue } from '../../../helper/formatValue';
 
 
 const useStyles = makeStyles((theme: any) => ({
@@ -77,7 +78,7 @@ function PoolCard(props: any) {
         acheive,
         farm_apr,
         trade_volume,
-        ezm_tvl,
+        ez_tvl,
         pair,
     } = props.poolInfo;
 
@@ -226,7 +227,7 @@ function PoolCard(props: any) {
                             <Grid item xs={12} sm={6} md={4} lg={3} p={1}>
                                 <Box sx={{ p: 1.5 }}>
                                     <Typography variant="subtitle1">TVL via EZ</Typography>
-                                    <Typography variant="h5">${ezm_tvl}</Typography>
+                                    <Typography variant="h5">${formatValue(ez_tvl, 2)}</Typography>
                                 </Box>
                             </Grid>
                         </Grid>

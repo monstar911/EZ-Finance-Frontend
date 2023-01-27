@@ -11,6 +11,7 @@ module ezfinance::faucet_tokens {
     struct USDC {}
     struct SOL {}
     struct BNB {}
+    struct CAKE {}
     
     fun init_module(sender: &signer) {
         // let account = account::create_account_for_test(@test_coin);
@@ -72,6 +73,14 @@ module ezfinance::faucet_tokens {
             sender,
             b"BNB Coin",
             b"BNB",
+            8,
+            false,
+        );
+
+          managed_coin::initialize<CAKE>(
+            sender,
+            b"CAKE Coin",
+            b"CAKE",
             8,
             false,
         );

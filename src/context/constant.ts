@@ -14,11 +14,11 @@ import PancakeIcon from '../asset/icons/logo-swap-pancake.png'
 import AuxIcon from '../asset/icons/logo-swap-aux.png'
 
 //lending, farming
-export const ezfinance = "0x9f9398105e1a0367d9d92b48cf36570e8e323b5a5fa73b94b3e4ddc106960351";
+export const ezfinance = "0x82f0cde995340030d5df8637bbb70fea8105c944f5cd4e167bd7317361aab6e2";
 
 export const swap_pancake = "0xc4911c40cf758ec21c0ebf0e547933ef6bb0f53ad581c08d2ecc7ad11364be1b";
-export const swap_liquid = "0x4649d843c7fe546a580aaebc58db6d242a3ce381545e13a5d0888ac1a35dd4f1";
-export const swap_aux = "0xf97e20653eb6765182275d11adb8ebe62d1456b3d73780e9e59925d7305c595e";
+export const swap_liquid = "0xb30dd6a14dd7626ac8a37bc964914f07e3dc38d629637f1087f9f7186f1e0909";
+export const swap_aux = "0x5e40a5bf7ab741784d3a99d96d8e2ddc6706ee06e5f509a3314a74c9e53746f5";
 
 export const swap_addr = {
     pancake: swap_pancake,

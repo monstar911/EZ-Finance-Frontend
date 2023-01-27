@@ -5,7 +5,7 @@ import { makeStyles } from '@mui/styles';
 import Container from '../../components/container';
 import PoolCard from './components/PoolCard';
 import { coins, pairs, protocols } from '../../context/constant';
-import { ITokenPosition, IUserInfo, Web3Context } from '../../context/Web3Context';
+import { ITokenPrice3, IUserInfo, Web3Context } from '../../context/Web3Context';
 import { trim } from '../../helper/trim';
 import { tokenMaxLeverage } from '../../helper/getMaxLeverage';
 import { getEstimatedAPR, getMaxAPR } from '../../helper/getEstimateAPR';
@@ -99,37 +99,55 @@ function Farm() {
 
     const web3 = useContext(Web3Context)
     const userInfo = web3?.userInfo as IUserInfo
-    const tokenPosition = web3?.tokenPosition as ITokenPosition
+    const tokenPosition = web3?.tokenPosition
     const pairTVLInfo = web3?.pairTVLInfo
     const tokenVolume = web3?.tokenVolume
+    const tokenPrice3 = web3?.tokenPrice3 as ITokenPrice3
 
     console.log('Farm tokenVolume', tokenVolume);
 
     let farmPools: any = [];
 
     var allPoolsTVL = 0;
+    var allPositions = 0;
     Object.keys(pairs).forEach((dex) => {
         for (let pair in pairs[dex]) {
             let _liquidityInfo = tokenVolume?.[dex]?.[pair]?.['liquidity']
             const _liquidity = _liquidityInfo ??= 0
 
             allPoolsTVL = allPoolsTVL + Number(_liquidity);
+
+            let _tokenPositionInfo = tokenPosition?.[dex]?.[pair]?.['length']
+            const _position = _tokenPositionInfo ??= 0
+            allPositions = allPositions + Number(_position)
         }
     })
 
-    const allPositions = tokenPosition['all_positions'] ?? 0;
 
     // useEffect(() => {
     Object.keys(pairs).forEach((dex) => {
         for (let pair in pairs[dex]) {
-            let _tvlInfo = pairTVLInfo?.[dex]?.[pair]
-            const _tvl = _tvlInfo ??= 0
-
             let _volumeInfo = tokenVolume?.[dex]?.[pair]?.['vol']
             const _volume = _volumeInfo ??= 0
 
             let _liquidityInfo = tokenVolume?.[dex]?.[pair]?.['liquidity']
             const _liquidity = _liquidityInfo ??= 0
+
+            let _tokenPositionInfo = tokenPosition?.[dex]?.[pair]?.['length']
+            const _position = _tokenPositionInfo ??= 0
+
+            const strCoinPair = pair?.split('-');
+
+            let tvl = 0;
+            for (let i = 0; i < _position; i++) {
+                let _tvlInfo_amountAdd_x = tokenPosition?.[dex]?.[pair]?.[i]?.amountAdd_x / Math.pow(10, 8)
+                let _tvlInfo_amountAdd_y = tokenPosition?.[dex]?.[pair]?.[i]?.amountAdd_y / Math.pow(10, 8)
+                const _tvl_x = _tvlInfo_amountAdd_x ??= 0
+                const _tvl_y = _tvlInfo_amountAdd_y ??= 0
+
+                console.log(_tvl_x, _tvl_y, tokenPrice3[strCoinPair[0]], tokenPrice3[strCoinPair[1]], Number(_tvl_x) * Number(tokenPrice3[strCoinPair[0]]), Number(_tvl_y) * Number(tokenPrice3[strCoinPair[1]]))
+                tvl = Number(tvl) + Number(_tvl_x) * Number(tokenPrice3[strCoinPair[0]]) + Number(_tvl_y) * Number(tokenPrice3[strCoinPair[1]]);
+            }
 
             const pool = {
                 dex: dex,
@@ -140,11 +158,11 @@ function Farm() {
                 max_apr: getMaxAPR(pairs[dex][pair].x.symbol, tokenMaxLeverage(pairs[dex][pair].x.symbol))[1],
                 trade_fee: tradingFee(_volume, _liquidity),
                 borrow: '0.25',
-                position: '0', //userInfo.position_count[key] ?? 0,
+                position: _position,
                 acheive: '0',
                 farm_apr: '0',
                 trade_volume: formatValue(_volume, 2),
-                ezm_tvl: '0',
+                ez_tvl: tvl,
                 pair: pairs[dex][pair].x.symbol + '-' + pairs[dex][pair].y.symbol + '-' + dex,
             };
 

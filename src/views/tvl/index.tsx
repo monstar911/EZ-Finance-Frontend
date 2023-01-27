@@ -5,7 +5,7 @@ import Container from '../../components/container';
 import ProtocolModal from './components/protocol_modal';
 import PoolModal from './components/pool_modal';
 import { coins, pairs, protocols } from '../../context/constant';
-import { ITokenPosition, IUserInfo, Web3Context } from '../../context/Web3Context';
+import { ITokenPrice3, IUserInfo, Web3Context } from '../../context/Web3Context';
 import { trim } from '../../helper/trim';
 import { formatValue } from '../../helper/formatValue';
 
@@ -45,22 +45,27 @@ export default function TVL() {
 
     const web3 = useContext(Web3Context)
     const userInfo = web3?.userInfo as IUserInfo
-    const tokenPosition = web3?.tokenPosition as ITokenPosition
-    const allPositions = Number(tokenPosition['pancake']) + Number(tokenPosition['liquid']) + Number(tokenPosition['aux']);
-    console.log('TVL', tokenPosition['pancake'], tokenPosition['liquid'], tokenPosition['aux'])
-
+    const tokenPosition = web3?.tokenPosition
     const pairTVLInfo = web3?.pairTVLInfo
     const tokenVolume = web3?.tokenVolume
+    const tokenPrice3 = web3?.tokenPrice3 as ITokenPrice3
+
+    console.log('Farm tokenVolume', tokenVolume);
+
+    let farmPools: any = [];
 
     var allPoolsTVL = 0;
-
-
+    var allPositions = 0;
     Object.keys(pairs).forEach((dex) => {
         for (let pair in pairs[dex]) {
             let _liquidityInfo = tokenVolume?.[dex]?.[pair]?.['liquidity']
             const _liquidity = _liquidityInfo ??= 0
 
             allPoolsTVL = allPoolsTVL + Number(_liquidity);
+
+            let _tokenPositionInfo = tokenPosition?.[dex]?.[pair]?.['length']
+            const _position = _tokenPositionInfo ??= 0
+            allPositions = allPositions + Number(_position)
         }
     })
 
@@ -73,6 +78,9 @@ export default function TVL() {
                 let _liquidityInfo = tokenVolume?.[dex]?.[pair]?.['liquidity']
                 const _liquidity = _liquidityInfo ??= 0
 
+                let _tokenPositionInfo = tokenPosition?.[dex]?.[pair]?.['length']
+                const _position = _tokenPositionInfo ??= 0
+
                 // console.log('TVL', _tvlInfo, _tvl)
                 const obj = {
                     title: protocols[dex].name,
@@ -81,7 +89,7 @@ export default function TVL() {
                     bTokenIcon: pairs[dex][pair].y.logo,
                     bname: pairs[dex][pair].y.name,
                     tvl: formatValue(_liquidity, 2),
-                    position: 0, //tokenPosition[dex],
+                    position: _position,
                 };
 
                 bump.push(obj);

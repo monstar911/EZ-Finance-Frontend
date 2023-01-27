@@ -14,8 +14,6 @@ export interface IUserInfo {
     deposit: Record<string, number>;
     claimable: boolean;
     totalRewards: number;
-    position_count: Record<string, number>;
-    all_positions: number;
 }
 
 export interface ITokenPrice3 {
@@ -29,21 +27,16 @@ export interface ITokenPrice3 {
     bnb: number;
 }
 
-export interface ITokenPosition {
-    pancake: number;
-    liquid: number;
-    aux: number;
-}
-
 export interface IAptosInterface {
     arcTotalSupply: number;
     poolInfo: any;
     userInfo: IUserInfo;
     pairTVLInfo: any;
+    positionInfo: any;
     tokenPrice: Record<string, number>;
     tokenPrice3: ITokenPrice3;
     tokenVolume: any;
-    tokenPosition: ITokenPosition;
+    tokenPosition: any;
     address: string | null;
     isConnected: boolean;
     connect: any;
@@ -136,41 +129,145 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         deposit: {},
         claimable: false,
         totalRewards: 0,
-        position_count: {},
-        all_positions: 0,
     });
 
     const [poolInfo, setPoolInfo] = useState({});
     const [pairTVLInfo, setPairTVLInfo] = useState({});
+    const [positionInfo, setPositionInfo] = useState({})
     const [tokenVolume, setTokenVolume] = useState({});
-    const [tokenPosition, setTokenPosition] = useState({
-        pancake: 0,
-        liquid: 0,
-        aux: 0,
-    })
+    const [tokenPosition, setTokenPosition] = useState({})
 
-    // Type: 0x1144baa18fd0f3cbf2d40d49f8bedcd7afc8eeca4f6c73be5e073db45aa16f55::farming::ModuleData
+    // 0x4d63574ba8d90a5926e2866d8291e57683108a47b96d884232a871fe4feddf41::farming::PositionInfoDex
+    // <
+    // 0x1::aptos_coin::AptosCoin, 
+    // 0x4d63574ba8d90a5926e2866d8291e57683108a47b96d884232a871fe4feddf41::faucet_tokens::USDC
+    // >
     // {
-    // ...
-    // position_count:"3"
-    // ...
+    //     positionInfo_aux: []
+    //     positionInfo_liq: []
+    //     positionInfo_pan: [
+    //         0: {
+    //             borrowAmount_x: "1160000"
+    //             borrowAmount_y: "116000000"
+    //             borrowAmount_z: "0"
+    //             created_at: "1674781684"
+    //             dex_name: "PancakeSwap"
+    //             leverage: "216000000"
+    //             signer_addr: "0xb926569bb507dafd750c44c26e9f9ab322da7010273d5c5f321c1c14e4bf2065"
+    //             status: true
+    //             supplyAmount_x: "1000000"
+    //             supplyAmount_y: "100000000"
+    //             supplyAmount_z: "100000000"
+    //         }
+    //     ]
     // }
     const getTokenPosition = async () => {
-        const resOfPair = await client.getAccountResources(ezfinance);
-        const tokenPositionInfo = resOfPair.find((item) => (
-            (item.type === `${ezfinance}::farming::ModuleData`)
-        )
-        )
+        const resOfResource = await client.getAccountResources(ezfinance)
 
-        console.log('getTokenPosition tokenPosition', tokenPositionInfo);
+        console.log('getTokenPosition start')
+        Object.keys(pairs).forEach((dex) => {
+            for (let pair in pairs[dex]) {
+                const tokenPositionInfo = resOfResource.find((item) => (
+                    (item.type === `${ezfinance}::farming::PositionInfoDex<${tokens[pairs[dex][pair].x.symbol]}, ${tokens[pairs[dex][pair].y.symbol]}>`) ||
+                    (item.type === `${ezfinance}::farming::PositionInfoDex<${tokens[pairs[dex][pair].y.symbol]}, ${tokens[pairs[dex][pair].x.symbol]}>`)
+                ))
 
-        if (tokenPositionInfo) {
-            const tokenData = tokenPositionInfo.data as { position_count_pan: number, position_count_liq: number, position_count_aux: number }
-            tokenPosition['pancake'] = tokenData.position_count_pan;
-            tokenPosition['liquid'] = tokenData.position_count_liq;
-            tokenPosition['aux'] = tokenData.position_count_aux;
-            setTokenPosition(tokenPosition);
-        }
+                console.log('getTokenPosition tokenPositionInfo', dex, pair, tokenPositionInfo);
+                if (tokenPositionInfo) {
+                    let tokenPositionInfoData;
+                    if (dex === 'pancake') {
+                        tokenPositionInfoData = tokenPositionInfo.data as { positionInfo_pan: { length: number } }
+                        console.log('getTokenPosition position count', tokenPositionInfoData.positionInfo_pan.length)
+
+                        const tokenPositionInfoItem = tokenPositionInfo.data as {
+                            'positionInfo_pan': {
+                                i: {
+                                    borrowAmount_x: number,
+                                    borrowAmount_y: number,
+                                    borrowAmount_z: number,
+                                    created_at: number,
+                                    dex_name: string,
+                                    leverage: number,
+                                    signer_addr: string,
+                                    status: boolean,
+                                    supplyAmount_x: number,
+                                    supplyAmount_y: number,
+                                    supplyAmount_z: number,
+                                }
+                            }
+                        }
+                        console.log('getTokenPosition tokenPositionInfoItem', tokenPositionInfoItem['positionInfo_pan'])
+
+                        setTokenPosition((tokenPosition) => (_.merge(
+                            tokenPosition, {
+                            ['pancake']: {
+                                [pair]: tokenPositionInfoItem['positionInfo_pan']
+                            }
+                        })))
+                    } else if (dex === 'liquid') {
+                        tokenPositionInfoData = tokenPositionInfo.data as { positionInfo_liq: { length: number } }
+                        console.log('getTokenPosition position count', tokenPositionInfoData.positionInfo_liq.length)
+
+                        const tokenPositionInfoItem = tokenPositionInfo.data as {
+                            positionInfo_liq: {
+                                i: {
+                                    borrowAmount_x: number,
+                                    borrowAmount_y: number,
+                                    borrowAmount_z: number,
+                                    created_at: number,
+                                    dex_name: string,
+                                    leverage: number,
+                                    signer_addr: string,
+                                    status: boolean,
+                                    supplyAmount_x: number,
+                                    supplyAmount_y: number,
+                                    supplyAmount_z: number,
+                                }
+                            }
+                        }
+                        console.log('getTokenPosition tokenPositionInfoItem', tokenPositionInfoItem['positionInfo_liq'])
+
+                        setTokenPosition((tokenPosition) => (_.merge(
+                            tokenPosition, {
+                            ['liquid']: {
+                                [pair]: tokenPositionInfoItem['positionInfo_liq']
+                            }
+                        })))
+                    } else if (dex === 'aux') {
+                        tokenPositionInfoData = tokenPositionInfo.data as { positionInfo_aux: { length: number } }
+                        console.log('getTokenPosition position count', tokenPositionInfoData.positionInfo_aux.length)
+
+                        const tokenPositionInfoItem = tokenPositionInfo.data as {
+                            positionInfo_aux: {
+                                i: {
+                                    borrowAmount_x: number,
+                                    borrowAmount_y: number,
+                                    borrowAmount_z: number,
+                                    created_at: number,
+                                    dex_name: string,
+                                    leverage: number,
+                                    signer_addr: string,
+                                    status: boolean,
+                                    supplyAmount_x: number,
+                                    supplyAmount_y: number,
+                                    supplyAmount_z: number,
+                                }
+                            }
+                        }
+                        console.log('getTokenPosition tokenPositionInfoItem', tokenPositionInfoItem['positionInfo_aux'])
+                        setTokenPosition((tokenPosition) => (_.merge(
+                            tokenPosition, {
+                            ['aux']: {
+                                [pair]: tokenPositionInfoItem['positionInfo_aux']
+                            }
+                        })))
+                    }
+                }
+            }
+        })
+
+        // setTokenPosition(tokenPositionInfoAll)
+        console.log('getTokenPosition tokenPositionInfoAll', tokenPosition);
     }
 
     useEffect(() => {
@@ -307,30 +404,6 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
             } else {
                 // console.log('getUserInfo tokenInfo is null');
             }
-
-            // data
-            // : 
-            // {position_count: '1'}
-            // type
-            // : 
-            // "0x1144baa18fd0f3cbf2d40d49f8bedcd7afc8eeca4f6c73be5e073db45aa16f55::farming::PositionInfo
-            // <
-            // 0x1144baa18fd0f3cbf2d40d49f8bedcd7afc8eeca4f6c73be5e073db45aa16f55::faucet_tokens::USDT, 
-            // 0x1::aptos_coin::AptosCoin
-            // >"
-            const tokenPositionInfo = resOfUser.find((item) => (
-                (item.type === `${ezfinance}::farming::PositionInfo<${tokens[symbol]}, ${tokens['apt']}>`) ||
-                (item.type === `${ezfinance}::farming::PositionInfo<${tokens['apt']}, ${tokens[symbol]}>`)
-            )
-            )
-            if (tokenPositionInfo) {
-                // console.log('tokenPositionInfo', tokenPositionInfo)
-                const _data = tokenPositionInfo.data as { position_count: number }
-                userInfo.position_count[symbol] = _data.position_count
-                setUserInfo(userInfo)
-            } else {
-                // console.log('getUserInfo tokenPositionInfo is null');
-            }
         })
 
         const rewardsInfo = resOfUser.find((item) => item.type === `${ezfinance}::lending::Rewards`)
@@ -341,7 +414,6 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
                 totalRewards: _data.claim_amount / Math.pow(10, 8),
             }))
         }
-
     };
 
     useEffect(() => {
@@ -581,6 +653,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         console.log('leverage_yield_farming', protocol, tokenTypeX, tokenTypeY, valuePairX, valuePairY, valueEZM,
             valueLeverage, leverageBorrowPairX, leverageBorrowPairY, leverageBorrowEZM)
 
+        const leverageInWei = ethers.utils.parseUnits(String(valueLeverage), 8).toNumber()
         const amountInWeiSupplyPairX = ethers.utils.parseUnits(String(valuePairX), 8).toNumber()
         const amountInWeiSupplyPairY = ethers.utils.parseUnits(String(valuePairY), 8).toNumber()
         const amountInWeiSupplyEZM = ethers.utils.parseUnits(String(valueEZM), 8).toNumber()
@@ -589,12 +662,12 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         const amountInWeiBorrowPairY = ethers.utils.parseUnits(String(leverageBorrowPairY.toFixed(7)), 8).toNumber()
         const amountInWeiBorrowEZM = ethers.utils.parseUnits(String(leverageBorrowEZM.toFixed(7)), 8).toNumber()
 
-        console.log('leverage_yield_farming', protocol, tokenTypeX, tokenTypeY, amountInWeiSupplyPairX, amountInWeiSupplyPairY, amountInWeiSupplyEZM,
+        console.log('leverage_yield_farming', protocol, tokenTypeX, tokenTypeY, leverageInWei, amountInWeiSupplyPairX, amountInWeiSupplyPairY, amountInWeiSupplyEZM,
             valueLeverage, amountInWeiBorrowPairX, amountInWeiBorrowPairY, amountInWeiBorrowEZM)
 
         const petraTransaction = {
-            arguments: [protocol, amountInWeiSupplyPairX, amountInWeiSupplyPairY, amountInWeiSupplyEZM,
-                amountInWeiBorrowPairX, amountInWeiBorrowPairY, amountInWeiBorrowEZM],
+            arguments: [protocol, leverageInWei, amountInWeiSupplyPairX, amountInWeiSupplyPairY, amountInWeiSupplyEZM,
+                amountInWeiBorrowPairX, amountInWeiBorrowPairY, 0],
             function: ezfinance + '::farming::leverage_yield_farming',
             type: 'entry_function_payload',
             type_arguments: [tokenTypeX, tokenTypeY],
@@ -603,8 +676,8 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         const sender = address;
         const payload = {
             function: ezfinance + '::pancake_farming::leverage_yield_farming',
-            arguments: [protocol, amountInWeiSupplyPairX, amountInWeiSupplyPairY, amountInWeiSupplyEZM,
-                amountInWeiBorrowPairX, amountInWeiBorrowPairY, amountInWeiBorrowEZM],
+            arguments: [protocol, leverageInWei, amountInWeiSupplyPairX, amountInWeiSupplyPairY, amountInWeiSupplyEZM,
+                amountInWeiBorrowPairX, amountInWeiBorrowPairY, 0],
             type_arguments: [tokenTypeX, tokenTypeY],
         };
 
@@ -774,6 +847,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         poolInfo,
         userInfo,
         pairTVLInfo,
+        positionInfo,
         tokenPrice: TokenPrice,
         tokenPrice3,
         tokenVolume,

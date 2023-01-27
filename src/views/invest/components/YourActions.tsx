@@ -3,7 +3,7 @@ import { makeStyles } from '@mui/styles';
 import { Box, Typography, Stack, Button } from '@mui/material';
 
 import { trim } from '../../../helper/trim';
-import { coins, protocols, } from '../../../context/constant';
+import { coins, protocols, swap_aux, swap_liquid, swap_pancake, } from '../../../context/constant';
 import { Web3Context } from '../../../context/Web3Context';
 
 
@@ -46,38 +46,40 @@ export default function YourActions(props: any) {
         // LiquidSwap: 1. APT/USDC, 2. Weth/USDC, 3. Weth/apt, 4. Wbtc/apt
         // AUX: 1. APT/USDC, 2. Sol/USDC, 3. Weth/USDC, 4. Wbtc/USDC, 5. USDC/USDT
 
-        // await web3?.add_liquidity(swap_pancake, 'apt', 'usdc', 0.1, 5);
-        // await web3?.add_liquidity(swap_pancake, 'weth', 'usdc', 0.1, 5);
-        // // await web3?.add_liquidity(swap_pancake, 'cake', 'apt', 0.1, 0.1);
-        // await web3?.add_liquidity(swap_pancake, 'bnb', 'usdc', 5, 5);
-        // await web3?.add_liquidity(swap_pancake, 'usdc', 'usdt', 5, 5);
-        // await web3?.add_liquidity(swap_pancake, 'ezm', 'apt', 5, 0.1);
-        // await web3?.add_liquidity(swap_pancake, 'ezm', 'usdc', 5, 5);
-        // // await web3?.add_liquidity(swap_pancake, 'ezm', 'cake', 5, 5);
-        // await web3?.add_liquidity(swap_pancake, 'ezm', 'usdt', 5, 5);
-        // await web3?.add_liquidity(swap_pancake, 'ezm', 'bnb', 5, 5);
-        // await web3?.add_liquidity(swap_pancake, 'ezm', 'weth', 5, 0.1);
+        if (0) {
+            await web3?.add_liquidity(swap_pancake, 'apt', 'usdc', 0.1, 5);
+            await web3?.add_liquidity(swap_pancake, 'weth', 'usdc', 0.1, 5);
+            // await web3?.add_liquidity(swap_pancake, 'cake', 'apt', 0.1, 0.1);
+            await web3?.add_liquidity(swap_pancake, 'bnb', 'usdc', 5, 5);
+            await web3?.add_liquidity(swap_pancake, 'usdc', 'usdt', 5, 5);
+            await web3?.add_liquidity(swap_pancake, 'ezm', 'apt', 5, 0.1);
+            await web3?.add_liquidity(swap_pancake, 'ezm', 'usdc', 5, 5);
+            // await web3?.add_liquidity(swap_pancake, 'ezm', 'cake', 5, 5);
+            await web3?.add_liquidity(swap_pancake, 'ezm', 'usdt', 5, 5);
+            await web3?.add_liquidity(swap_pancake, 'ezm', 'bnb', 5, 5);
+            await web3?.add_liquidity(swap_pancake, 'ezm', 'weth', 5, 0.1);
 
-        // await web3?.add_liquidity(swap_liquid, 'apt', 'usdc', 0.1, 5);
-        // await web3?.add_liquidity(swap_liquid, 'weth', 'usdc', 0.1, 5);
-        // await web3?.add_liquidity(swap_liquid, 'weth', 'apt', 0.1, 0.1);
-        // await web3?.add_liquidity(swap_liquid, 'wbtc', 'apt', 0.01, 0.1);
-        // await web3?.add_liquidity(swap_liquid, 'ezm', 'apt', 5, 0.1);
-        // await web3?.add_liquidity(swap_liquid, 'ezm', 'weth', 5, 0.1);
-        // await web3?.add_liquidity(swap_liquid, 'ezm', 'wbtc', 5, 0.01);
-        // await web3?.add_liquidity(swap_liquid, 'ezm', 'usdc', 5, 5);
+            await web3?.add_liquidity(swap_liquid, 'apt', 'usdc', 0.1, 5);
+            await web3?.add_liquidity(swap_liquid, 'weth', 'usdc', 0.1, 5);
+            await web3?.add_liquidity(swap_liquid, 'weth', 'apt', 0.1, 0.1);
+            await web3?.add_liquidity(swap_liquid, 'wbtc', 'apt', 0.01, 0.1);
+            await web3?.add_liquidity(swap_liquid, 'ezm', 'apt', 5, 0.1);
+            await web3?.add_liquidity(swap_liquid, 'ezm', 'weth', 5, 0.1);
+            await web3?.add_liquidity(swap_liquid, 'ezm', 'wbtc', 5, 0.01);
+            await web3?.add_liquidity(swap_liquid, 'ezm', 'usdc', 5, 5);
 
-        // await web3?.add_liquidity(swap_aux, 'apt', 'usdc', 0.1, 5);
-        // await web3?.add_liquidity(swap_aux, 'sol', 'usdc', 5, 5);
-        // await web3?.add_liquidity(swap_aux, 'weth', 'usdc', 0.1, 5);
-        // await web3?.add_liquidity(swap_aux, 'wbtc', 'usdc', 0.01, 5);
-        // await web3?.add_liquidity(swap_aux, 'usdt', 'usdc', 5, 5);
-        // await web3?.add_liquidity(swap_aux, 'ezm', 'apt', 5, 0.1);
-        // await web3?.add_liquidity(swap_aux, 'ezm', 'weth', 5, 0.1);
-        // await web3?.add_liquidity(swap_aux, 'ezm', 'wbtc', 5, 0.01);
-        // await web3?.add_liquidity(swap_aux, 'ezm', 'usdc', 5, 5);
-        // await web3?.add_liquidity(swap_aux, 'ezm', 'usdt', 5, 5);
-        // await web3?.add_liquidity(swap_aux, 'ezm', 'sol', 5, 5);
+            await web3?.add_liquidity(swap_aux, 'apt', 'usdc', 0.1, 5);
+            await web3?.add_liquidity(swap_aux, 'sol', 'usdc', 5, 5);
+            await web3?.add_liquidity(swap_aux, 'weth', 'usdc', 0.1, 5);
+            await web3?.add_liquidity(swap_aux, 'wbtc', 'usdc', 0.01, 5);
+            await web3?.add_liquidity(swap_aux, 'usdt', 'usdc', 5, 5);
+            await web3?.add_liquidity(swap_aux, 'ezm', 'apt', 5, 0.1);
+            await web3?.add_liquidity(swap_aux, 'ezm', 'weth', 5, 0.1);
+            await web3?.add_liquidity(swap_aux, 'ezm', 'wbtc', 5, 0.01);
+            await web3?.add_liquidity(swap_aux, 'ezm', 'usdc', 5, 5);
+            await web3?.add_liquidity(swap_aux, 'ezm', 'usdt', 5, 5);
+            await web3?.add_liquidity(swap_aux, 'ezm', 'sol', 5, 5);
+        }
 
 
         if (strCoinPair[2] === "pancake") {
