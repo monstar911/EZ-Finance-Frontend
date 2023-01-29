@@ -37,6 +37,7 @@ export interface IAptosInterface {
     tokenPrice3: ITokenPrice3;
     tokenVolume: any;
     tokenPosition: any;
+    userPosition: any;
     address: string | null;
     isConnected: boolean;
     connect: any;
@@ -83,6 +84,8 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
 
     // get token volume
     const getTokenVolume = async () => {
+        if (dataVolume === null || dataVolume === undefined) return;
+
         console.log('token volume:', dataVolume);
 
         Object.keys(dataVolume).forEach((dex) => {
@@ -136,6 +139,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
     const [positionInfo, setPositionInfo] = useState({})
     const [tokenVolume, setTokenVolume] = useState({});
     const [tokenPosition, setTokenPosition] = useState({})
+    const [userPosition, setUserPosition] = useState({})
 
     // 0x4d63574ba8d90a5926e2866d8291e57683108a47b96d884232a871fe4feddf41::farming::PositionInfoDex
     // <
@@ -164,7 +168,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
     const getTokenPosition = async () => {
         const resOfResource = await client.getAccountResources(ezfinance)
 
-        console.log('getTokenPosition start')
+        // console.log('getTokenPosition start')
         Object.keys(pairs).forEach((dex) => {
             for (let pair in pairs[dex]) {
                 const tokenPositionInfo = resOfResource.find((item) => (
@@ -172,12 +176,12 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
                     (item.type === `${ezfinance}::farming::PositionInfoDex<${tokens[pairs[dex][pair].y.symbol]}, ${tokens[pairs[dex][pair].x.symbol]}>`)
                 ))
 
-                console.log('getTokenPosition tokenPositionInfo', dex, pair, tokenPositionInfo);
+                // console.log('getTokenPosition tokenPositionInfo', dex, pair, tokenPositionInfo);
                 if (tokenPositionInfo) {
                     let tokenPositionInfoData;
                     if (dex === 'pancake') {
                         tokenPositionInfoData = tokenPositionInfo.data as { positionInfo_pan: { length: number } }
-                        console.log('getTokenPosition position count', tokenPositionInfoData.positionInfo_pan.length)
+                        // console.log('getTokenPosition position count', tokenPositionInfoData.positionInfo_pan.length)
 
                         const tokenPositionInfoItem = tokenPositionInfo.data as {
                             'positionInfo_pan': {
@@ -196,7 +200,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
                                 }
                             }
                         }
-                        console.log('getTokenPosition tokenPositionInfoItem', tokenPositionInfoItem['positionInfo_pan'])
+                        // console.log('getTokenPosition tokenPositionInfoItem', tokenPositionInfoItem['positionInfo_pan'])
 
                         setTokenPosition((tokenPosition) => (_.merge(
                             tokenPosition, {
@@ -206,7 +210,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
                         })))
                     } else if (dex === 'liquid') {
                         tokenPositionInfoData = tokenPositionInfo.data as { positionInfo_liq: { length: number } }
-                        console.log('getTokenPosition position count', tokenPositionInfoData.positionInfo_liq.length)
+                        // console.log('getTokenPosition position count', tokenPositionInfoData.positionInfo_liq.length)
 
                         const tokenPositionInfoItem = tokenPositionInfo.data as {
                             positionInfo_liq: {
@@ -225,7 +229,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
                                 }
                             }
                         }
-                        console.log('getTokenPosition tokenPositionInfoItem', tokenPositionInfoItem['positionInfo_liq'])
+                        // console.log('getTokenPosition tokenPositionInfoItem', tokenPositionInfoItem['positionInfo_liq'])
 
                         setTokenPosition((tokenPosition) => (_.merge(
                             tokenPosition, {
@@ -235,7 +239,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
                         })))
                     } else if (dex === 'aux') {
                         tokenPositionInfoData = tokenPositionInfo.data as { positionInfo_aux: { length: number } }
-                        console.log('getTokenPosition position count', tokenPositionInfoData.positionInfo_aux.length)
+                        // console.log('getTokenPosition position count', tokenPositionInfoData.positionInfo_aux.length)
 
                         const tokenPositionInfoItem = tokenPositionInfo.data as {
                             positionInfo_aux: {
@@ -254,7 +258,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
                                 }
                             }
                         }
-                        console.log('getTokenPosition tokenPositionInfoItem', tokenPositionInfoItem['positionInfo_aux'])
+                        // console.log('getTokenPosition tokenPositionInfoItem', tokenPositionInfoItem['positionInfo_aux'])
                         setTokenPosition((tokenPosition) => (_.merge(
                             tokenPosition, {
                             ['aux']: {
@@ -267,12 +271,144 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         })
 
         // setTokenPosition(tokenPositionInfoAll)
-        console.log('getTokenPosition tokenPositionInfoAll', tokenPosition);
+        // console.log('getTokenPosition tokenPositionInfoAll', tokenPosition);
     }
 
     useEffect(() => {
         getTokenPosition();
     }, [tokenPosition]);
+
+    const getUserPosition = async () => {
+        if (!address) return
+
+        const resOfResource = await client.getAccountResources(ezfinance)
+
+        console.log('getUserPosition start')
+        Object.keys(pairs).forEach((dex) => {
+            for (let pair in pairs[dex]) {
+                const userPositionInfo = resOfResource.find((item) => (
+                    (item.type === `${ezfinance}::farming::PositionInfoDex<${tokens[pairs[dex][pair].x.symbol]}, ${tokens[pairs[dex][pair].y.symbol]}>`) ||
+                    (item.type === `${ezfinance}::farming::PositionInfoDex<${tokens[pairs[dex][pair].y.symbol]}, ${tokens[pairs[dex][pair].x.symbol]}>`)
+                ))
+
+                if (userPositionInfo) {
+                    console.log('getUserPosition userPositionInfo', dex, pair, userPositionInfo);
+
+                    let userPositionInfoData;
+                    if (dex === 'pancake') {
+                        userPositionInfoData = userPositionInfo.data as { positionInfo_pan: { length: number } }
+                        for (let i = 0; i < userPositionInfoData.positionInfo_pan.length; i++) {
+                            const userPositionInfoItem = userPositionInfo.data as {
+                                'positionInfo_pan': {
+                                    i: {
+                                        borrowAmount_x: number,
+                                        borrowAmount_y: number,
+                                        borrowAmount_z: number,
+                                        created_at: number,
+                                        dex_name: string,
+                                        leverage: number,
+                                        signer_addr: string,
+                                        status: boolean,
+                                        supplyAmount_x: number,
+                                        supplyAmount_y: number,
+                                        supplyAmount_z: number,
+                                    }
+                                }
+                            }
+
+                            console.log('getUserPosition userPositionInfoItem', userPositionInfoItem['positionInfo_pan'][`${i}`])
+                            // console.log('getUserPosition userPositionInfoItem', address, userPositionInfoItem['positionInfo_pan'][`${i}`]['signer_addr'])
+                            if (address !== userPositionInfoItem['positionInfo_pan'][`${i}`]['signer_addr']) continue;
+                            setUserPosition((userPosition) => (_.merge(
+                                userPosition, {
+                                ['pancake']: {
+                                    [pair]: {
+                                        [`${i}`]: userPositionInfoItem['positionInfo_pan'][`${i}`],
+                                        ['length']: i + 1,
+                                    }
+                                }
+                            })))
+                        }
+                    } else if (dex === 'liquid') {
+                        userPositionInfoData = userPositionInfo.data as { positionInfo_liq: { length: number } }
+
+                        for (let i = 0; i < userPositionInfoData.positionInfo_liq.length; i++) {
+                            const userPositionInfoItem = userPositionInfo.data as {
+                                positionInfo_liq: {
+                                    i: {
+                                        borrowAmount_x: number,
+                                        borrowAmount_y: number,
+                                        borrowAmount_z: number,
+                                        created_at: number,
+                                        dex_name: string,
+                                        leverage: number,
+                                        signer_addr: string,
+                                        status: boolean,
+                                        supplyAmount_x: number,
+                                        supplyAmount_y: number,
+                                        supplyAmount_z: number,
+                                    }
+                                }
+                            }
+                            console.log('getUserPosition userPositionInfoItem', userPositionInfoItem['positionInfo_liq'][`${i}`])
+                            // console.log('getUserPosition userPositionInfoItem', address, userPositionInfoItem['positionInfo_liq'][`${i}`]['signer_addr'])
+                            if (address !== userPositionInfoItem['positionInfo_liq'][`${i}`]['signer_addr']) continue;
+                            setUserPosition((userPosition) => (_.merge(
+                                userPosition, {
+                                ['liquid']: {
+                                    [pair]: {
+                                        [`${i}`]: userPositionInfoItem['positionInfo_liq'][`${i}`],
+                                        ['length']: i + 1,
+                                    }
+                                }
+                            })))
+                        }
+                    } else if (dex === 'aux') {
+                        userPositionInfoData = userPositionInfo.data as { positionInfo_aux: { length: number } }
+
+                        for (let i = 0; i < userPositionInfoData.positionInfo_aux.length; i++) {
+                            const userPositionInfoItem = userPositionInfo.data as {
+                                positionInfo_aux: {
+                                    i: {
+                                        borrowAmount_x: number,
+                                        borrowAmount_y: number,
+                                        borrowAmount_z: number,
+                                        created_at: number,
+                                        dex_name: string,
+                                        leverage: number,
+                                        signer_addr: string,
+                                        status: boolean,
+                                        supplyAmount_x: number,
+                                        supplyAmount_y: number,
+                                        supplyAmount_z: number,
+                                    }
+                                }
+                            }
+                            console.log('getUserPosition userPositionInfoItem', userPositionInfoItem['positionInfo_aux'][`${i}`])
+                            // console.log('getUserPosition userPositionInfoItem', address, userPositionInfoItem['positionInfo_aux'][`${i}`]['signer_addr'])
+                            if (address !== userPositionInfoItem['positionInfo_aux'][`${i}`]['signer_addr']) continue;
+                            setUserPosition((userPosition) => (_.merge(
+                                userPosition, {
+                                ['aux']: {
+                                    [pair]: {
+                                        [`${i}`]: userPositionInfoItem['positionInfo_aux'][`${i}`],
+                                        ['length']: i + 1,
+                                    }
+                                }
+                            })))
+                        }
+                    }
+                }
+            }
+        })
+
+        // setuserPosition(userPositionInfoAll)
+        console.log('getUserPosition userPositionInfoAll', userPosition);
+    }
+
+    useEffect(() => {
+        getUserPosition();
+    }, [address, userPosition]);
 
 
     // update wallet address
@@ -347,7 +483,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
                         [pair]: tvl
                     }
                 })))
-                console.log('getTVLInfo pairTVLInfo', pairTVLInfo);
+                // console.log('getTVLInfo pairTVLInfo', pairTVLInfo);
             }
         }
     }
@@ -388,7 +524,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
                     lend_amount: number;
                     claim_amount: number;
                 }
-                console.log('getUserInfo borrow_amount:', _data.borrow_amount);
+                // console.log('getUserInfo borrow_amount:', _data.borrow_amount);
 
                 userInfo.deposit[symbol] = _data.lend_amount / Math.pow(10, 8)
                 setUserInfo(userInfo)
@@ -852,6 +988,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         tokenPrice3,
         tokenVolume,
         tokenPosition,
+        userPosition,
         address,
         isConnected,
         connect,

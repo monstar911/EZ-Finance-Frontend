@@ -50,15 +50,15 @@ export const protocols = {
 }
 
 export const coins = {
-    ezm: { name: 'EZM', symbol: 'ezm', logo: EzmIcon },
-    apt: { name: 'APT', symbol: 'apt', logo: AptIcon },
-    wbtc: { name: 'WBTC', symbol: 'wbtc', logo: BtcIcon },
-    weth: { name: 'WETH', symbol: 'weth', logo: EthIcon },
-    usdt: { name: 'USDT', symbol: 'usdt', logo: UsdtIcon },
-    usdc: { name: 'USDC', symbol: 'usdc', logo: UsdcIcon },
+    ezm: { name: 'EZM', symbol: 'ezm', logo: EzmIcon, apy: 0.66 },
+    apt: { name: 'APT', symbol: 'apt', logo: AptIcon, apy: 0.75 },
+    wbtc: { name: 'WBTC', symbol: 'wbtc', logo: BtcIcon, apy: 0.56 },
+    weth: { name: 'WETH', symbol: 'weth', logo: EthIcon, apy: 0.62 },
+    usdt: { name: 'USDT', symbol: 'usdt', logo: UsdtIcon, apy: 0.32 },
+    usdc: { name: 'USDC', symbol: 'usdc', logo: UsdcIcon, apy: 0.34 },
     // cake: {name:'Cake', symbol:'cake', logo:},
-    sol: { name: 'SOL', symbol: 'sol', logo: SolIcon },
-    bnb: { name: 'BNB', symbol: 'bnb', logo: BnbIcon },
+    sol: { name: 'SOL', symbol: 'sol', logo: SolIcon, apy: 0.43 },
+    bnb: { name: 'BNB', symbol: 'bnb', logo: BnbIcon, apy: 0.38 },
 }
 
 // Pools

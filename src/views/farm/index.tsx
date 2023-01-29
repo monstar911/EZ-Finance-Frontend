@@ -62,6 +62,9 @@ const useStyles = makeStyles((theme: any) => ({
         },
         '& .Mui-selected': {
             background: 'linear-gradient(90deg,#6e42ca,#8d29c1)',
+            '&:hover': {
+                background: 'linear-gradient(90deg,#6e42ca,#8d29c1)',
+            }
         },
         '& button': {
             background: '#16162d',
@@ -86,7 +89,7 @@ const useStyles = makeStyles((theme: any) => ({
                 width: '100%',
             },
             '&:hover': {
-                background: '#483A6B',
+                background: '#16162d',
             }
         },
     },
@@ -104,7 +107,7 @@ function Farm() {
     const tokenVolume = web3?.tokenVolume
     const tokenPrice3 = web3?.tokenPrice3 as ITokenPrice3
 
-    console.log('Farm tokenVolume', tokenVolume);
+    // console.log('Farm tokenVolume', tokenVolume);
 
     let farmPools: any = [];
 
@@ -149,18 +152,20 @@ function Farm() {
                 tvl = Number(tvl) + Number(_tvl_x) * Number(tokenPrice3[strCoinPair[0]]) + Number(_tvl_y) * Number(tokenPrice3[strCoinPair[1]]);
             }
 
+            const max_apr = getMaxAPR(pairs[dex][pair].x.symbol, tokenMaxLeverage(pairs[dex][pair].x.symbol))[1];
+            const trade_fee = tradingFee(_volume, _liquidity)
             const pool = {
                 dex: dex,
                 property: pairs[dex][pair],
                 pool_tvl: formatValue(_liquidity, 2),
                 from_multi: tokenMaxLeverage(pairs[dex][pair].x.symbol),
                 from_percent: getEstimatedAPR(pairs[dex][pair].x.symbol, 1.0),
-                max_apr: getMaxAPR(pairs[dex][pair].x.symbol, tokenMaxLeverage(pairs[dex][pair].x.symbol))[1],
-                trade_fee: tradingFee(_volume, _liquidity),
+                max_apr: max_apr,
+                trade_fee: trade_fee,
                 borrow: '0.25',
                 position: _position,
                 acheive: '0',
-                farm_apr: '0',
+                farm_apr: formatValue(Number(max_apr) + Number(trade_fee), 2),
                 trade_volume: formatValue(_volume, 2),
                 ez_tvl: tvl,
                 pair: pairs[dex][pair].x.symbol + '-' + pairs[dex][pair].y.symbol + '-' + dex,
