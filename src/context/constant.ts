@@ -27,11 +27,11 @@ export const swap_addr = {
     aux: swap_aux,
 }
 
-// export const BACKEND_TOKEN_PRICE = "https://82.180.160.21:4000/api/prices";
-// export const BACKEND_VOLUME_DATA = "https://82.180.160.21:4000/api/dexes";
+export const BACKEND_TOKEN_PRICE = "https://82.180.160.21:4000/api/prices";
+export const BACKEND_VOLUME_DATA = "https://82.180.160.21:4000/api/dexes";
 
-export const BACKEND_TOKEN_PRICE = "https://localhost:5000/api/prices";
-export const BACKEND_VOLUME_DATA = "https://localhost:5000/api/dexes";
+// export const BACKEND_TOKEN_PRICE = "https://localhost:4000/api/prices";
+// export const BACKEND_VOLUME_DATA = "https://localhost:4000/api/dexes";
 
 export const tokens = {
     apt: '0x1::aptos_coin::AptosCoin',
