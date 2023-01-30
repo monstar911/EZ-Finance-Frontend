@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Box, Typography, Stack } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { makeStyles } from '@mui/styles';
@@ -93,47 +93,62 @@ export default function Invest() {
     }, [poolid]);
 
     const web3 = useContext(Web3Context)
-    const userInfo = web3?.userInfo as IUserInfo
-    const tokenVolume = web3?.tokenVolume
-
-    const tokenPosition = web3?.tokenPosition
-    const pairTVLInfo = web3?.pairTVLInfo
-    const tokenPrice3 = web3?.tokenPrice3 as ITokenPrice3
+    const [userPosition, setUserPosition] = useState<any>(web3?.userPosition)
+    const [tokenVolume, setTokenVolume] = useState<any>()
+    const [tokenPrice3, setTokenPrice] = useState<ITokenPrice3>()
+    const [tokenPosition, setTokenPosition] = useState({})
+    const [allPositions, setAllPositions] = useState(0);
+    const [tvl, setTVL] = useState(0);
+    const [liquidity, setLiquidity] = useState(0);
 
     console.log('Farm tokenVolume', tokenVolume);
-
     console.log('Invest', strCoinPair[0], strCoinPair[1], strCoinPair[2])
 
     const dex = strCoinPair[2]
     const pair = strCoinPair[0] + '-' + strCoinPair[1]
 
-    let _liquidityInfo = tokenVolume?.[dex]?.[pair]?.['liquidity']
-    const _liquidity = _liquidityInfo ??= 0
+    const getAllPosition = (tokenVolume: any, tokenPrice3: any) => {
+        let _allPositions = 0
 
-    let farmPools: any = [];
+        let _liquidityInfo = tokenVolume?.[dex]?.[pair]?.['liquidity']
+        const _liquidity = _liquidityInfo ??= 0
 
-    var allPoolsTVL = 0;
-    var allPositions = 0;
+        let _tokenPositionInfo = tokenPosition?.[dex]?.[pair]?.['length']
+        const _position = _tokenPositionInfo ??= 0
+        _allPositions = _allPositions + Number(_position)
 
-    allPoolsTVL = allPoolsTVL + Number(_liquidity);
+        let tvl = 0;
 
-    let _tokenPositionInfo = tokenPosition?.[dex]?.[pair]?.['length']
-    const _position = _tokenPositionInfo ??= 0
-    allPositions = allPositions + Number(_position)
+        for (let i = 0; i < _position; i++) {
+            let _tvlInfo_amountAdd_x = tokenPosition?.[dex]?.[pair]?.[i]?.amountAdd_x / Math.pow(10, 8)
+            let _tvlInfo_amountAdd_y = tokenPosition?.[dex]?.[pair]?.[i]?.amountAdd_y / Math.pow(10, 8)
+            const _tvl_x = _tvlInfo_amountAdd_x ??= 0
+            const _tvl_y = _tvlInfo_amountAdd_y ??= 0
 
+            console.log(_tvl_x, _tvl_y, tokenPrice3[strCoinPair[0]], tokenPrice3[strCoinPair[1]], Number(_tvl_x) * Number(tokenPrice3[strCoinPair[0]]), Number(_tvl_y) * Number(tokenPrice3[strCoinPair[1]]))
+            tvl = Number(tvl) + Number(_tvl_x) * Number(tokenPrice3[strCoinPair[0]]) + Number(_tvl_y) * Number(tokenPrice3[strCoinPair[1]]);
+        }
 
-    let tvl = 0;
-    for (let i = 0; i < _position; i++) {
-        let _tvlInfo_amountAdd_x = tokenPosition?.[dex]?.[pair]?.[i]?.amountAdd_x / Math.pow(10, 8)
-        let _tvlInfo_amountAdd_y = tokenPosition?.[dex]?.[pair]?.[i]?.amountAdd_y / Math.pow(10, 8)
-        const _tvl_x = _tvlInfo_amountAdd_x ??= 0
-        const _tvl_y = _tvlInfo_amountAdd_y ??= 0
-
-        console.log(_tvl_x, _tvl_y, tokenPrice3[strCoinPair[0]], tokenPrice3[strCoinPair[1]], Number(_tvl_x) * Number(tokenPrice3[strCoinPair[0]]), Number(_tvl_y) * Number(tokenPrice3[strCoinPair[1]]))
-        tvl = Number(tvl) + Number(_tvl_x) * Number(tokenPrice3[strCoinPair[0]]) + Number(_tvl_y) * Number(tokenPrice3[strCoinPair[1]]);
+        return {
+            allPositions: _allPositions,
+            tvl: tvl,
+            liquidity: _liquidity,
+        }
     }
 
+    useEffect(() => {
+        const tokenVolume = web3?.tokenVolume
+        const tokenPrice3 = web3?.tokenPrice3
+        const userPosition = web3?.userPosition
+        setUserPosition(userPosition)
+        setTokenVolume(tokenVolume)
+        setTokenPrice(tokenPrice3)
+        const positionInfo = getAllPosition(tokenVolume, tokenPrice3);
 
+        setAllPositions(positionInfo.allPositions)
+        setTVL(positionInfo.tvl)
+        setLiquidity(positionInfo.liquidity)
+    }, [web3])
 
     return (
         <Container>
@@ -178,7 +193,7 @@ export default function Invest() {
                         </Box>
                         <Box>
                             <Typography variant="subtitle1">TVL on {protocols[strCoinPair[2]].name}</Typography>
-                            <Typography variant="h5">${formatValue(_liquidity, 2)}</Typography>
+                            <Typography variant="h5">${formatValue(liquidity, 2)}</Typography>
                         </Box>
                     </Stack>
                 </Box>

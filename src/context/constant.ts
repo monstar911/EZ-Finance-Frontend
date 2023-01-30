@@ -5,12 +5,13 @@ import BtcIcon from '../asset/icons/crypto-btc.svg'
 import EthIcon from '../asset/icons/crypto-ethereum.png'
 import UsdtIcon from '../asset/icons/crypto-usdt.png'
 import UsdcIcon from '../asset/icons/crypto-usdc.png'
+import CakeIcon from '../asset/icons/cake.svg'
 import DaiIcon from '../asset/icons/crypto-dai.svg'
 import SolIcon from '../asset/icons/sol.png'
 import BnbIcon from '../asset/icons/bnb.png'
 
-import LiquidIcon from '../asset/icons/logo-swap-liquid.png'
 import PancakeIcon from '../asset/icons/logo-swap-pancake.png'
+import LiquidIcon from '../asset/icons/logo-swap-liquid.png'
 import AuxIcon from '../asset/icons/logo-swap-aux.png'
 
 //lending, farming
@@ -39,6 +40,7 @@ export const tokens = {
     weth: `${ezfinance}::faucet_tokens::WETH`,
     usdt: `${ezfinance}::faucet_tokens::USDT`,
     usdc: `${ezfinance}::faucet_tokens::USDC`,
+    cake: `${ezfinance}::faucet_tokens::CAKE`,
     sol: `${ezfinance}::faucet_tokens::SOL`,
     bnb: `${ezfinance}::faucet_tokens::BNB`,
 }
@@ -56,7 +58,7 @@ export const coins = {
     weth: { name: 'WETH', symbol: 'weth', logo: EthIcon, apy: 0.62 },
     usdt: { name: 'USDT', symbol: 'usdt', logo: UsdtIcon, apy: 0.32 },
     usdc: { name: 'USDC', symbol: 'usdc', logo: UsdcIcon, apy: 0.34 },
-    // cake: {name:'Cake', symbol:'cake', logo:},
+    cake: { name: 'Cake', symbol: 'cake', logo: CakeIcon, apy: 0.48 },
     sol: { name: 'SOL', symbol: 'sol', logo: SolIcon, apy: 0.43 },
     bnb: { name: 'BNB', symbol: 'bnb', logo: BnbIcon, apy: 0.38 },
 }
@@ -75,10 +77,10 @@ export const pairs = {
             x: coins.weth,
             y: coins.usdc
         },
-        // 'cake-apt': {
-        //     x: coins.cake,
-        //     y: coins.apt
-        // },
+        'cake-apt': {
+            x: coins.cake,
+            y: coins.apt
+        },
         'bnb-usdc': {
             x: coins.bnb,
             y: coins.usdc
@@ -140,6 +142,7 @@ export const TokenPrice = {
     sol: 23.81,
     weth: 1200,
     wbtc: 17000,
+    cake: 4,
     apt: 4,
     bnb: 305.24,
 }
@@ -153,6 +156,7 @@ export const tokenColBorFactor = {
     weth: { col: 0.79, bor: 1.26 },
     usdt: { col: 0.85, bor: 1.15 },
     usdc: { col: 0.85, bor: 1.15 },
+    cake: { col: 0.85, bor: 1.15 },
     sol: { col: 0.82, bor: 1.18 },
     bnb: { col: 0.75, bor: 1.35 },
 }
@@ -164,6 +168,7 @@ export const maxDefaultAPR = {
     weth: 6.52,
     usdt: 4.64,
     usdc: 4.64,
+    cake: 4.64,
     sol: 4.64,
     bnb: 6.52
 }

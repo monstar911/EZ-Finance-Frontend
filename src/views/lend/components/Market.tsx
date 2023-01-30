@@ -130,6 +130,14 @@ function Market() {
             depositBalance: userInfo?.deposit['usdc'] ?? 0,
             walletBalance: trim(userInfo?.tokenBalance['usdc'] ?? 0, 3)
         }, {
+            icon: coins['cake'].logo,
+            asset: 'CAKE',
+            symbol: 'cake',
+            depositAPY: 0.9,
+            totalDeposited: trim(poolInfo?.usdc ?? 0, 3),
+            depositBalance: userInfo?.deposit['cake'] ?? 0,
+            walletBalance: trim(userInfo?.tokenBalance['cake'] ?? 0, 3)
+        }, {
             icon: coins['sol'].logo,
             asset: 'SOL',
             symbol: 'sol',

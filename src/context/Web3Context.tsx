@@ -23,6 +23,7 @@ export interface ITokenPrice3 {
     weth: number;
     usdt: number;
     usdc: number;
+    cake: number;
     sol: number;
     bnb: number;
 }
@@ -71,6 +72,14 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
     const [wallet, setWallet] = useState<string>('');
     const [address, setAddress] = useState<string | null>(null);
     const [isConnected, setIsConnected] = useState<boolean>(false);
+
+    const [poolInfo, setPoolInfo] = useState({});
+    const [pairTVLInfo, setPairTVLInfo] = useState({});
+    const [positionInfo, setPositionInfo] = useState({})
+    const [tokenPosition, setTokenPosition] = useState({})
+    const [userPosition, setUserPosition] = useState({})
+
+    const [tokenVolume, setTokenVolume] = useState({});
     const [tokenPrice3, setTokenPrice] = useState<ITokenPrice3>({
         ezm: 10,
         apt: 8.2,
@@ -78,6 +87,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         weth: 1568.66,
         usdt: 1,
         usdc: 1,
+        cake: 4,
         sol: 23.81,
         bnb: 305.24,
     });
@@ -134,12 +144,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         totalRewards: 0,
     });
 
-    const [poolInfo, setPoolInfo] = useState({});
-    const [pairTVLInfo, setPairTVLInfo] = useState({});
-    const [positionInfo, setPositionInfo] = useState({})
-    const [tokenVolume, setTokenVolume] = useState({});
-    const [tokenPosition, setTokenPosition] = useState({})
-    const [userPosition, setUserPosition] = useState({})
+
 
     // 0x4d63574ba8d90a5926e2866d8291e57683108a47b96d884232a871fe4feddf41::farming::PositionInfoDex
     // <
@@ -276,7 +281,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
 
     useEffect(() => {
         getTokenPosition();
-    }, [tokenPosition]);
+    }, []);
 
     const getUserPosition = async () => {
         if (!address) return
@@ -408,7 +413,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
 
     useEffect(() => {
         getUserPosition();
-    }, [address, userPosition]);
+    }, [address]);
 
 
     // update wallet address
@@ -837,6 +842,8 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         await sleep(2)
         await getUserInfo();
         await getPoolInfo();
+        await getTokenPosition();
+        await getUserPosition();
     }
 
     const add_liquidity = async (protocol: string, coinX: string, coinY: string, amountX: number, amountY: number) => {

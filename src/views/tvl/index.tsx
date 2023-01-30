@@ -178,7 +178,7 @@ export default function TVL() {
 
 
                 <Box className={classes.divide_line} />
-                <Grid container justifyContent="space-between" alignItems={'center'} sx={{ marginTop: '40px' }}>
+                <Grid container justifyContent="space-start" alignItems={'center'} sx={{ marginTop: '40px' }}>
                     {poolData.map((item: any, index: number) => (
                         <PoolModal
                             title={item.title}

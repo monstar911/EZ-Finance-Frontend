@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Box, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -170,29 +170,75 @@ export default function Position() {
     const classes = useStyles();
 
     const web3 = useContext(Web3Context)
-    const userPosition = web3?.userPosition
-    const tokenVolume = web3?.tokenVolume
-    const tokenPrice3 = web3?.tokenPrice3 as ITokenPrice3
+    const [userPosition, setUserPosition] = useState<any>(web3?.userPosition)
+    const [tokenVolume, setTokenVolume] = useState<any>()
+    const [tokenPrice3, setTokenPrice] = useState<ITokenPrice3>()
+    const [allPositions, setAllPositions] = useState(0);
+    const [totalPositionValue, setTotalPositionValue] = useState(0);
+    const [totalDebtValue, setTotalDebtValue] = useState(0);
+    const [totalEquityValue, setTotalEquityValue] = useState(0);
+
+    useEffect(() => {
+        const tokenVolume = web3?.tokenVolume
+        const tokenPrice3 = web3?.tokenPrice3
+        const userPosition = web3?.userPosition
+        setUserPosition(userPosition)
+        setTokenVolume(tokenVolume)
+        setTokenPrice(tokenPrice3)
+        const positionInfo = getAllPosition(tokenVolume, tokenPrice3, userPosition);
+        console.log('Position useEffect', tokenVolume, userPosition, positionInfo.allPositions, positionInfo.totalPositionValue, positionInfo.totalDebtValue, positionInfo.totalEquityValue);
+        setAllPositions(positionInfo.allPositions)
+        setTotalPositionValue(positionInfo.totalPositionValue)
+        setTotalDebtValue(positionInfo.totalDebtValue)
+        setTotalEquityValue(positionInfo.totalEquityValue)
+    }, [web3])
 
     // console.log('Farm tokenVolume', tokenVolume);
     // console.log('Position', userPosition);
 
     let farmPools: any = [];
 
-    var allPoolsTVL = 0;
-    var allPositions = 0;
-    Object.keys(pairs).forEach((dex) => {
-        for (let pair in pairs[dex]) {
-            let _liquidityInfo = tokenVolume?.[dex]?.[pair]?.['liquidity']
-            const _liquidity = _liquidityInfo ??= 0
 
-            allPoolsTVL = allPoolsTVL + Number(_liquidity);
+    const getAllPosition = (tokenVolume: any, tokenPrice3: any, userPosition: any) => {
+        let _allPositions = 0
+        let _totalPositionValue = 0
+        let _totalDebtValue = 0
+        let _totalEquityValue = 0
 
-            let _userPositionInfo = userPosition?.[dex]?.[pair]?.['length']
-            const _position = _userPositionInfo ??= 0
-            allPositions = allPositions + Number(_position)
+        Object.keys(pairs).forEach((dex) => {
+            for (let pair in pairs[dex]) {
+                let _liquidityInfo = tokenVolume?.[dex]?.[pair]?.['liquidity']
+                const _liquidity = _liquidityInfo ??= 0
+
+                let _userPositionInfo = userPosition?.[dex]?.[pair]?.['length']
+                const _position = _userPositionInfo ??= 0
+                _allPositions = _allPositions + Number(_position)
+
+                for (let i = 0; i < _position; i++) {
+                    const _positionValue = tokenPrice3?.[pairs[dex][pair].x.symbol] * userPosition?.[dex]?.[pair]?.[`${i}`]?.amountAdd_x / Math.pow(10, 8) +
+                        tokenPrice3?.[pairs[dex][pair].y.symbol] * userPosition?.[dex]?.[pair]?.[`${i}`]?.amountAdd_y / Math.pow(10, 8)
+                    const _debtValue = tokenPrice3?.[pairs[dex][pair].x.symbol] * userPosition?.[dex]?.[pair]?.[`${i}`]?.borrowAmount_x / Math.pow(10, 8) +
+                        tokenPrice3?.[pairs[dex][pair].y.symbol] * userPosition?.[dex]?.[pair]?.[`${i}`]?.borrowAmount_y / Math.pow(10, 8)
+
+                    console.log('getAllPosition - tokenPrice3, tokenPrice3', { tokenPrice3, userPosition });
+                    console.log('getAllPosition - i', { _positionValue, _debtValue });
+
+                    _totalPositionValue = _totalPositionValue + Number(_positionValue)
+                    _totalDebtValue = _totalDebtValue + Number(_debtValue)
+                    _totalEquityValue = _totalEquityValue + Number(_positionValue) - Number(_debtValue)
+                    console.log('getAllPosition - i', { tokenVolume, userPosition, _allPositions, _totalPositionValue, _totalDebtValue, _totalEquityValue });
+                }
+            }
+        })
+        console.log('getAllPosition', { tokenVolume, userPosition, _allPositions, _totalPositionValue, _totalDebtValue, _totalEquityValue });
+        return {
+            allPositions: _allPositions,
+            totalPositionValue: _totalPositionValue,
+            totalDebtValue: _totalDebtValue,
+            totalEquityValue: _totalEquityValue,
         }
-    })
+    }
+    // setAllPositions(_allPositions)
 
     const poolData = React.useMemo(() => {
         const bump: any = [];
@@ -204,13 +250,13 @@ export default function Position() {
 
                 console.log('Position', dex, pair, _position, userPosition?.[dex]?.[pair])
                 for (let i = 0; i < _position; i++) {
-                    console.log('Position', tokenPrice3[pairs[dex][pair].x.symbol], userPosition?.[dex]?.[pair]?.[`${i}`]?.['amountAdd_x'], userPosition?.[dex]?.[pair]?.[`${i}`]?.['amountAdd_y'])
+                    console.log('Position', tokenPrice3?.[pairs[dex][pair].x.symbol], userPosition?.[dex]?.[pair]?.[`${i}`]?.['amountAdd_x'], userPosition?.[dex]?.[pair]?.[`${i}`]?.['amountAdd_y'])
                     console.log('Position', userPosition?.[dex]?.[pair]?.[`${i}`]?.['borrowAmount_x'], userPosition?.[dex]?.[pair]?.[`${i}`]?.['borrowAmount_y'])
 
-                    const _positionValue = tokenPrice3[pairs[dex][pair].x.symbol] * userPosition?.[dex]?.[pair]?.[`${i}`]?.amountAdd_x / Math.pow(10, 8) +
-                        tokenPrice3[pairs[dex][pair].y.symbol] * userPosition?.[dex]?.[pair]?.[`${i}`]?.amountAdd_y / Math.pow(10, 8)
-                    const _debtValue = tokenPrice3[pairs[dex][pair].x.symbol] * userPosition?.[dex]?.[pair]?.[`${i}`]?.borrowAmount_x / Math.pow(10, 8) +
-                        tokenPrice3[pairs[dex][pair].y.symbol] * userPosition?.[dex]?.[pair]?.[`${i}`]?.borrowAmount_y / Math.pow(10, 8)
+                    const _positionValue = tokenPrice3?.[pairs[dex][pair].x.symbol] * userPosition?.[dex]?.[pair]?.[`${i}`]?.amountAdd_x / Math.pow(10, 8) +
+                        tokenPrice3?.[pairs[dex][pair].y.symbol] * userPosition?.[dex]?.[pair]?.[`${i}`]?.amountAdd_y / Math.pow(10, 8)
+                    const _debtValue = tokenPrice3?.[pairs[dex][pair].x.symbol] * userPosition?.[dex]?.[pair]?.[`${i}`]?.borrowAmount_x / Math.pow(10, 8) +
+                        tokenPrice3?.[pairs[dex][pair].y.symbol] * userPosition?.[dex]?.[pair]?.[`${i}`]?.borrowAmount_y / Math.pow(10, 8)
                     const obj = {
                         dex: dex,
                         aTokenIcon: pairs[dex][pair].x.logo,
@@ -229,9 +275,7 @@ export default function Position() {
         })
 
         return bump;
-    }, [userPosition]);
-
-
+    }, [web3]);
 
     return (
         <Container>
@@ -264,15 +308,15 @@ export default function Position() {
                         <Box className="footer">
                             <Box>
                                 <Typography variant="subtitle1">Total Position Value</Typography>
-                                <Typography variant="h4">$0.00</Typography>
+                                <Typography variant="h4">${formatValue(totalPositionValue, 2)}</Typography>
                             </Box>
                             <Box>
                                 <Typography variant="subtitle1">Total Equity Value</Typography>
-                                <Typography variant="h4">$0.00</Typography>
+                                <Typography variant="h4">${formatValue(totalEquityValue, 2)}</Typography>
                             </Box>
                             <Box>
                                 <Typography variant="subtitle1">Total Debt Value</Typography>
-                                <Typography variant="h4">$0.00</Typography>
+                                <Typography variant="h4">${formatValue(totalDebtValue, 2)}</Typography>
                             </Box>
                         </Box>
                         {/* <Box className={classes.gradient__back}></Box> */}
@@ -298,20 +342,20 @@ export default function Position() {
                             },
                         }}
                     >
-                        {!allPositions && (
+                        {(allPositions === 0) && (
                             <Box>
                                 <img src={notExist} alt="" />
                                 <Typography variant="h4">You don't have any positions yet</Typography>
                             </Box>
                         )}
 
-                        {allPositions && (
+                        {allPositions !== 0 && (
                             <TableContainer>
                                 <Table sx={{ '& .MuiTableCell-root': { textAlign: 'center' } }}>
                                     <TableHead>
                                         <TableRow sx={{ '.MuiTableCell-root': { color: '#FFFFFF80' } }}>
                                             {tableHeader.map((item, index) => (
-                                                <TableCell key={index}>{item}</TableCell>
+                                                <TableCell sx={{ fontSize: '20px' }} key={index} > {item}</TableCell>
                                             ))}
                                         </TableRow>
                                     </TableHead>
@@ -329,8 +373,8 @@ export default function Position() {
                                                                 display: 'flex',
                                                                 width: { xs: '100%' },
                                                                 '& img': {
-                                                                    width: '24px',
-                                                                    height: '24px',
+                                                                    width: '32px',
+                                                                    height: '32px',
                                                                     borderRadius: '50%',
                                                                 },
                                                             }}
@@ -346,7 +390,7 @@ export default function Position() {
                                                                 </Typography>
                                                                 <Typography
                                                                     variant="subtitle1"
-                                                                    sx={{ opacity: '.5', fontSize: '12px', wordBreak: 'keep-all' }}
+                                                                    sx={{ opacity: '.5', fontSize: '12px', wordBreak: 'keep-all', marginLeft: '16px' }}
                                                                 >
                                                                     {protocols[item.dex].name}
                                                                 </Typography>
@@ -376,7 +420,7 @@ export default function Position() {
                                                         //disabled={index > 1 ? true : false}
                                                         // onClick={() => onSupModalOpen(index)}
                                                         >
-                                                            Deposit
+                                                            Withdraw
                                                         </Button>
                                                     </Box>
                                                 </TableCell>
@@ -389,6 +433,6 @@ export default function Position() {
                     </Box>
                 </Box>
             </Box>
-        </Container>
+        </Container >
     );
 }

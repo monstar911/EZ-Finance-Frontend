@@ -49,12 +49,12 @@ export default function YourActions(props: any) {
         if (0) {
             await web3?.add_liquidity(swap_pancake, 'apt', 'usdc', 0.1, 5);
             await web3?.add_liquidity(swap_pancake, 'weth', 'usdc', 0.1, 5);
-            // await web3?.add_liquidity(swap_pancake, 'cake', 'apt', 0.1, 0.1);
+            await web3?.add_liquidity(swap_pancake, 'cake', 'apt', 0.1, 0.1);
             await web3?.add_liquidity(swap_pancake, 'bnb', 'usdc', 5, 5);
             await web3?.add_liquidity(swap_pancake, 'usdc', 'usdt', 5, 5);
             await web3?.add_liquidity(swap_pancake, 'ezm', 'apt', 5, 0.1);
             await web3?.add_liquidity(swap_pancake, 'ezm', 'usdc', 5, 5);
-            // await web3?.add_liquidity(swap_pancake, 'ezm', 'cake', 5, 5);
+            await web3?.add_liquidity(swap_pancake, 'ezm', 'cake', 5, 5);
             await web3?.add_liquidity(swap_pancake, 'ezm', 'usdt', 5, 5);
             await web3?.add_liquidity(swap_pancake, 'ezm', 'bnb', 5, 5);
             await web3?.add_liquidity(swap_pancake, 'ezm', 'weth', 5, 0.1);
