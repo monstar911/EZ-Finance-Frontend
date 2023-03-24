@@ -131,12 +131,24 @@ function Header({ handleDrawerToggle }: IHeader) {
                 <div onClick={handleDrawerToggle} className={classes.toggleButton}>
                     <Avatar
                         sx={{
-                            bgcolor: '#FFF',
-                            boxShadow: '0px 1px 4px #ccc',
+                            // bgcolor: '#FFF',
+                            // boxShadow: '0px 1px 4px #ccc',
+
+                            color: 'white',
+                            // background: '#42396B',
+                            background: 'linear-gradient(90deg,#6e42ca,#8d29c1)',
+
+                            // boxShadow: '0px 0px 4px #5361DC60',
+
                             mt: '3px',
+                            '&:hover': {
+                                boxShadow: '0px 0px 4px #5361DC60',
+                            }
+
                         }}
                     >
-                        <IconMenu2 color="#888" />
+                        {/* <IconMenu2 color="#888" /> */}
+                        <IconMenu2 color="#FFF" />
                     </Avatar>
                 </div>
             )}

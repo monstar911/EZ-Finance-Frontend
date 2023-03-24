@@ -71,7 +71,8 @@ function Market() {
     const [borrAmt, setBorrAmt] = useState(0)
 
     useEffect(() => {
-        console.log(web3?.userInfo)
+        console.log('Market useEffect', web3?.userInfo)
+
         const poolInfo = web3?.poolInfo
         const userInfo = web3?.userInfo
         setPoolInfo(poolInfo)

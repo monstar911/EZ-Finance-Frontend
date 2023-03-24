@@ -178,26 +178,7 @@ export default function Position() {
     const [totalDebtValue, setTotalDebtValue] = useState(0);
     const [totalEquityValue, setTotalEquityValue] = useState(0);
 
-    useEffect(() => {
-        const tokenVolume = web3?.tokenVolume
-        const tokenPrice3 = web3?.tokenPrice3
-        const userPosition = web3?.userPosition
-        setUserPosition(userPosition)
-        setTokenVolume(tokenVolume)
-        setTokenPrice(tokenPrice3)
-        const positionInfo = getAllPosition(tokenVolume, tokenPrice3, userPosition);
-        console.log('Position useEffect', tokenVolume, userPosition, positionInfo.allPositions, positionInfo.totalPositionValue, positionInfo.totalDebtValue, positionInfo.totalEquityValue);
-        setAllPositions(positionInfo.allPositions)
-        setTotalPositionValue(positionInfo.totalPositionValue)
-        setTotalDebtValue(positionInfo.totalDebtValue)
-        setTotalEquityValue(positionInfo.totalEquityValue)
-    }, [web3])
-
-    // console.log('Farm tokenVolume', tokenVolume);
-    // console.log('Position', userPosition);
-
-    let farmPools: any = [];
-
+    const [poolData, setPoolData] = useState<any>([]);
 
     const getAllPosition = (tokenVolume: any, tokenPrice3: any, userPosition: any) => {
         let _allPositions = 0
@@ -215,22 +196,27 @@ export default function Position() {
                 _allPositions = _allPositions + Number(_position)
 
                 for (let i = 0; i < _position; i++) {
-                    const _positionValue = tokenPrice3?.[pairs[dex][pair].x.symbol] * userPosition?.[dex]?.[pair]?.[`${i}`]?.amountAdd_x / Math.pow(10, 8) +
-                        tokenPrice3?.[pairs[dex][pair].y.symbol] * userPosition?.[dex]?.[pair]?.[`${i}`]?.amountAdd_y / Math.pow(10, 8)
-                    const _debtValue = tokenPrice3?.[pairs[dex][pair].x.symbol] * userPosition?.[dex]?.[pair]?.[`${i}`]?.borrowAmount_x / Math.pow(10, 8) +
-                        tokenPrice3?.[pairs[dex][pair].y.symbol] * userPosition?.[dex]?.[pair]?.[`${i}`]?.borrowAmount_y / Math.pow(10, 8)
+                    console.log('getAllPosition token price', tokenPrice3?.[pairs[dex][pair].x.symbol], userPosition?.[dex]?.[pair]?.[i]?.['amountAdd_x'], userPosition?.[dex]?.[pair]?.[i]?.['amountAdd_y'])
+                    console.log('getAllPosition user position', userPosition?.[dex]?.[pair]?.[i]?.['borrowAmount_x'], userPosition?.[dex]?.[pair]?.[i]?.['borrowAmount_y'])
 
-                    console.log('getAllPosition - tokenPrice3, tokenPrice3', { tokenPrice3, userPosition });
-                    console.log('getAllPosition - i', { _positionValue, _debtValue });
+                    let _positionValue = tokenPrice3?.[pairs[dex][pair].x.symbol] * userPosition?.[dex]?.[pair]?.[i]?.amountAdd_x / Math.pow(10, 8) +
+                        tokenPrice3?.[pairs[dex][pair].y.symbol] * userPosition?.[dex]?.[pair]?.[i]?.amountAdd_y / Math.pow(10, 8)
+                    if (isNaN(_positionValue)) { _positionValue = 0 }
+                    let _debtValue = tokenPrice3?.[pairs[dex][pair].x.symbol] * userPosition?.[dex]?.[pair]?.[i]?.borrowAmount_x / Math.pow(10, 8) +
+                        tokenPrice3?.[pairs[dex][pair].y.symbol] * userPosition?.[dex]?.[pair]?.[i]?.borrowAmount_y / Math.pow(10, 8)
+                    if (isNaN(_debtValue)) { _debtValue = 0 }
+
+                    // console.log('getAllPosition - tokenPrice3, tokenPrice3', { tokenPrice3, userPosition });
+                    // console.log('getAllPosition - i', { _positionValue, _debtValue });
 
                     _totalPositionValue = _totalPositionValue + Number(_positionValue)
                     _totalDebtValue = _totalDebtValue + Number(_debtValue)
                     _totalEquityValue = _totalEquityValue + Number(_positionValue) - Number(_debtValue)
-                    console.log('getAllPosition - i', { tokenVolume, userPosition, _allPositions, _totalPositionValue, _totalDebtValue, _totalEquityValue });
+                    // console.log('getAllPosition - i', { tokenVolume, userPosition, _allPositions, _totalPositionValue, _totalDebtValue, _totalEquityValue });
                 }
             }
         })
-        console.log('getAllPosition', { tokenVolume, userPosition, _allPositions, _totalPositionValue, _totalDebtValue, _totalEquityValue });
+        // console.log('getAllPosition', { tokenVolume, userPosition, _allPositions, _totalPositionValue, _totalDebtValue, _totalEquityValue });
         return {
             allPositions: _allPositions,
             totalPositionValue: _totalPositionValue,
@@ -238,9 +224,26 @@ export default function Position() {
             totalEquityValue: _totalEquityValue,
         }
     }
-    // setAllPositions(_allPositions)
 
-    const poolData = React.useMemo(() => {
+    useEffect(() => {
+        console.log('Position useEffect')
+
+        const tokenVolume = web3?.tokenVolume
+        const tokenPrice3 = web3?.tokenPrice3
+        const userPosition = web3?.userPosition
+        setUserPosition(userPosition)
+        setTokenVolume(tokenVolume)
+        setTokenPrice(tokenPrice3)
+        const positionInfo = getAllPosition(tokenVolume, tokenPrice3, userPosition);
+        // console.log('Position useEffect', tokenVolume, userPosition, positionInfo.allPositions, positionInfo.totalPositionValue, positionInfo.totalDebtValue, positionInfo.totalEquityValue);
+        setAllPositions(positionInfo.allPositions)
+        setTotalPositionValue(positionInfo.totalPositionValue)
+        setTotalDebtValue(positionInfo.totalDebtValue)
+        setTotalEquityValue(positionInfo.totalEquityValue)
+
+
+        // console.log('Position useMemo')
+
         const bump: any = [];
 
         Object.keys(pairs).forEach((dex) => {
@@ -248,24 +251,37 @@ export default function Position() {
                 let _userPositionInfo = userPosition?.[dex]?.[pair]?.['length']
                 const _position = _userPositionInfo ??= 0
 
-                console.log('Position', dex, pair, _position, userPosition?.[dex]?.[pair])
+                // console.log('Position', dex, pair, _position, userPosition, userPosition?.[dex]?.[pair])
                 for (let i = 0; i < _position; i++) {
-                    console.log('Position', tokenPrice3?.[pairs[dex][pair].x.symbol], userPosition?.[dex]?.[pair]?.[`${i}`]?.['amountAdd_x'], userPosition?.[dex]?.[pair]?.[`${i}`]?.['amountAdd_y'])
-                    console.log('Position', userPosition?.[dex]?.[pair]?.[`${i}`]?.['borrowAmount_x'], userPosition?.[dex]?.[pair]?.[`${i}`]?.['borrowAmount_y'])
+                    // console.log('Position token price', tokenPrice3?.[pairs[dex][pair].x.symbol], userPosition?.[dex]?.[pair]?.[i]?.['amountAdd_x'], userPosition?.[dex]?.[pair]?.[i]?.['amountAdd_y'])
+                    // console.log('Position user position', userPosition?.[dex]?.[pair]?.[i]?.['borrowAmount_x'], userPosition?.[dex]?.[pair]?.[i]?.['borrowAmount_y'])
 
-                    const _positionValue = tokenPrice3?.[pairs[dex][pair].x.symbol] * userPosition?.[dex]?.[pair]?.[`${i}`]?.amountAdd_x / Math.pow(10, 8) +
-                        tokenPrice3?.[pairs[dex][pair].y.symbol] * userPosition?.[dex]?.[pair]?.[`${i}`]?.amountAdd_y / Math.pow(10, 8)
-                    const _debtValue = tokenPrice3?.[pairs[dex][pair].x.symbol] * userPosition?.[dex]?.[pair]?.[`${i}`]?.borrowAmount_x / Math.pow(10, 8) +
-                        tokenPrice3?.[pairs[dex][pair].y.symbol] * userPosition?.[dex]?.[pair]?.[`${i}`]?.borrowAmount_y / Math.pow(10, 8)
+                    let _positionValue = tokenPrice3?.[pairs[dex][pair].x.symbol] * userPosition?.[dex]?.[pair]?.[i]?.amountAdd_x / Math.pow(10, 8) +
+                        tokenPrice3?.[pairs[dex][pair].y.symbol] * userPosition?.[dex]?.[pair]?.[i]?.amountAdd_y / Math.pow(10, 8)
+                    if (isNaN(_positionValue)) { _positionValue = 0 }
+                    let _debtValue = tokenPrice3?.[pairs[dex][pair].x.symbol] * userPosition?.[dex]?.[pair]?.[i]?.borrowAmount_x / Math.pow(10, 8) +
+                        tokenPrice3?.[pairs[dex][pair].y.symbol] * userPosition?.[dex]?.[pair]?.[i]?.borrowAmount_y / Math.pow(10, 8)
+                    if (isNaN(_debtValue)) { _debtValue = 0 }
+
                     const obj = {
                         dex: dex,
+                        created_at: userPosition?.[dex]?.[pair]?.[i]?.created_at,
+                        leverage: userPosition?.[dex]?.[pair]?.[i]?.leverage,
+                        supplyAmount_x: userPosition?.[dex]?.[pair]?.[i]?.supplyAmount_x,
+                        supplyAmount_y: userPosition?.[dex]?.[pair]?.[i]?.supplyAmount_y,
+                        supplyAmount_z: userPosition?.[dex]?.[pair]?.[i]?.supplyAmount_z,
+                        borrowAmount_x: userPosition?.[dex]?.[pair]?.[i]?.borrowAmount_x,
+                        borrowAmount_y: userPosition?.[dex]?.[pair]?.[i]?.borrowAmount_y,
+                        borrowAmount_z: userPosition?.[dex]?.[pair]?.[i]?.borrowAmount_z,
+                        amountAdd_x: userPosition?.[dex]?.[pair]?.[i]?.amountAdd_x,
+                        amountAdd_y: userPosition?.[dex]?.[pair]?.[i]?.amountAdd_y,
                         aTokenIcon: pairs[dex][pair].x.logo,
                         bTokenIcon: pairs[dex][pair].y.logo,
                         aname: pairs[dex][pair].x.name,
                         bname: pairs[dex][pair].y.name,
                         pair: pairs[dex][pair].x.symbol + '-' + pairs[dex][pair].y.symbol + '-' + dex,
-                        positionValue: _positionValue,
-                        debtValue: _debtValue,
+                        positionValue: Number(_positionValue),
+                        debtValue: Number(_debtValue),
                         equityValue: Number(_positionValue) - Number(_debtValue)
                     };
 
@@ -274,8 +290,29 @@ export default function Position() {
             }
         })
 
-        return bump;
-    }, [web3]);
+        setPoolData(bump);
+    }, [web3])
+
+    const onWithdraw = async (index: number) => {
+        console.log('onWithdraw', index, poolData[index]);
+
+        await web3?.position_withdraw(
+            poolData[index].dex,
+            poolData[index].aname,
+            poolData[index].bname,
+            poolData[index].created_at,
+            poolData[index].leverage,
+            poolData[index].supplyAmount_x,
+            poolData[index].supplyAmount_y,
+            poolData[index].supplyAmount_z,
+            poolData[index].borrowAmount_x,
+            poolData[index].borrowAmount_y,
+            poolData[index].borrowAmount_z,
+            poolData[index].amountAdd_x,
+            poolData[index].amountAdd_y
+        );
+    }
+
 
     return (
         <Container>
@@ -288,7 +325,7 @@ export default function Position() {
                                 <Typography variant="subtitle1">Claimable $EZM Rewards</Typography>
                                 <Typography variant="h4">0.00 $EZM</Typography>
                             </Box>
-                            <Common_FillButton content="Claim & Stake" />
+                            <Common_FillButton content="Claim" />
                         </Box>
                         <Box className="devideLine" />
                         <Box className="footer">
@@ -417,8 +454,8 @@ export default function Position() {
                                                                     color: '#FFF'
                                                                 }
                                                             }}
-                                                        //disabled={index > 1 ? true : false}
-                                                        // onClick={() => onSupModalOpen(index)}
+                                                            //disabled={index > 1 ? true : false}
+                                                            onClick={() => onWithdraw(index)}
                                                         >
                                                             Withdraw
                                                         </Button>

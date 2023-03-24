@@ -6,6 +6,12 @@ import { ethers } from 'ethers'
 import useSWR from 'swr'
 import _ from 'lodash'
 
+// const WalletClient = require("aptos-wallet-api/src/wallet-client");
+// const NODE_URL = "https://fullnode.testnet.aptoslabs.com/v1";
+// const FAUCET_URL = "https://faucet.net.aptoslabs.com";
+// const walletClient = new WalletClient(NODE_URL, FAUCET_URL);
+
+
 const client = new AptosClient('https://fullnode.testnet.aptoslabs.com/v1');
 const coinClient = new CoinClient(client);
 
@@ -49,6 +55,7 @@ export interface IAptosInterface {
     getFaucet: any;
     checkBalance: any;
     leverage_yield_farming: any;
+    position_withdraw: any;
     add_liquidity: any;
     swap: any;
     borrow: any;
@@ -64,9 +71,6 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
 
     const { data: dataPrice } = useSWR(BACKEND_TOKEN_PRICE);
     const { data: dataVolume } = useSWR(BACKEND_VOLUME_DATA);
-
-    // console.log('data:', dataPrice);
-    // console.log('data:', dataVolume);
 
     const [, setLoading] = useState(false);
     const [wallet, setWallet] = useState<string>('');
@@ -109,7 +113,6 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
                         }
                     }
                 })))
-
             }
         })
     };
@@ -284,161 +287,89 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
     }, []);
 
     const getUserPosition = async () => {
+        console.log('web3 getUserPosition address', address)
         if (!address) return
 
         const resOfResource = await client.getAccountResources(ezfinance)
 
-        console.log('getUserPosition start')
+        console.log('web3 getUserPosition getAccountResources')
         Object.keys(pairs).forEach((dex) => {
             for (let pair in pairs[dex]) {
+
                 const userPositionInfo = resOfResource.find((item) => (
                     (item.type === `${ezfinance}::farming::PositionInfoDex<${tokens[pairs[dex][pair].x.symbol]}, ${tokens[pairs[dex][pair].y.symbol]}>`) ||
                     (item.type === `${ezfinance}::farming::PositionInfoDex<${tokens[pairs[dex][pair].y.symbol]}, ${tokens[pairs[dex][pair].x.symbol]}>`)
                 ))
 
-                if (userPositionInfo) {
-                    console.log('getUserPosition userPositionInfo', dex, pair, userPositionInfo);
+                if (!userPositionInfo) continue
 
-                    let userPositionInfoData;
-                    if (dex === 'pancake') {
-                        userPositionInfoData = userPositionInfo.data as { positionInfo_pan: { length: number } }
-                        for (let i = 0; i < userPositionInfoData.positionInfo_pan.length; i++) {
-                            const userPositionInfoItem = userPositionInfo.data as {
-                                'positionInfo_pan': {
-                                    i: {
-                                        borrowAmount_x: number,
-                                        borrowAmount_y: number,
-                                        borrowAmount_z: number,
-                                        created_at: number,
-                                        dex_name: string,
-                                        leverage: number,
-                                        signer_addr: string,
-                                        status: boolean,
-                                        supplyAmount_x: number,
-                                        supplyAmount_y: number,
-                                        supplyAmount_z: number,
-                                    }
-                                }
+                let length = 0
+                let userPositionInfoData;
+                let posInfo_dex = 'positionInfo_'
+                if (dex === 'pancake') {
+                    posInfo_dex = posInfo_dex + 'pan'
+                    userPositionInfoData = userPositionInfo.data as { posInfo_dex: { length: number } }
+                    length = userPositionInfoData.positionInfo_pan.length
+                } else if (dex === 'liquid') {
+                    posInfo_dex = posInfo_dex + 'liq'
+                    userPositionInfoData = userPositionInfo.data as { posInfo_dex: { length: number } }
+                    length = userPositionInfoData.positionInfo_liq.length
+                } else if (dex === 'aux') {
+                    posInfo_dex = posInfo_dex + 'aux'
+                    userPositionInfoData = userPositionInfo.data as { posInfo_dex: { length: number } }
+                    length = userPositionInfoData.positionInfo_aux.length
+                }
+
+                // console.log('web3 getPositionInfo posInfo_dex:', posInfo_dex)
+
+                let idx = 0;
+                for (let i = 0; i < length; i++) {
+                    const userPositionInfoItem = userPositionInfo.data as {
+                        posInfo_dex: {
+                            i: {
+                                amountAdd_x: number,
+                                amountAdd_y: number,
+                                borrowAmount_x: number,
+                                borrowAmount_y: number,
+                                borrowAmount_z: number,
+                                created_at: number,
+                                dex_name: string,
+                                leverage: number,
+                                signer_addr: string,
+                                status: boolean,
+                                supplyAmount_x: number,
+                                supplyAmount_y: number,
+                                supplyAmount_z: number,
                             }
-
-                            console.log('getUserPosition userPositionInfoItem', userPositionInfoItem['positionInfo_pan'][`${i}`])
-                            // console.log('getUserPosition userPositionInfoItem', address, userPositionInfoItem['positionInfo_pan'][`${i}`]['signer_addr'])
-                            if (address !== userPositionInfoItem['positionInfo_pan'][`${i}`]['signer_addr']) continue;
-                            setUserPosition((userPosition) => (_.merge(
-                                userPosition, {
-                                ['pancake']: {
-                                    [pair]: {
-                                        [`${i}`]: userPositionInfoItem['positionInfo_pan'][`${i}`],
-                                        ['length']: i + 1,
-                                    }
-                                }
-                            })))
-                        }
-                    } else if (dex === 'liquid') {
-                        userPositionInfoData = userPositionInfo.data as { positionInfo_liq: { length: number } }
-
-                        for (let i = 0; i < userPositionInfoData.positionInfo_liq.length; i++) {
-                            const userPositionInfoItem = userPositionInfo.data as {
-                                positionInfo_liq: {
-                                    i: {
-                                        borrowAmount_x: number,
-                                        borrowAmount_y: number,
-                                        borrowAmount_z: number,
-                                        created_at: number,
-                                        dex_name: string,
-                                        leverage: number,
-                                        signer_addr: string,
-                                        status: boolean,
-                                        supplyAmount_x: number,
-                                        supplyAmount_y: number,
-                                        supplyAmount_z: number,
-                                    }
-                                }
-                            }
-                            console.log('getUserPosition userPositionInfoItem', userPositionInfoItem['positionInfo_liq'][`${i}`])
-                            // console.log('getUserPosition userPositionInfoItem', address, userPositionInfoItem['positionInfo_liq'][`${i}`]['signer_addr'])
-                            if (address !== userPositionInfoItem['positionInfo_liq'][`${i}`]['signer_addr']) continue;
-                            setUserPosition((userPosition) => (_.merge(
-                                userPosition, {
-                                ['liquid']: {
-                                    [pair]: {
-                                        [`${i}`]: userPositionInfoItem['positionInfo_liq'][`${i}`],
-                                        ['length']: i + 1,
-                                    }
-                                }
-                            })))
-                        }
-                    } else if (dex === 'aux') {
-                        userPositionInfoData = userPositionInfo.data as { positionInfo_aux: { length: number } }
-
-                        for (let i = 0; i < userPositionInfoData.positionInfo_aux.length; i++) {
-                            const userPositionInfoItem = userPositionInfo.data as {
-                                positionInfo_aux: {
-                                    i: {
-                                        borrowAmount_x: number,
-                                        borrowAmount_y: number,
-                                        borrowAmount_z: number,
-                                        created_at: number,
-                                        dex_name: string,
-                                        leverage: number,
-                                        signer_addr: string,
-                                        status: boolean,
-                                        supplyAmount_x: number,
-                                        supplyAmount_y: number,
-                                        supplyAmount_z: number,
-                                    }
-                                }
-                            }
-                            console.log('getUserPosition userPositionInfoItem', userPositionInfoItem['positionInfo_aux'][`${i}`])
-                            // console.log('getUserPosition userPositionInfoItem', address, userPositionInfoItem['positionInfo_aux'][`${i}`]['signer_addr'])
-                            if (address !== userPositionInfoItem['positionInfo_aux'][`${i}`]['signer_addr']) continue;
-                            setUserPosition((userPosition) => (_.merge(
-                                userPosition, {
-                                ['aux']: {
-                                    [pair]: {
-                                        [`${i}`]: userPositionInfoItem['positionInfo_aux'][`${i}`],
-                                        ['length']: i + 1,
-                                    }
-                                }
-                            })))
                         }
                     }
+
+                    // console.log('web3 getUserPosition addr', address, userPositionInfoItem[posInfo_dex][`${i}`]?.signer_addr)
+
+                    if (address !== userPositionInfoItem[posInfo_dex][`${i}`]?.signer_addr) continue;
+
+
+                    setUserPosition((userPosition) => (_.merge(
+                        userPosition, {
+                        [dex]: {
+                            [pair]: {
+                                [`${idx}`]: userPositionInfoItem[posInfo_dex][i],
+                                ['length']: idx + 1,
+                            }
+                        }
+                    })))
+
+                    idx++;
                 }
             }
         })
 
-        // setuserPosition(userPositionInfoAll)
-        console.log('getUserPosition userPositionInfoAll', userPosition);
+        console.log('web3 getUserPosition', userPosition);
     }
 
     useEffect(() => {
         getUserPosition();
-    }, [address]);
-
-
-    // update wallet address
-    useEffect(() => {
-        if (isConnected && wallet === 'petra') {
-            window?.aptos.account().then((data: any) => {
-                setAddress(data.address);
-            });
-        } else if (isConnected && wallet === 'martian') {
-            window?.martian.account().then((data: any) => {
-                setAddress(data.address);
-            });
-        } else if (isConnected && wallet === 'pontem') {
-            window?.pontem.account().then((data: any) => {
-                setAddress(data);
-            });
-        } else {
-            setAddress(null);
-        }
-    }, [isConnected, wallet]);
-
-    // update connection
-    useEffect(() => {
-        checkIsConnected(wallet);
-    }, [wallet]);
+    }, [address, userPosition]);
 
     // get pull information
     const getPoolInfo = async () => {
@@ -560,50 +491,6 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
     useEffect(() => {
         getUserInfo();
     }, [address, userInfo]);
-
-    const connect = async (wallet: string) => {
-        try {
-            if (wallet === 'petra') {
-                if ('aptos' in window) await window.aptos.connect();
-                //  else window.open('https://petra.app/', `_blank`);
-            } else if (wallet === 'martian') {
-                if ('martian' in window) await window.martian.connect();
-                // else window.open('https://www.martianwallet.xyz/', '_blank');
-            } else if (wallet === 'pontem') {
-                if ('pontem' in window) await window.pontem.connect();
-                // else window.open('https://petra.app/', `_blank`);
-            }
-            setWallet(wallet);
-            checkIsConnected(wallet);
-        } catch (e) {
-            console.log(e);
-        }
-    };
-
-    const disconnect = async () => {
-        try {
-            if (wallet === 'petra') await window.aptos.disconnect();
-            else if (wallet === 'martian') await window.martian.disconnect();
-            else if (wallet === 'pontem') await window.pontem.disconnect();
-            setWallet('');
-            checkIsConnected(wallet);
-        } catch (e) {
-            console.log(e);
-        }
-    };
-
-    const checkIsConnected = async (wallet: string) => {
-        if (wallet === 'petra') {
-            const x = await window.aptos.isConnected();
-            setIsConnected(x);
-        } else if (wallet === 'martian') {
-            const x = await window.martian.isConnected();
-            setIsConnected(x);
-        } else if (wallet === 'pontem') {
-            const x = await window.pontem.isConnected();
-            setIsConnected(x);
-        }
-    };
 
     const claim = async () => {
         if (wallet === '' || !isConnected) return;
@@ -748,7 +635,10 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         if (wallet === 'petra') {
             transaction = petraTransaction;
         } else if (wallet === 'martian') {
-            transaction = await window.martian.generateTransaction(sender, payload);
+            const options = {
+                max_gas_amount: "10000"
+            }
+            transaction = await window.martian.generateTransaction(sender, payload, options);
         } else if (wallet === 'pontem') {
             // transaction = await window.pontem.generateTransaction(sender, payload);
         }
@@ -781,6 +671,15 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
     // const getMinimumReceivedLP = async (tokenX: string, tokenY: string, amount: number) => {
 
     // }
+
+    const position_withdraw = async (
+        protocol: number, coinX: string, coinY: string,
+        created_at: number, leverage: number,
+        supplyAmount_x: number, supplyAmount_y: number, supplyAmount_z: number,
+        borrowAmount_x: number, borrowAmount_y: number, borrowAmount_z: number,
+        amountAdd_x: number, amountAdd_y: number) => {
+
+    }
 
     const leverage_yield_farming = async (protocol: number, coinX: string, coinY: string, valuePairX: number, valuePairY: number, valueEZM: number, valueLeverage: number) => {
         if (wallet === '' || !isConnected) return;
@@ -816,7 +715,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
 
         const sender = address;
         const payload = {
-            function: ezfinance + '::pancake_farming::leverage_yield_farming',
+            function: ezfinance + '::farming::leverage_yield_farming',
             arguments: [protocol, leverageInWei, amountInWeiSupplyPairX, amountInWeiSupplyPairY, amountInWeiSupplyEZM,
                 amountInWeiBorrowPairX, amountInWeiBorrowPairY, 0],
             type_arguments: [tokenTypeX, tokenTypeY],
@@ -985,6 +884,78 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         await getPoolInfo();
     }
 
+    const connect = async (wallet: string) => {
+        try {
+            if (wallet === 'petra') {
+                if ('aptos' in window) await window.aptos.connect();
+                //  else window.open('https://petra.app/', `_blank`);
+            } else if (wallet === 'martian') {
+                if ('martian' in window) await window.martian.connect();
+                // else window.open('https://www.martianwallet.xyz/', '_blank');
+            } else if (wallet === 'pontem') {
+                if ('pontem' in window) await window.pontem.connect();
+                // else window.open('https://petra.app/', `_blank`);
+            }
+            setWallet(wallet);
+            checkIsConnected(wallet);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+
+    const disconnect = async () => {
+        try {
+            if (wallet === 'petra') await window.aptos.disconnect();
+            else if (wallet === 'martian') await window.martian.disconnect();
+            else if (wallet === 'pontem') await window.pontem.disconnect();
+            setWallet('');
+            checkIsConnected(wallet);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+
+    const checkIsConnected = async (wallet: string) => {
+        if (wallet === 'petra') {
+            const x = await window.aptos.isConnected();
+            setIsConnected(x);
+        } else if (wallet === 'martian') {
+            const x = await window.martian.isConnected();
+            setIsConnected(x);
+        } else if (wallet === 'pontem') {
+            const x = await window.pontem.isConnected();
+            setIsConnected(x);
+        }
+    };
+
+    // update wallet address
+    useEffect(() => {
+        if (isConnected && wallet === 'petra') {
+            window?.aptos.account().then((data: any) => {
+                setAddress(data.address);
+                console.log('web3 petra address', data.address)
+            });
+        } else if (isConnected && wallet === 'martian') {
+            window?.martian.account().then((data: any) => {
+                setAddress(data.address);
+                console.log('web3 martian address', data.address)
+            });
+        } else if (isConnected && wallet === 'pontem') {
+            window?.pontem.account().then((data: any) => {
+                setAddress(data);
+                console.log('web3 pontem address', data.address)
+            });
+        } else {
+            setAddress(null);
+        }
+
+    }, [isConnected, wallet]);
+
+    // update connection
+    useEffect(() => {
+        checkIsConnected(wallet);
+    }, [wallet]);
+
     const contextValue: IAptosInterface = {
         arcTotalSupply: 100000,
         poolInfo,
@@ -1006,6 +977,7 @@ export const Web3ContextProvider = ({ children, ...props }: Props) => {
         getFaucet,
         checkBalance,
         leverage_yield_farming,
+        position_withdraw,
         add_liquidity,
         swap,
         borrow,

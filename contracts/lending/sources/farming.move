@@ -16,12 +16,15 @@ module ezfinance::farming {
     use aptos_framework::account::SignerCapability;
     use aptos_framework::aptos_coin::AptosCoin;
 
+    use pancake::math as math_pan;
     use pancake::swap as swap_pan;
     use pancake::router as router_pan;
 
+    use liquid::math as math_liq;
     use liquid::swap as swap_liq;
     use liquid::router as router_liq;
 
+    use auxexchange::math as math_aux;
     use auxexchange::swap as swap_aux;
     use auxexchange::router as router_aux;
     
@@ -45,9 +48,10 @@ module ezfinance::farming {
     const ERROR_NOT_CREATED_PAIR: u64 = 1;
     const ERROR_INSUFFICIENT_ASSET: u64 = 2;
     const ERROR_INVALID_PARAM_DEX: u64 = 3;
+    const ERROR_UNKNOWN: u64 = 4;
 
     // for TVL via EZ, positions
-    struct PositionInfo<phantom X, phantom Y> has key, store, drop {
+    struct PositionInfo<phantom X, phantom Y> has key, copy, store, drop {
         dex_name: String, //PancakeSwap, LiquidSwap, AUX Exchange
         signer_addr: address,
         created_at: u64,
@@ -66,7 +70,7 @@ module ezfinance::farming {
         amountAdd_y: u64,
     }
 
-    struct PositionInfoDex<phantom X, phantom Y> has key, store {
+    struct PositionInfoDex<phantom X, phantom Y> has key, copy, store {
         positionInfo_pan: vector<PositionInfo<X, Y>>,
         positionInfo_liq: vector<PositionInfo<X, Y>>,
         positionInfo_aux: vector<PositionInfo<X, Y>>,
@@ -84,6 +88,89 @@ module ezfinance::farming {
         move_to(&resource_signer, ModuleData {
             signer_cap,
         });
+    }
+
+    public entry fun withdraw<X, Y>(
+        sender: &signer,
+        dex: u64, // protocol: number,
+        created_at: u64,
+        leverage: u64,
+        supplyAmount_x: u64,
+        supplyAmount_y: u64,
+        supplyAmount_z: u64,
+        borrowAmount_x: u64,
+        borrowAmount_y: u64,
+        borrowAmount_z: u64,
+        amountAdd_x: u64,
+        amountAdd_y: u64,
+    ) acquires ModuleData, PositionInfoDex {
+        
+        let dex_name: string::String = string::utf8(b"PancakeSwap");
+
+        if (dex == 0) { //pancake
+            dex_name = string::utf8(b"PancakeSwap");
+
+            assert!(swap_pan::is_pair_created<X, Y>() || swap_pan::is_pair_created<Y, X>(), ERROR_NOT_CREATED_PAIR);
+            assert!(swap_pan::is_pair_created<EZM, X>() || swap_pan::is_pair_created<X, EZM>(), ERROR_NOT_CREATED_PAIR);              
+            assert!(swap_pan::is_pair_created<EZM, Y>() || swap_pan::is_pair_created<Y, EZM>(), ERROR_NOT_CREATED_PAIR);
+        } else if (dex == 1) { //liquid
+            dex_name = string::utf8(b"LiquidSwap");
+
+            assert!(swap_liq::is_pair_created<X, Y>() || swap_liq::is_pair_created<Y, X>(), ERROR_NOT_CREATED_PAIR);
+            assert!(swap_liq::is_pair_created<EZM, X>() || swap_liq::is_pair_created<X, EZM>(), ERROR_NOT_CREATED_PAIR);              
+            assert!(swap_liq::is_pair_created<EZM, Y>() || swap_liq::is_pair_created<Y, EZM>(), ERROR_NOT_CREATED_PAIR);
+        } else if (dex == 2) { //aux
+            dex_name = string::utf8(b"AUX Exchange");
+
+            assert!(swap_aux::is_pair_created<X, Y>() || swap_aux::is_pair_created<Y, X>(), ERROR_NOT_CREATED_PAIR);
+            assert!(swap_aux::is_pair_created<EZM, X>() || swap_aux::is_pair_created<X, EZM>(), ERROR_NOT_CREATED_PAIR);              
+            assert!(swap_aux::is_pair_created<EZM, Y>() || swap_aux::is_pair_created<Y, EZM>(), ERROR_NOT_CREATED_PAIR);
+        } else {
+            abort ERROR_INVALID_PARAM_DEX
+        };
+        
+        let moduleData = borrow_global_mut<ModuleData>(RESOURCE_ACCOUNT);
+        let resource_signer = account::create_signer_with_capability(&moduleData.signer_cap);
+        let resource_account_addr = signer::address_of(&resource_signer);
+
+
+        //set position for wallet and position count
+        let signer_addr = signer::address_of(sender);
+        
+        assert!(exists<PositionInfoDex<X, Y>>(resource_account_addr), ERROR_UNKNOWN);
+
+        let len = 0;
+        let positionInfoDex = borrow_global_mut<PositionInfoDex<X, Y>>(resource_account_addr);
+        if (dex == 0) {
+            let i = 0;
+            let max_len = vector::length(&positionInfoDex.positionInfo_pan);
+            while (i < max_len) {
+                let positionInfo = vector::borrow_mut(&mut positionInfoDex.positionInfo_pan, i);
+                if (positionInfo.created_at == created_at) {
+                    if (amountAdd_x > 0 && amountAdd_y > 0) {
+                        let suppose_lp_balance = math_pan::sqrt(((amountAdd_x as u128) * (amountAdd_y as u128))) - MINIMUM_LIQUIDITY;
+
+                        router_pan::remove_liquidity<X, Y>(&resource_signer, (suppose_lp_balance as u64), 0, 0);
+
+                        positionInfo.status = false;
+
+                        let balance_x = coin::balance<X>(signer::address_of(&resource_signer));
+                        assert!(balance_x > supplyAmount_x, ERROR_INSUFFICIENT_ASSET);
+                        let input_x_coin = coin::withdraw<X>(&resource_signer, supplyAmount_x);
+                        coin::deposit<X>(signer_addr, input_x_coin);
+
+                        let balance_y = coin::balance<Y>(signer::address_of(&resource_signer));
+                        assert!(balance_y > supplyAmount_y, ERROR_INSUFFICIENT_ASSET);
+                        let input_y_coin = coin::withdraw<Y>(&resource_signer, supplyAmount_x);
+                        coin::deposit<Y>(signer_addr, input_y_coin);
+                    };
+                };
+
+                i = i + 1;
+            };
+        } else if (dex == 1) {
+        } else if (dex == 2) {
+        };
     }
 
     /// Leverage Yield Farming, create pair if it's needed

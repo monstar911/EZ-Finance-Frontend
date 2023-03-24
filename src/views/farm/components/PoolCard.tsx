@@ -181,7 +181,7 @@ function PoolCard(props: any) {
 
                 {dropOpen && (
                     <Box className="hidden_content">
-                        <Grid container justifyContent={'center'} alignItems={'center'}>
+                        <Grid container justifyContent={'flex-start'} alignItems={'center'}>
                             <Grid item xs={12} sm={6} md={4} lg={3}>
                                 <Box sx={{ p: 1.5 }}>
                                     <Typography variant="subtitle1">Maximum APR</Typography>
@@ -204,12 +204,6 @@ function PoolCard(props: any) {
                                 <Box sx={{ p: 1.5 }}>
                                     <Typography variant="subtitle1">Positions</Typography>
                                     <Typography variant="h5">{position}</Typography>
-                                </Box>
-                            </Grid>
-                            <Grid item xs={12} sm={6} md={4} lg={3}>
-                                <Box sx={{ p: 1.5 }}>
-                                    <Typography variant="subtitle1">Acheived From</Typography>
-                                    <Typography variant="h5">{acheive}x</Typography>
                                 </Box>
                             </Grid>
                             <Grid item xs={12} sm={6} md={4} lg={3}>
