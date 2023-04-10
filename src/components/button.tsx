@@ -25,7 +25,9 @@ const OutlineStyledButton = styled(Button)({
 export const Common_FillButton = (props: any) => {
     const { content, ...other } = props;
 
-    return <StyledButton {...other}>{content}</StyledButton>;
+    return <StyledButton {...other}>
+            {content}
+        </StyledButton>;
 };
 
 export const Common_OutlineButton = (props: any) => {
