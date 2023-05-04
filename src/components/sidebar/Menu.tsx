@@ -51,11 +51,6 @@ const menuList = [
         param: 'lend',
         logo: LendIcon,
     },
-    // {
-    //     title: 'Invest',
-    //     param: 'invest',
-    //     logo: Invest,
-    // },
     {
         title: 'Docs',
         logo: DocsIcon,
@@ -91,7 +86,7 @@ function MenuList() {
         const { pathname } = location;
         const menu = checkPage(pathname);
         setMenu(menu);
-    }, [location]);
+    }, [location, checkPage]);
 
     return (
         <div className={classes.menuList}>

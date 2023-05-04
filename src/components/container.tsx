@@ -14,7 +14,5 @@ const useStyles = makeStyles((theme: any) => ({
 
 export default function Container({ children }: { children: React.ReactNode }) {
     const classes = useStyles();
-    return <Box className={classes.root}>
-        {children}
-    </Box>;
+    return <Box className={classes.root}>{children}</Box>;
 }

@@ -1,18 +1,18 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Box, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import Container from '../../components/container';
-import { Common_FillButton } from '../../components/button';
+import React, { useContext, useEffect, useState } from 'react'
+import { Box, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
+import { makeStyles } from '@mui/styles'
+import AccountCircleIcon from '@mui/icons-material/AccountCircle'
+import Container from '../../components/container'
+import { CommonFillButton } from '../../components/button'
 
-import notExist from '../../asset/icons/not_exist.png';
-import { ITokenPrice3, Web3Context } from '../../context/Web3Context';
-import { coins, pairs, protocols } from '../../context/constant';
-import { trim } from '../../helper/trim';
-import { formatValue } from '../../helper/formatValue';
+import notExist from '../../asset/icons/not_exist.png'
+import { ITokenPrice, Web3Context } from '../../context/Web3Context'
+import {  pairs, protocols } from '../../context/constant'
+import { formatValue } from '../../helper/formatValue'
 
 const useStyles = makeStyles((theme: any) => ({
     root: {
+        
         color: 'white',
         '& > h2': {
             fontSize: '30px',
@@ -37,15 +37,11 @@ const useStyles = makeStyles((theme: any) => ({
             },
             '& > div:first-child': {
                 position: 'relative',
-                flex: '1',
+                flexGrow: 1,
                 background: '#16162d', borderRadius: '24px',
                 boxShadow: '0px 1px 4px #ccc',
 
-                minWidth: '600px',
-                [theme.breakpoints.down('md')]: {
-                    minWidth: 'unset',
-                    width: '100%',
-                },
+
                 '& .header': {
                     display: 'flex',
                     justifyContent: 'space-between',
@@ -80,16 +76,11 @@ const useStyles = makeStyles((theme: any) => ({
                 },
             },
             '& > div:last-child': {
-                position: 'relative',
-                flex: '1',
+                position: 'relative', 
+                flexGrow:1,
                 background: '#16162d', borderRadius: '24px',
                 boxShadow: '0px 1px 4px #ccc',
 
-                minWidth: '600px',
-                [theme.breakpoints.down('md')]: {
-                    minWidth: 'unset',
-                    width: '100%',
-                },
                 '& .header': {
                     display: 'flex',
                     justifyContent: 'space-between',
@@ -146,7 +137,6 @@ const useStyles = makeStyles((theme: any) => ({
                 },
             },
             '& h6': {
-                // padding: '50px',
                 fontSize: '18px',
                 fontWeight: '500',
             },
@@ -170,9 +160,9 @@ export default function Position() {
     const classes = useStyles();
 
     const web3 = useContext(Web3Context)
-    const [userPosition, setUserPosition] = useState<any>(web3?.userPosition)
-    const [tokenVolume, setTokenVolume] = useState<any>()
-    const [tokenPrice3, setTokenPrice] = useState<ITokenPrice3>()
+    const [, setUserPosition] = useState<any>(web3?.userPosition)
+    const [, setTokenVolume] = useState<any>()
+    const [, setTokenPrice] = useState<ITokenPrice>()
     const [allPositions, setAllPositions] = useState(0);
     const [totalPositionValue, setTotalPositionValue] = useState(0);
     const [totalDebtValue, setTotalDebtValue] = useState(0);
@@ -180,7 +170,8 @@ export default function Position() {
 
     const [poolData, setPoolData] = useState<any>([]);
 
-    const getAllPosition = (tokenVolume: any, tokenPrice3: any, userPosition: any) => {
+    const getAllPosition = (tokenVolume: any, tokenPrice: any, userPosition: any) => {
+
         let _allPositions = 0
         let _totalPositionValue = 0
         let _totalDebtValue = 0
@@ -188,35 +179,29 @@ export default function Position() {
 
         Object.keys(pairs).forEach((dex) => {
             for (let pair in pairs[dex]) {
-                let _liquidityInfo = tokenVolume?.[dex]?.[pair]?.['liquidity']
-                const _liquidity = _liquidityInfo ??= 0
-
+                
+            
                 let _userPositionInfo = userPosition?.[dex]?.[pair]?.['length']
                 const _position = _userPositionInfo ??= 0
                 _allPositions = _allPositions + Number(_position)
 
-                for (let i = 0; i < _position; i++) {
-                    console.log('getAllPosition token price', tokenPrice3?.[pairs[dex][pair].x.symbol], userPosition?.[dex]?.[pair]?.[i]?.['amountAdd_x'], userPosition?.[dex]?.[pair]?.[i]?.['amountAdd_y'])
-                    console.log('getAllPosition user position', userPosition?.[dex]?.[pair]?.[i]?.['borrowAmount_x'], userPosition?.[dex]?.[pair]?.[i]?.['borrowAmount_y'])
+                for (let i = 0; i < _position; i++) {                  
 
-                    let _positionValue = tokenPrice3?.[pairs[dex][pair].x.symbol] * userPosition?.[dex]?.[pair]?.[i]?.amountAdd_x / Math.pow(10, 8) +
-                        tokenPrice3?.[pairs[dex][pair].y.symbol] * userPosition?.[dex]?.[pair]?.[i]?.amountAdd_y / Math.pow(10, 8)
+                    let _positionValue = tokenPrice?.[pairs[dex][pair].x.symbol] * userPosition?.[dex]?.[pair]?.[i]?.amountAdd_x / Math.pow(10, 8) +
+                        tokenPrice?.[pairs[dex][pair].y.symbol] * userPosition?.[dex]?.[pair]?.[i]?.amountAdd_y / Math.pow(10, 8)
                     if (isNaN(_positionValue)) { _positionValue = 0 }
-                    let _debtValue = tokenPrice3?.[pairs[dex][pair].x.symbol] * userPosition?.[dex]?.[pair]?.[i]?.borrowAmount_x / Math.pow(10, 8) +
-                        tokenPrice3?.[pairs[dex][pair].y.symbol] * userPosition?.[dex]?.[pair]?.[i]?.borrowAmount_y / Math.pow(10, 8)
+                    let _debtValue = tokenPrice?.[pairs[dex][pair].x.symbol] * userPosition?.[dex]?.[pair]?.[i]?.borrowAmount_x / Math.pow(10, 8) +
+                        tokenPrice?.[pairs[dex][pair].y.symbol] * userPosition?.[dex]?.[pair]?.[i]?.borrowAmount_y / Math.pow(10, 8)
                     if (isNaN(_debtValue)) { _debtValue = 0 }
-
-                    // console.log('getAllPosition - tokenPrice3, tokenPrice3', { tokenPrice3, userPosition });
-                    // console.log('getAllPosition - i', { _positionValue, _debtValue });
 
                     _totalPositionValue = _totalPositionValue + Number(_positionValue)
                     _totalDebtValue = _totalDebtValue + Number(_debtValue)
                     _totalEquityValue = _totalEquityValue + Number(_positionValue) - Number(_debtValue)
-                    // console.log('getAllPosition - i', { tokenVolume, userPosition, _allPositions, _totalPositionValue, _totalDebtValue, _totalEquityValue });
+                    
                 }
             }
         })
-        // console.log('getAllPosition', { tokenVolume, userPosition, _allPositions, _totalPositionValue, _totalDebtValue, _totalEquityValue });
+        
         return {
             allPositions: _allPositions,
             totalPositionValue: _totalPositionValue,
@@ -226,23 +211,20 @@ export default function Position() {
     }
 
     useEffect(() => {
-        console.log('Position useEffect')
 
         const tokenVolume = web3?.tokenVolume
-        const tokenPrice3 = web3?.tokenPrice3
+        const tokenPrice = web3?.tokenPrice
         const userPosition = web3?.userPosition
         setUserPosition(userPosition)
         setTokenVolume(tokenVolume)
-        setTokenPrice(tokenPrice3)
-        const positionInfo = getAllPosition(tokenVolume, tokenPrice3, userPosition);
-        // console.log('Position useEffect', tokenVolume, userPosition, positionInfo.allPositions, positionInfo.totalPositionValue, positionInfo.totalDebtValue, positionInfo.totalEquityValue);
+        setTokenPrice(tokenPrice)
+
+        const positionInfo = getAllPosition(tokenVolume, tokenPrice, userPosition);
+       
         setAllPositions(positionInfo.allPositions)
         setTotalPositionValue(positionInfo.totalPositionValue)
         setTotalDebtValue(positionInfo.totalDebtValue)
         setTotalEquityValue(positionInfo.totalEquityValue)
-
-
-        // console.log('Position useMemo')
 
         const bump: any = [];
 
@@ -251,16 +233,13 @@ export default function Position() {
                 let _userPositionInfo = userPosition?.[dex]?.[pair]?.['length']
                 const _position = _userPositionInfo ??= 0
 
-                // console.log('Position', dex, pair, _position, userPosition, userPosition?.[dex]?.[pair])
                 for (let i = 0; i < _position; i++) {
-                    // console.log('Position token price', tokenPrice3?.[pairs[dex][pair].x.symbol], userPosition?.[dex]?.[pair]?.[i]?.['amountAdd_x'], userPosition?.[dex]?.[pair]?.[i]?.['amountAdd_y'])
-                    // console.log('Position user position', userPosition?.[dex]?.[pair]?.[i]?.['borrowAmount_x'], userPosition?.[dex]?.[pair]?.[i]?.['borrowAmount_y'])
 
-                    let _positionValue = tokenPrice3?.[pairs[dex][pair].x.symbol] * userPosition?.[dex]?.[pair]?.[i]?.amountAdd_x / Math.pow(10, 8) +
-                        tokenPrice3?.[pairs[dex][pair].y.symbol] * userPosition?.[dex]?.[pair]?.[i]?.amountAdd_y / Math.pow(10, 8)
+                    let _positionValue = tokenPrice?.[pairs[dex][pair].x.symbol] * userPosition?.[dex]?.[pair]?.[i]?.amountAdd_x / Math.pow(10, 8) +
+                        tokenPrice?.[pairs[dex][pair].y.symbol] * userPosition?.[dex]?.[pair]?.[i]?.amountAdd_y / Math.pow(10, 8)
                     if (isNaN(_positionValue)) { _positionValue = 0 }
-                    let _debtValue = tokenPrice3?.[pairs[dex][pair].x.symbol] * userPosition?.[dex]?.[pair]?.[i]?.borrowAmount_x / Math.pow(10, 8) +
-                        tokenPrice3?.[pairs[dex][pair].y.symbol] * userPosition?.[dex]?.[pair]?.[i]?.borrowAmount_y / Math.pow(10, 8)
+                    let _debtValue = tokenPrice?.[pairs[dex][pair].x.symbol] * userPosition?.[dex]?.[pair]?.[i]?.borrowAmount_x / Math.pow(10, 8) +
+                        tokenPrice?.[pairs[dex][pair].y.symbol] * userPosition?.[dex]?.[pair]?.[i]?.borrowAmount_y / Math.pow(10, 8)
                     if (isNaN(_debtValue)) { _debtValue = 0 }
 
                     const obj = {
@@ -289,12 +268,10 @@ export default function Position() {
                 }
             }
         })
-
         setPoolData(bump);
     }, [web3])
 
     const onWithdraw = async (index: number) => {
-        console.log('onWithdraw', index, poolData[index]);
 
         await web3?.position_withdraw(
             poolData[index].dex,
@@ -325,14 +302,13 @@ export default function Position() {
                                 <Typography variant="subtitle1">Claimable $EZM Rewards</Typography>
                                 <Typography variant="h4">0.00 $EZM</Typography>
                             </Box>
-                            <Common_FillButton content="Claim" />
+                            <CommonFillButton content="Claim" />
                         </Box>
                         <Box className="devideLine" />
                         <Box className="footer">
                             <Typography variant="subtitle1">Pending $EZM Rewards</Typography>
                             <Typography variant="body1">~0.00 $EZM</Typography>
                         </Box>
-                        {/* <Box className={classes.gradient__back}></Box> */}
                     </Box>
                     <Box>
                         <Box className="header">
@@ -356,7 +332,6 @@ export default function Position() {
                                 <Typography variant="h4">${formatValue(totalDebtValue, 2)}</Typography>
                             </Box>
                         </Box>
-                        {/* <Box className={classes.gradient__back}></Box> */}
                     </Box>
                 </Box>
 
@@ -364,7 +339,6 @@ export default function Position() {
                     <Box className="header">
                         <Typography variant="subtitle1">Your positions</Typography>
                     </Box>
-                    {/* <Box className="devideLine" /> */}
                     <Box
                         sx={{
                             display: 'flex',
@@ -415,12 +389,10 @@ export default function Position() {
                                                                     borderRadius: '50%',
                                                                 },
                                                             }}
-                                                        // sx={{ display: 'flex', justifyContent: 'flex-start', width: '40px' }}
                                                         >
                                                             <img src={item.aTokenIcon} alt={item.aname} />
                                                             <img src={item.bTokenIcon} alt={item.bname} style={{ marginLeft: '-8px' }} />
 
-                                                            {/* <img src={item.icon} alt='logo' style={{ width: '24px', height: '24px', marginRight: '3px' }} /> */}
                                                             <Box>
                                                                 <Typography variant="subtitle1" sx={{ wordBreak: 'keep-all', marginLeft: '16px' }}>
                                                                     {item.aname}-{item.bname}
@@ -454,7 +426,6 @@ export default function Position() {
                                                                     color: '#FFF'
                                                                 }
                                                             }}
-                                                            //disabled={index > 1 ? true : false}
                                                             onClick={() => onWithdraw(index)}
                                                         >
                                                             Withdraw

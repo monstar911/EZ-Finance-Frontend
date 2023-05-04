@@ -4,8 +4,8 @@ import { makeStyles } from '@mui/styles';
 import { Typography, Box, Grid } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { Common_FillButton } from '../../../components/button';
-import { coins, protocols } from '../../../context/constant';
+import { CommonFillButton } from '../../../components/button';
+import {  protocols } from '../../../context/constant';
 import { formatValue } from '../../../helper/formatValue';
 
 
@@ -75,7 +75,6 @@ function PoolCard(props: any) {
         trade_fee,
         borrow,
         position,
-        acheive,
         farm_apr,
         trade_volume,
         ez_tvl,
@@ -108,7 +107,6 @@ function PoolCard(props: any) {
                                 },
                             }}
                         >
-
                             <img src={property.x.logo} alt={property.x.name} />
                             <img src={property.y.logo} alt={property.y.name} style={{ marginLeft: '-8px' }} />
                             <Box>
@@ -157,8 +155,8 @@ function PoolCard(props: any) {
                             cursor: 'pointer',
                         }}
                     >
-                        <Common_FillButton
-                            content={'Farm up to ' + '1.00x'}
+                        <CommonFillButton
+                            content={'Farm up to 1.00x'}
                             onClick={() => navigate(`/farm/${pair}`)}
                         />
 

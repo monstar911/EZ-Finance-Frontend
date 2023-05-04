@@ -1,7 +1,7 @@
-import React from 'react';
+import React from 'react'
 
-import Market from './components/Market';
-import OverView from './components/OverView';
+import Market from './components/Market'
+import OverView from './components/OverView'
 
 function Lend() {
     return (
@@ -12,5 +12,5 @@ function Lend() {
     )
 }
 
-export default Lend;
+export default Lend
 

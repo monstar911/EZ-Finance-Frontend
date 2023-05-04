@@ -1,12 +1,11 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { Box, Typography, ToggleButtonGroup, ToggleButton } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 
 import Container from '../../components/container';
 import PoolCard from './components/PoolCard';
-import { coins, pairs, protocols } from '../../context/constant';
-import { ITokenPrice3, IUserInfo, Web3Context } from '../../context/Web3Context';
-import { trim } from '../../helper/trim';
+import { pairs, protocols } from '../../context/constant';
+import { ITokenPrice, Web3Context } from '../../context/Web3Context';
 import { tokenMaxLeverage } from '../../helper/getMaxLeverage';
 import { getEstimatedAPR, getMaxAPR } from '../../helper/getEstimateAPR';
 import { tradingFee } from '../../helper/tradingFee';
@@ -43,7 +42,6 @@ const useStyles = makeStyles((theme: any) => ({
         width: '100%',
         display: 'flex',
         alignItems: 'center',
-        // justifyContent: 'space-between',
         padding: '30px 0',
         flexWrap: "wrap",
         gap: "16px",
@@ -101,13 +99,9 @@ function Farm() {
     const [viewPoolList, setPoolList] = React.useState(0);
 
     const web3 = useContext(Web3Context)
-    const userInfo = web3?.userInfo as IUserInfo
     const tokenPosition = web3?.tokenPosition
-    const pairTVLInfo = web3?.pairTVLInfo
     const tokenVolume = web3?.tokenVolume
-    const tokenPrice3 = web3?.tokenPrice3 as ITokenPrice3
-
-    // console.log('Farm tokenVolume', tokenVolume);
+    const tokenPrice = web3?.tokenPrice as ITokenPrice
 
     let farmPools: any = [];
 
@@ -127,7 +121,6 @@ function Farm() {
     })
 
 
-    // useEffect(() => {
     Object.keys(pairs).forEach((dex) => {
         for (let pair in pairs[dex]) {
             let _volumeInfo = tokenVolume?.[dex]?.[pair]?.['vol']
@@ -148,8 +141,7 @@ function Farm() {
                 const _tvl_x = _tvlInfo_amountAdd_x ??= 0
                 const _tvl_y = _tvlInfo_amountAdd_y ??= 0
 
-                // console.log(_tvl_x, _tvl_y, tokenPrice3[strCoinPair[0]], tokenPrice3[strCoinPair[1]], Number(_tvl_x) * Number(tokenPrice3[strCoinPair[0]]), Number(_tvl_y) * Number(tokenPrice3[strCoinPair[1]]))
-                tvl = Number(tvl) + Number(_tvl_x) * Number(tokenPrice3[strCoinPair[0]]) + Number(_tvl_y) * Number(tokenPrice3[strCoinPair[1]]);
+                tvl = Number(tvl) + Number(_tvl_x) * Number(tokenPrice[strCoinPair[0]]) + Number(_tvl_y) * Number(tokenPrice[strCoinPair[1]]);
             }
 
             const max_apr = getMaxAPR(pairs[dex][pair].x.symbol, tokenMaxLeverage(pairs[dex][pair].x.symbol))[1];
@@ -174,7 +166,6 @@ function Farm() {
             farmPools.push(pool)
         }
     })
-    // }, [pairTVLInfo])
 
     return (
         <Container>
@@ -227,37 +218,35 @@ function Farm() {
                     {
                         Object.keys(protocols).map((key: string, index: number) => (
                             < ToggleButton
-                                value={String(index + 2)} key={index}
+                                value={String(index + 2)}
+                                key={index}
                                 onClick={() => setPoolList(index + 1)}
                             >
-                                {<img src={protocols[key].logo} alt={protocols[key].name} accessKey={String(index + 2)} />}
+                                {<img src={protocols[key].logo} alt={protocols[key].name} />}
                                 {protocols[key].name}
                             </ToggleButton>
                         ))
                     }
                 </ToggleButtonGroup>
             </Box>
-
-            {/* Pool Component */}
             <Box>
                 {
                     farmPools.filter((pool) => {
                         switch (viewPoolList) {
                             case 0: return true;
-                                break;
+
                             case 1:
                                 return pool.dex === 'pancake';
-                                break;
+
                             case 2:
                                 return pool.dex === 'liquid';
-                                break;
+
                             case 3:
                                 return pool.dex === 'aux';
-                                break;
+
                             default: return true;
-                                break;
                         }
-                    }).map((pool) => (<PoolCard poolInfo={pool} />))
+                    }).map((pool, index) => (<PoolCard poolInfo={pool} key={index} />))
                 }
             </Box>
         </Container >

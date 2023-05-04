@@ -1,5 +1,5 @@
-import React, { useState, useContext, useMemo, useEffect } from 'react';
-import { makeStyles } from '@mui/styles';
+import React, { useState, useContext, useEffect } from 'react'
+import { makeStyles, styled } from '@mui/styles'
 import {
     Box,
     Typography,
@@ -13,23 +13,39 @@ import {
     Modal,
     TextField,
     InputAdornment,
-    useMediaQuery
-} from '@mui/material';
+    useMediaQuery,
+    Divider
+} from '@mui/material'
 
-import { IconX } from '@tabler/icons';
-import { trim } from '../../../helper/trim';
-import { coins } from '../../../context/constant';
-import { IUserInfo, Web3Context } from '../../../context/Web3Context';
+import { IconX } from '@tabler/icons'
+import { trim } from '../../../helper/trim'
+import { coins } from '../../../context/constant'
+import { IUserInfo, Web3Context } from '../../../context/Web3Context'
 
 
 const useStyles = makeStyles((theme) => ({
     marketView: {
         padding: '0 50px 20px',
         [theme.breakpoints.down('md')]: {
-            padding: '0 20px 20px',
+            padding: '0 0 20px',
         }
     }
-})) as any;
+})) as any
+
+const ActionButton = styled('button')({
+    minWidth: '120px',
+    border: '1px solid #fff',
+    backgroundColor: '#5361DC10',
+    color: '#fff',
+    borderRadius: '20px',
+    margin: '0 3px',
+    cursor: 'pointer',
+    padding: '10px 0px',
+    '&:hover': {
+        backgroundColor: '#5361DC10',
+        color: '#fff'
+    }
+})
 
 
 const modalStyle = {
@@ -48,6 +64,8 @@ const tableHeader = ['', 'Deposit APY', 'Total Deposit', 'Deposit Balance', 'Wal
 
 function Market() {
 
+    const isXs = useMediaQuery('(max-width:760px)')
+
     const emptyToken = {
         icon: '',
         asset: '',
@@ -57,7 +75,7 @@ function Market() {
         depositBalance: 0,
         walletBalance: 0
     }
-    // const isMd = useMediaQuery('(max-width:375px)');
+
     const classes = useStyles()
     const web3 = useContext(Web3Context)
     const [poolInfo, setPoolInfo] = useState<any>()
@@ -71,8 +89,6 @@ function Market() {
     const [borrAmt, setBorrAmt] = useState(0)
 
     useEffect(() => {
-        console.log('Market useEffect', web3?.userInfo)
-
         const poolInfo = web3?.poolInfo
         const userInfo = web3?.userInfo
         setPoolInfo(poolInfo)
@@ -202,7 +218,7 @@ function Market() {
                     fontWeight: 'bold',
                     pl: '20px',
                     my: 2,
-                    color: '#FFFFFF',
+                    color: '#fff',
                 }}>
                 Lending
             </Typography>
@@ -210,83 +226,114 @@ function Market() {
                 sx={{
                     display: 'flex',
                     padding: '20px',
-                    background: '#16162d', borderRadius: '24px',
-                    boxShadow: '0px 1px 4px #ccc',
-                    color: "#FFFFFF80"
+                    background: '#16162d',
+                    borderRadius: '24px',
+                    boxShadow: '0px 1px 4px #ccc'
                 }}
             >
-                <TableContainer>
-                    <Table sx={{ '& .MuiTableCell-root': { textAlign: 'center' } }}>
-                        <TableHead>
-                            <TableRow sx={{ '.MuiTableCell-root': { color: '#FFFFFF80' } }}>
-                                {tableHeader.map((item, index) => (
-                                    <TableCell key={index}>{item}</TableCell>
-                                ))}
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {datas.map((item, index) => (
-                                <TableRow
-                                    key={index}
-                                    sx={{ '&:last-child td, &:last-child th': { border: 0 }, '.MuiTableCell-root': { color: '#fff' } }}
-                                >
-                                    <TableCell>
-                                        <Box sx={{ display: 'flex', ml: '30px' }}>
-                                            <Box sx={{ display: 'flex', justifyContent: 'flex-start', width: '40px' }}>
-                                                <img src={item.icon} alt='logo' style={{ width: '24px', height: '24px', marginRight: '3px' }} />
-                                            </Box>
-                                            <Typography component='span' >{item.asset}</Typography>
-                                        </Box>
-                                    </TableCell>
-                                    <TableCell>{item.depositAPY}%</TableCell>
-                                    <TableCell>{item.totalDeposited}</TableCell>
-                                    <TableCell>{item.depositBalance}</TableCell>
-                                    <TableCell>{item.walletBalance}</TableCell>
-                                    <TableCell >
-                                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
-                                            <Button
-                                                sx={{
-                                                    minWidth: '120px',
-                                                    border: '1px solid #fff',
-                                                    bgcolor: '#5361DC10',
-                                                    color: '#fff',
-                                                    borderRadius: '20px',
-                                                    mx: '3px',
-                                                    '&:hover': {
-                                                        bgcolor: '#5361DC10',
-                                                        color: '#FFF'
-                                                    }
-                                                }}
-                                                //disabled={index > 1 ? true : false}
-                                                onClick={() => onSupModalOpen(index)}
-                                            >
-                                                Deposit
-                                            </Button>
-                                            <Button
-                                                sx={{
-                                                    minWidth: '120px',
-                                                    border: '1px solid #fff',
-                                                    bgcolor: '#5361DC10',
-                                                    color: '#fff',
-                                                    borderRadius: '20px',
-                                                    mx: '3px',
-                                                    '&:hover': {
-                                                        bgcolor: '#5361DC10',
-                                                        color: '#FFFFFF'
-                                                    }
-                                                }}
-                                                //disabled={index > 1 ? true : false}
-                                                onClick={() => onBorrModalOpen(index)}
-                                            >
-                                                Withdraw
-                                            </Button>
-                                        </Box>
-                                    </TableCell>
+                {!isXs ?
+                    <TableContainer>
+                        <Table sx={{ '& .MuiTableCell-root': { textAlign: 'center', color: '#fff' } }}>
+                            <TableHead>
+                                <TableRow >
+                                    {tableHeader.map((item, index) => (
+                                        <TableCell key={index}>{item}</TableCell>
+                                    ))}
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+                            </TableHead>
+                            <TableBody>
+                                {datas.map((item, index) => (
+                                    <TableRow
+                                        key={index}
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 }, '.MuiTableCell-root': { color: '#fff' } }}
+                                    >
+                                        <TableCell>
+                                            <Box sx={{ display: 'flex', ml: '30px' }}>
+                                                <Box sx={{ display: 'flex', justifyContent: 'flex-start', width: '40px' }}>
+                                                    <img src={item.icon} alt='logo' style={{ width: '24px', height: '24px', marginRight: '3px' }} />
+                                                </Box>
+                                                <Typography component='span' >{item.asset}</Typography>
+                                            </Box>
+                                        </TableCell>
+                                        <TableCell>{item.depositAPY}%</TableCell>
+                                        <TableCell>{item.totalDeposited}</TableCell>
+                                        <TableCell>{item.depositBalance}</TableCell>
+                                        <TableCell>{item.walletBalance}</TableCell>
+                                        <TableCell >
+                                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+                                                <ActionButton
+                                                    onClick={() => onSupModalOpen(index)}
+                                                >
+                                                    Deposit
+                                                </ActionButton>
+                                                <ActionButton
+                                                    onClick={() => onBorrModalOpen(index)}
+                                                >
+                                                    Withdraw
+                                                </ActionButton>
+                                            </Box>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer> :
+                    <Box sx={{ width: '100%' }}>
+                        {
+                            datas.map((item, index) => (
+                                <Box key={index} sx={{
+                                    '& .MuiBox-root': {
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        flexGrow: 1,
+                                        mb: 1
+                                    },
+                                    '& .MuiTypography-root': {
+                                        color: '#fff'
+                                    }
+                                }}>
+                                    <Box sx={{ ml: '30px', width: '80px' }}>
+                                        <Box sx={{ display: 'flex', justifyContent: 'flex-start', width: '40px' }}>
+                                            <img src={item.icon} alt='logo' style={{ width: '24px', height: '24px', marginRight: '3px' }} />
+                                        </Box>
+                                        <Typography component='span' color='#fff'>{item.asset}</Typography>
+                                    </Box>
+                                    <Box>
+                                        <Typography>Deposit APY</Typography>
+                                        <Typography>{item.depositAPY}%</Typography>
+                                    </Box>
+                                    <Box>
+                                        <Typography>Total Deposit</Typography>
+                                        <Typography>{item.totalDeposited}</Typography>
+                                    </Box>
+                                    <Box>
+                                        <Typography>Deposit Balance</Typography>
+                                        <Typography>{item.depositBalance}</Typography>
+                                    </Box>
+                                    <Box>
+                                        <Typography>Wallet Balance</Typography>
+                                        <Typography>{item.walletBalance}</Typography>
+                                    </Box>
+
+                                    <Box sx={{ gap: '10px', justifyContent: 'center !important' }}>
+                                        <ActionButton
+                                            onClick={() => onSupModalOpen(index)}
+                                        >
+                                            Deposit
+                                        </ActionButton>
+                                        <ActionButton
+                                            onClick={() => onBorrModalOpen(index)}
+                                        >
+                                            Withdraw
+                                        </ActionButton>
+                                    </Box>
+                                    <Divider sx={{ my: 2, bgcolor: '#fff' }} />
+                                </Box>
+                            ))
+                        }
+                    </Box>
+                }
+
                 <Modal
                     open={supModal}
                     onClose={onSupModalClose}
@@ -306,8 +353,7 @@ function Market() {
                                 component="h2"
                                 sx={{
                                     textAlign: 'center',
-                                    mb: 1,
-                                    //color: '#333'
+                                    mb: 1
                                 }}
                             >
                                 {`Deposit ${supToken.asset}`}
@@ -428,8 +474,7 @@ function Market() {
                                 component="h2"
                                 sx={{
                                     textAlign: 'center',
-                                    mb: 1,
-                                    //color: '#fff'
+                                    mb: 1
                                 }}
                             >
                                 {`Withdraw ${borrToken.asset}`}
@@ -514,7 +559,6 @@ function Market() {
                                 mt: 3,
                                 display: 'flex',
                                 width: '100%',
-                                //backgroundColor: '#5361DC',
                                 background: '#42396B',
                                 boxShadow: '0px 0px 4px #5361DC60',
                                 borderColor: 'gray',
@@ -522,7 +566,6 @@ function Market() {
                                 borderRadius: '20px',
                                 py: 2,
                                 '&:hover': {
-                                    //backgroundColor: '#5361DC'
                                     boxShadow: '0px 0px 4px #5361DC60',
                                 }
                             }}

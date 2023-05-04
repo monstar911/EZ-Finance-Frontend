@@ -25,8 +25,7 @@ const useStyles = makeStyles((theme) => ({
         [theme.breakpoints.down('lg')]: {
             marginLeft: '20px',
             width: `calc(100% - ${40}px)`,
-            padding: '0px',
-            paddingTop: '20px',
+            padding: '20px 0px',
         },
     },
     contentShift: {

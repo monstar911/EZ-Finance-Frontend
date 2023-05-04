@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { alpha, Button, Menu, MenuProps, styled, Typography, useMediaQuery } from '@mui/material'
 import { makeStyles } from '@mui/styles'
-import { Avatar, Box, Select, MenuItem, Stack } from '@mui/material'
+import { Avatar, Box, MenuItem, Stack } from '@mui/material'
 import { IconMenu2 } from '@tabler/icons'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
@@ -21,6 +21,7 @@ const useStyles = makeStyles((theme) => ({
         top: 0,
         left: 0,
         display: 'flex',
+        alignItems: 'center',
         backgroundColor: '#241F3E',
         width: '100%',
         padding: '15px 0',
@@ -104,9 +105,7 @@ const StyledMenu = styled((props: MenuProps) => (
 
 function Header({ handleDrawerToggle }: IHeader) {
     const is1200 = useMediaQuery('(max-width: 1200px)');
-    const isDown425 = useMediaQuery('(max-width: 425px)');
     const classes = useStyles();
-    const [selectValue, setSelectValue] = React.useState('aptos');
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
@@ -131,15 +130,8 @@ function Header({ handleDrawerToggle }: IHeader) {
                 <div onClick={handleDrawerToggle} className={classes.toggleButton}>
                     <Avatar
                         sx={{
-                            // bgcolor: '#FFF',
-                            // boxShadow: '0px 1px 4px #ccc',
-
                             color: 'white',
-                            // background: '#42396B',
                             background: 'linear-gradient(90deg,#6e42ca,#8d29c1)',
-
-                            // boxShadow: '0px 0px 4px #5361DC60',
-
                             mt: '3px',
                             '&:hover': {
                                 boxShadow: '0px 0px 4px #5361DC60',
@@ -147,7 +139,6 @@ function Header({ handleDrawerToggle }: IHeader) {
 
                         }}
                     >
-                        {/* <IconMenu2 color="#888" /> */}
                         <IconMenu2 color="#FFF" />
                     </Avatar>
                 </div>
@@ -163,12 +154,6 @@ function Header({ handleDrawerToggle }: IHeader) {
                 }}
             >
                 <Box className={classes.selectbutton}>
-                    {/* <Select
-                        value={selectValue}
-                        label='Faucet'
-                        onChange={(e: any) => setSelectValue(e.target.value)}
-                        IconComponent={ExpandMoreIcon}
-                    > */}
                     <Button
                         sx={{
                             color: 'white',
@@ -177,6 +162,10 @@ function Header({ handleDrawerToggle }: IHeader) {
                             borderRadius: '200px',
                             marginRight: '-5px',
                             minWidth: '160px',
+                            '@media(max-width:450px)': {
+                                minWidth: '100px',
+                                padding: '15px 3px'
+                            }
                         }}
                         id="demo-customized-button"
                         aria-controls={open ? 'demo-customized-menu' : undefined}
@@ -200,14 +189,14 @@ function Header({ handleDrawerToggle }: IHeader) {
                     >
                         {
                             Object.keys(coins).map((item, index) => (
-                                (!(coins[item].name == 'APT') && <MenuItem key={index} value={coins[item].symbol} onClick={() => onGetFaucet(coins[item].symbol)}>
+                                (!(coins[item].name === 'APT') && <MenuItem key={index} value={coins[item].symbol} onClick={() => onGetFaucet(coins[item].symbol)}>
                                     < Stack
                                         direction={'row'}
                                         alignItems={'center'}
                                         gap={1}
                                         sx={{ '& img': { width: '30px', height: '30px', borderRadius: '50%' } }}
                                     >
-                                        <Box sx={{ display: { xs: 'none', md: 'block' } }}><img src={coins[item].logo} alt="aptos" /></Box>
+                                        <Box ><img src={coins[item].logo} alt="aptos" /></Box>
                                         <Typography >{coins[item].name}</Typography>
                                     </Stack>
                                 </MenuItem>)

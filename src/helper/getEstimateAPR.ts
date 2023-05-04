@@ -11,15 +11,12 @@ export const getMaxAPR = (symbol: string, maxLeverage: number) => {
 
     for (let i = 1; i < maxLeverage; i += 0.01) {
         const estAPR = +getEstimatedAPR(symbol, i);
-        // console.log('getMaxAPR i: ', i, maxIndex, maxRatio, estAPR);
 
         if (maxRatio < estAPR) {
             maxIndex = i;
             maxRatio = estAPR;
         }
     }
-
-    // console.log('getMaxAPR: ', maxRatio);
 
     return [maxIndex, maxRatio];
 }

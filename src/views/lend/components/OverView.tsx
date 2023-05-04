@@ -1,26 +1,19 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Typography, Box, LinearProgress } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import {
-    styled,
-    experimental_sx as sx,
-} from '@mui/system';
-import 'react-circular-progressbar/dist/styles.css';
-import { ITokenPrice3, IUserInfo, Web3Context } from '../../../context/Web3Context';
-import { trim } from '../../../helper/trim';
-import { formatValue } from '../../../helper/formatValue';
+import React, { useContext, useEffect, useState } from 'react'
+import { Typography, Box } from '@mui/material'
+import { makeStyles } from '@mui/styles'
+
+import 'react-circular-progressbar/dist/styles.css'
+import { ITokenPrice, IUserInfo, Web3Context } from '../../../context/Web3Context'
+import { formatValue } from '../../../helper/formatValue'
 
 const useStyles = makeStyles((theme) => ({
     overview: {
         padding: '0 50px 20px',
         [theme.breakpoints.down('md')]: {
-            padding: '0 20px 20px',
-        },
-        '& .MuiTypography-root': {
-            //color: '#333'
+            padding: '0 0 20px',
         },
         '& .valueText': {
-            color: '#FFFFFF'
+            color: '#FFF'
         }
     },
     circularData: {
@@ -31,33 +24,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: 'transparent',
         zIndex: 20,
     }
-})) as any;
-
-const CustomBox = styled('div')(
-    sx({
-        display: 'flex',
-        flexDirection: { xs: 'column', md: 'row' },
-        flex: '1 1 0',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        my: 2,
-        "& .CircularProgressbar": {
-            width: '120px',
-            height: '120px'
-        },
-        "& .CircularProgressbar-path": {
-            stroke: '#5361DC'
-        }
-    })
-)
-
-const CustomDivider = styled('div')(
-    sx({
-        width: { xs: '0px', md: '2px' },
-        height: { xs: '0px', md: '50px' },
-        border: '1px solid #ccc',
-    })
-)
+})) as any
 
 function OverView() {
 
@@ -65,7 +32,7 @@ function OverView() {
     const web3 = useContext(Web3Context)
     const userInfo = web3?.userInfo as IUserInfo
     const poolInfo = web3?.poolInfo
-    const tokenPrice3 = web3?.tokenPrice3 as ITokenPrice3
+    const tokenPrice = web3?.tokenPrice as ITokenPrice
 
     const [tvl, setTVL] = useState(0)
     const [supBalance, setSupplyBalance] = useState(0)
@@ -73,18 +40,13 @@ function OverView() {
     useEffect(() => {
         let _tvl = 0;
         let _sup = 0;
-        Object.keys(poolInfo).map((item) => {
-            _tvl += poolInfo[item] * tokenPrice3[item]
-            _sup += (userInfo.deposit[item] ?? 0) * tokenPrice3[item]
-
+        Object.keys(poolInfo).forEach((item) => {
+            _tvl += poolInfo[item] * tokenPrice[item]
+            _sup += (userInfo.deposit[item] ?? 0) * tokenPrice[item]
         })
         setTVL(_tvl)
         setSupplyBalance(_sup)
-    }, [poolInfo, tokenPrice3, userInfo])
-
-    // const borrowLimit = supplyBalance > 0 ? borrowBalance * 100 / (supplyBalance * 0.8) > 100 ? 100 : borrowBalance * 100 / (supplyBalance * 0.8) : 0;
-    // const totalRewards = userInfo.totalRewards * 10;
-
+    }, [poolInfo, tokenPrice, userInfo])
 
     return (
         <div className={classes.overview}>
@@ -124,16 +86,16 @@ function OverView() {
                     }}
                 >
                     <Box>
-                        <Typography sx={{ mb: 2, color: '#FFFFFF80' }}>TVL</Typography>
-                        <Typography sx={{ fontSize: '28px' }} className='valueText'>$ {formatValue(tvl, 3)}</Typography>
+                        <Typography >TVL</Typography>
+                        <Typography sx={{ fontSize: '28px', mb: 2 }} className='valueText'>$ {formatValue(tvl, 3)}</Typography>
                     </Box>
                     <Box>
-                        <Typography sx={{ mb: 2, color: '#FFFFFF80' }}>Supply Balance</Typography>
-                        <Typography sx={{ fontSize: '28px' }} className='valueText'>$ {formatValue(supBalance, 3)}</Typography>
+                        <Typography >Supply Balance</Typography>
+                        <Typography sx={{ fontSize: '28px', mb: 2 }} className='valueText'>$ {formatValue(supBalance, 3)}</Typography>
                     </Box>
                     <Box>
-                        <Typography sx={{ mb: 2, color: '#FFFFFF80' }}>Net APY</Typography>
-                        <Typography sx={{ fontSize: '28px' }} className='valueText'>7 %</Typography>
+                        <Typography >Net APY</Typography>
+                        <Typography sx={{ fontSize: '28px', mb: 2 }} className='valueText'>7 %</Typography>
                     </Box>
                 </Box>
             </Box>

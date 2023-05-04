@@ -8,7 +8,6 @@ import MartianIcon from '../../asset/icons/Martian.jpg';
 import PetraIcon from '../../asset/icons/Petra.jpg';
 import { IconX } from '@tabler/icons';
 import { formart } from '../../helper/formatAddress';
-import { useWallet, WalletName } from '@manahippo/aptos-wallet-adapter';
 import { Web3Context } from '../../context/Web3Context';
 
 const modalStyle = {
@@ -43,15 +42,12 @@ function ConnectButton() {
     const [open, setOpen] = useState(false);
     const web3 = useContext(Web3Context)
 
-    const { connect, account, ...rest } = useWallet()
-
     const onClose = () => {
         setOpen(false);
     };
 
 
     const onConnectWallet = async (wallet: string) => {
-        console.log('onConnectWallet: ', wallet)
         await web3?.connect(wallet)
         setOpen(false)
     }
@@ -70,11 +66,14 @@ function ConnectButton() {
                     sx={{
                         color: 'white',
                         padding: '15px 20px',
-                        // backgroundImage: 'linear-gradient(93.57deg, #543DFB 0.71%, #F76CC5 50.59%, #FF4848 97.83%)',
                         background: 'linear-gradient(90deg,#6e42ca,#8d29c1)',
                         borderRadius: '200px',
                         marginRight: '20px',
                         minWidth: '160px',
+                        '@media(max-width: 450px)': {
+                            minWidth: '100px',
+                            padding: '15px 5px'
+                        }
                     }}
                     onClick={() => setOpen(!open)}
                 >

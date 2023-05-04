@@ -1,29 +1,17 @@
 import React from 'react';
 import { Box, Typography, Grid } from '@mui/material';
-import { styled } from '@mui/system';
 
-const Back = styled(Box)({
-    position: 'absolute',
-    top: '2px',
-    left: '0',
-    width: '100%',
-    height: '100%',
-    background: 'linear-gradient(90deg,#6e42ca,#8d29c1)',
-    zIndex: '-1',
-    borderRadius: '13px',
-});
 
-export default function PoolModal(props: any) {
+export default function PoolCard(props: any) {
     const { title, tvl, imga, namea, imgb, nameb, position } = props;
 
     return (
-        <Grid item xs={12} md={6} lg={4} sx={{ p: 2 }}>
+        <Grid item xs={12} md={6} lg={4} sx={{p:2}}>
             <Box
                 sx={{
                     position: 'relative',
                     '@media(max-width: 350px)': {
-                        width: '100%',
-                        padding: '20px',
+                        width: '100%',         
                     },
                     transition: '0.3s all',
                     '&:hover': {
@@ -81,7 +69,7 @@ export default function PoolModal(props: any) {
                         </Box>
                     </Box>
                 </Box>
-                {/* <Back /> */}
+
             </Box>
         </Grid>
     );

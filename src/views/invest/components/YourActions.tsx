@@ -14,26 +14,24 @@ const useStyles = makeStyles((theme: any) => ({
         opacity: '.5',
         margin: '20px 0',
     },
-}));
+}))
 
 export default function YourActions(props: any) {
     const {
-        strCoinPair,
-        valuePairX, valuePairY, valueEZM,
-        valueDolarPairX, valueDolarPairY, valueDolarEZM,
-        valueLeverage, estimatiedAPR, valueTotalSupply,
-        valueDebtA, valueDebtB,
-        valueDolarDebtA, valueDolarDebtB, valueTotalDebt,
-        valuePositionPairX, valuePositionPairY,
-        valuePositionDolarPairX, valuePositionDolarPairY,
-        valuePositionDolarTotal,
+        tokens,
+        tokenAmount,
+        leverage, estimatiedAPR, borrowAmount
     } = props;
 
     const classes = useStyles();
     const web3 = useContext(Web3Context)
 
+    const tokenPrice = web3?.tokenPrice
+
+    const totalSupply = tokenAmount.tokenA * (tokenPrice?.[tokens[0]] ?? 0) + tokenAmount.tokenB * (tokenPrice?.[tokens[1]] ?? 0) + tokenAmount.tokenEZM * (tokenPrice?.ezm ?? 0)
+
     const onClickConfirm = async () => {
-        console.log('onClickConfirm', protocols[strCoinPair[2]].name, coins[strCoinPair[0]].symbol, coins[strCoinPair[1]].symbol, valuePairX, valuePairY, valueEZM, valueLeverage);
+        // console.log('onClickConfirm', protocols[tokens[2]].name, coins[tokens[0]].symbol, coins[tokens[1]].symbol, valuePairX, valuePairY, valueEZM, valueLeverage);
 
         // await web3?.borrow('ezm', 0.001);
         // await web3?.swap('ezm', 'wbtc', 0.01, 0);
@@ -82,26 +80,29 @@ export default function YourActions(props: any) {
         }
 
 
-        if (strCoinPair[2] === "pancake") {
-            await web3?.leverage_yield_farming(0, coins[strCoinPair[0]].symbol, coins[strCoinPair[1]].symbol,
-                valuePairX ?? 0, valuePairY ?? 0, valueEZM ?? 0, valueLeverage ?? 1);
-        } else if (strCoinPair[2] === "liquid") {
-            await web3?.leverage_yield_farming(1, coins[strCoinPair[0]].symbol, coins[strCoinPair[1]].symbol,
-                valuePairX ?? 0, valuePairY ?? 0, valueEZM ?? 0, valueLeverage ?? 1);
-        } else if (strCoinPair[2] === "aux") {
-            await web3?.leverage_yield_farming(2, coins[strCoinPair[0]].symbol, coins[strCoinPair[1]].symbol,
-                valuePairX ?? 0, valuePairY ?? 0, valueEZM ?? 0, valueLeverage ?? 1);
-        }
+        // if (tokens[2] === "pancake") {
+        //     await web3?.leverage_yield_farming(0, coins[tokens[0]].symbol, coins[tokens[1]].symbol,
+        //         valuePairX ?? 0, valuePairY ?? 0, valueEZM ?? 0, valueLeverage ?? 1);
+        // } else if (tokens[2] === "liquid") {
+        //     await web3?.leverage_yield_farming(1, coins[tokens[0]].symbol, coins[tokens[1]].symbol,
+        //         valuePairX ?? 0, valuePairY ?? 0, valueEZM ?? 0, valueLeverage ?? 1);
+        // } else if (tokens[2] === "aux") {
+        //     await web3?.leverage_yield_farming(2, coins[tokens[0]].symbol, coins[tokens[1]].symbol,
+        //         valuePairX ?? 0, valuePairY ?? 0, valueEZM ?? 0, valueLeverage ?? 1);
+        // }
     }
 
     return (
         <Box className={'modal4'}
             sx={{
                 background: '#16162d', borderRadius: '24px',
-                padding: '40px',
+                padding: { xs: '25px', md: '40px' },
+                '& img': {
+                    width: '25px', height: '25px', borderRadius: '50%'
+                }
             }}>
 
-            <Typography variant="h4" sx={{ py: 2, fontSize: '24px' }}>
+            <Typography sx={{ py: 2 }}>
                 Your Actions
             </Typography>
 
@@ -120,13 +121,13 @@ export default function YourActions(props: any) {
                 }}
             >
                 <Box sx={{ flex: '1' }}>
-                    <Typography variant="h6">Estimated APR</Typography>
-                    <Typography variant="h5">{estimatiedAPR}%</Typography>
+                    <Typography whiteSpace='nowrap'>Estimated APR</Typography>
+                    <Typography >{estimatiedAPR}%</Typography>
                 </Box>
 
                 <Box sx={{ flex: '1' }}>
-                    <Typography variant="h6">Your leverage</Typography>
-                    <Typography variant="h5">{valueLeverage}x</Typography>
+                    <Typography whiteSpace='nowrap'>Your leverage</Typography>
+                    <Typography >{leverage}x</Typography>
                 </Box>
             </Box>
 
@@ -137,34 +138,39 @@ export default function YourActions(props: any) {
                     mt: 3,
                 }}
             >
-                <Box sx={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 1 }}>
-                    <Typography variant="h5" sx={{ fontSize: '18px', py: 2 }}>
-                        Total Supply
+                <Box sx={{
+                    textAlign: 'left',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 1,
+
+                }}>
+                    <Typography sx={{ py: 2 }}>
+                        Your Supply
                     </Typography>
-
                     <Stack direction={'row'} alignItems="center" gap={1}>
-                        <img src={coins[strCoinPair[0]].logo} alt={coins[strCoinPair[0]].symbol} width={25} height={25} style={{ borderRadius: '50%' }} />
-                        <Typography variant={'h6'}> {trim(valuePairX, 5)} {coins[strCoinPair[0]].name}</Typography>
+                        <img src={coins[tokens[0]].logo} alt={coins[tokens[0]].symbol} />
+                        <Typography> {trim(tokenAmount.tokenA, 5)} {coins[tokens[0]].name}</Typography>
                     </Stack>
 
                     <Stack direction={'row'} alignItems="center" gap={1}>
-                        <img src={coins[strCoinPair[1]].logo} alt={coins[strCoinPair[1]].symbol} width={25} height={25} style={{ borderRadius: '50%' }} />
-                        <Typography variant={'h6'}> {trim(valuePairY, 5)} {coins[strCoinPair[1]].name}</Typography>
+                        <img src={coins[tokens[1]].logo} alt={coins[tokens[1]].symbol} />
+                        <Typography> {trim(tokenAmount.tokenB, 5)} {coins[tokens[1]].name}</Typography>
                     </Stack>
 
                     <Stack direction={'row'} alignItems="center" gap={1}>
-                        <img src={coins['ezm'].logo} alt="lp" width={25} height={25} style={{ borderRadius: '50%' }} />
-                        <Typography variant={'h6'}> {trim(valueEZM, 5)} {coins['ezm'].name}</Typography>
+                        <img src={coins['ezm'].logo} alt="ezm" />
+                        <Typography> {trim(tokenAmount.tokenEZM, 5)} {coins['ezm'].name}</Typography>
                     </Stack>
                 </Box>
 
                 <Box sx={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: 1 }}>
-                    <Typography variant="h5" sx={{ fontSize: '18px', py: 2 }}>
-                        ~${trim(valueTotalSupply, 3)}
+                    <Typography sx={{ py: 2 }}>
+                        ~${trim(totalSupply, 3)}
                     </Typography>
-                    <Typography variant="h6">${trim(valueDolarPairX, 3)}</Typography>
-                    <Typography variant="h6">${trim(valueDolarPairY, 3)}</Typography>
-                    <Typography variant="h6">${trim(valueDolarEZM, 3)}</Typography>
+                    <Typography >${trim(tokenAmount.tokenA * (tokenPrice?.[tokens[0]] ?? 0), 3)}</Typography>
+                    <Typography>${trim(tokenAmount.tokenB * (tokenPrice?.[tokens[1]] ?? 0), 3)}</Typography>
+                    <Typography >${trim(tokenAmount.tokenEZM * (tokenPrice?.ezm ?? 0), 3)}</Typography>
                 </Box>
             </Box>
 
@@ -174,31 +180,31 @@ export default function YourActions(props: any) {
                 sx={{
                     display: 'flex',
                     justifyContent: 'space-between',
-                    mt: 3,
+                    mt: 3
                 }}
             >
                 <Box sx={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 1 }}>
-                    <Typography variant="h5" sx={{ fontSize: '18px', py: 2 }}>
+                    <Typography sx={{ py: 2 }}>
                         Total Debt
                     </Typography>
 
                     <Stack direction={'row'} alignItems="center" gap={1}>
-                        <img src={coins[strCoinPair[0]].logo} alt={coins[strCoinPair[0]].symbol} width={25} height={25} style={{ borderRadius: '50%' }} />
-                        <Typography variant={'h6'}> {valueDebtA} {coins[strCoinPair[0]].name}</Typography>
+                        <img src={coins[tokens[0]].logo} alt={coins[tokens[0]].symbol} />
+                        <Typography > {trim(borrowAmount.tokenA, 3)} {coins[tokens[0]].name}</Typography>
                     </Stack>
 
                     <Stack direction={'row'} alignItems="center" gap={1}>
-                        <img src={coins[strCoinPair[1]].logo} alt={coins[strCoinPair[1]].symbol} width={25} height={25} style={{ borderRadius: '50%' }} />
-                        <Typography variant={'h6'}>{valueDebtB} {coins[strCoinPair[1]].name}</Typography>
+                        <img src={coins[tokens[1]].logo} alt={coins[tokens[1]].symbol} />
+                        <Typography >{trim(borrowAmount.tokenB, 3)} {coins[tokens[1]].name}</Typography>
                     </Stack>
                 </Box>
 
                 <Box sx={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: 1 }}>
-                    <Typography variant="h5" sx={{ fontSize: '18px', py: 2 }}>
-                        ~${valueTotalDebt}
+                    <Typography sx={{ py: 2 }}>
+                        ~${trim(borrowAmount.tokenA * (tokenPrice?.[tokens[0]] ?? 0) + borrowAmount.tokenB * (tokenPrice?.[tokens[1]] ?? 0), 3)}
                     </Typography>
-                    <Typography variant="h6">${valueDolarDebtA}</Typography>
-                    <Typography variant="h6">${valueDolarDebtB}</Typography>
+                    <Typography >${trim(borrowAmount.tokenA * (tokenPrice?.[tokens[0]] ?? 0), 3)}</Typography>
+                    <Typography >${trim(borrowAmount.tokenB * (tokenPrice?.[tokens[1]] ?? 0), 3)}</Typography>
                 </Box>
             </Box>
 
@@ -208,33 +214,34 @@ export default function YourActions(props: any) {
                 sx={{
                     display: 'flex',
                     justifyContent: 'space-between',
-                    mt: 3,
+                    mt: 3
                 }}
             >
-                <Box sx={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 1 }}>
-                    <Stack direction={'row'} alignItems="center" gap={1}>
-                        <Typography variant="h5" sx={{ fontSize: '18px', py: 2 }}>
-                            Position Value(After Swap)
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, width: '100%' }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Typography sx={{ py: 2 }}>
+                            Position Value <Typography whiteSpace='nowrap'>(After Swap)</Typography>
                         </Typography>
-                    </Stack>
+                        <Typography sx={{ py: 2 }}>
+                            ~${trim(totalSupply * leverage, 3)}
+                        </Typography>
+                    </Box>
 
-                    <Stack direction={'row'} alignItems="center" gap={1}>
-                        <img src={coins[strCoinPair[0]].logo} alt={coins[strCoinPair[0]].symbol} width={25} height={25} style={{ borderRadius: '50%' }} />
-                        <Typography variant={'h6'}>{valuePositionPairX} {coins[strCoinPair[0]].name}</Typography>
-                    </Stack>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Box display='flex' gap={1}>
+                            <img src={coins[tokens[0]].logo} alt={coins[tokens[0]].symbol} />
+                            <Typography >{trim(totalSupply * leverage / (2 * (tokenPrice?.[tokens[0]] ?? 1)), 3)} {coins[tokens[0]].name}</Typography>
+                        </Box>
+                        <Typography >${trim(totalSupply * leverage / 2, 3)}</Typography>
+                    </Box>
 
-                    <Stack direction={'row'} alignItems="center" gap={1}>
-                        <img src={coins[strCoinPair[1]].logo} alt={coins[strCoinPair[1]].symbol} width={25} height={25} style={{ borderRadius: '50%' }} />
-                        <Typography variant={'h6'}>{valuePositionPairY} {coins[strCoinPair[1]].name}</Typography>
-                    </Stack>
-                </Box>
-
-                <Box sx={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: 1 }}>
-                    <Typography variant="h5" sx={{ fontSize: '18px', py: 2 }}>
-                        ~${valuePositionDolarTotal}
-                    </Typography>
-                    <Typography variant="h6">${valuePositionDolarPairX}</Typography>
-                    <Typography variant="h6">${valuePositionDolarPairY}</Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }} >
+                        <Box display='flex' gap={1}>
+                            <img src={coins[tokens[1]].logo} alt={coins[tokens[1]].symbol} />
+                            <Typography>{trim(totalSupply * leverage / (2 * (tokenPrice?.[tokens[1]] ?? 1)), 3)} {coins[tokens[1]].name}</Typography>
+                        </Box>
+                        <Typography >${trim(totalSupply * leverage / 2, 3)}</Typography>
+                    </Box>
                 </Box>
             </Box>
 
@@ -247,13 +254,13 @@ export default function YourActions(props: any) {
                     borderRadius: '15px',
                     width: '100%',
                     color: 'white',
-                    padding: '20px',
+                    padding: '15px',
                     mt: 3,
                 }}
                 onClick={onClickConfirm}
             >
                 Confirm
             </Button>
-        </Box>
+        </Box >
     );
 }

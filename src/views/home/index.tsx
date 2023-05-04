@@ -3,7 +3,7 @@ import { Box, Typography, Paper, Grid, IconButton, Stack, InputAdornment, TextFi
 import { makeStyles } from '@mui/styles';
 import EastIcon from '@mui/icons-material/East';
 import Container from '../../components/container';
-import { Common_FillButton, Common_OutlineButton } from '../../components/button';
+import { CommonFillButton, CommonOutlineButton } from '../../components/button';
 import Slider from 'react-slick';
 
 import CryptoImage from '../../asset/icons/crypto-hand.png';
@@ -15,7 +15,7 @@ import part3_img from '../../asset/icons/Private Key.png';
 import SmartContract from '../../asset/icons/Smart_Contract.png';
 
 import { coins, pairs, protocols } from '../../context/constant';
-import { ITokenPrice3, IUserInfo, Web3Context } from '../../context/Web3Context';
+import { IUserInfo, Web3Context } from '../../context/Web3Context';
 import { formatValue } from '../../helper/formatValue';
 import { useNavigate } from 'react-router-dom';
 import { getEstimatedAPR, getMaxAPR } from '../../helper/getEstimateAPR';
@@ -32,6 +32,9 @@ const useStyles = makeStyles((theme: any) => ({
         alignItems: 'center',
         '& .MuiTypography-root': {
             color: '#FFF',
+        },
+        '& .slick-dots': {
+            bottom: '-32px',
         },
         '& .slick-dots button::before': {
             color: 'white',
@@ -413,6 +416,7 @@ const slide_settings = {
 };
 
 function Home() {
+
     const classes = useStyles();
 
     const poolData = React.useMemo(() => {
@@ -440,15 +444,12 @@ function Home() {
 
     const web3 = useContext(Web3Context)
     const tokenVolume = web3?.tokenVolume
-    const tokenPrice3 = web3?.tokenPrice3 as ITokenPrice3
+
     const tokenPosition = web3?.tokenPosition
 
-    const [poolInfo, setPoolInfo] = useState<any>()
-    const [userInfo, setUserInfo] = useState<IUserInfo>()
+    const [poolInfo,] = useState<any>()
+    const [userInfo,] = useState<IUserInfo>()
 
-    console.log('Farm tokenVolume', tokenVolume);
-
-    let farmPools: any = [];
 
     var allPoolsTVL = 0;
     var allPositions = 0;
@@ -579,11 +580,11 @@ function Home() {
                         </Typography>
                         <Box>
                             <Paper>
-                                <Typography variant="subtitle1">Aptos TVL</Typography>
-                                <Typography variant="h2">${formatValue(allPoolsTVL, 2)}</Typography>
+                                <Typography variant="subtitle1" sx={{ whiteSpace: 'nowrap' }}>Aptos TVL</Typography>
+                                <Typography variant="h2" >${formatValue(allPoolsTVL, 2)}</Typography>
                             </Paper>
                             <Paper>
-                                <Typography variant="subtitle1">Sui TVL</Typography>
+                                <Typography variant="subtitle1" sx={{ whiteSpace: 'nowrap' }}>Sui TVL</Typography>
                                 <Typography variant="h2">$0</Typography>
                             </Paper>
                         </Box>
@@ -610,17 +611,16 @@ function Home() {
                                 <Typography variant="subtitle1">Earn up to 15% APR</Typography>
                                 <Typography variant="body1">Boost farming yield from top exchanges</Typography>
                             </Box>
-                            <Common_FillButton
+                            <CommonFillButton
                                 content="View Pools Now"
                                 onClick={() => navigate(`/farm`)}
                             >
-                            </Common_FillButton>
+                            </CommonFillButton>
                         </Box>
 
                         <Box sx={{ position: 'absolute', bottom: 0, right: 0 }}>
                             <img src={CubeImage} alt="cube" />
                         </Box>
-                        {/* <Box className={classes.gradient__back}></Box> */}
                     </Box>
                     <Box>
                         <Box
@@ -638,19 +638,17 @@ function Home() {
                                 <Typography variant="subtitle1">Earn up to 6% APR</Typography>
                                 <Typography variant="body1">Boost farming yield from top exchanges</Typography>
                             </Box>
-                            <Common_FillButton
+                            <CommonFillButton
                                 content="Deposit Now"
                                 onClick={() => navigate(`/lend`)}                             >
 
-                            </Common_FillButton>
+                            </CommonFillButton>
                         </Box>
                         <Box sx={{ position: 'absolute', bottom: 0, right: 0, zIndex: 0 }}>
                             <img src={PocketImage} alt="pocket" />
                         </Box>
-                        {/* <Box className={classes.gradient__back}></Box> */}
                     </Box>
                 </Box>
-
                 <Box className={classes.part3}>
                     <Typography variant="h3" sx={{ fontSize: { xs: '20px', sm: '30px', md: '30px' } }}>
                         Why Farm with EZ?
@@ -686,7 +684,7 @@ function Home() {
                             </Typography>
                         </Box>
                         <Box>
-                            <Common_FillButton
+                            <CommonFillButton
                                 content="View All Pools"
                                 onClick={() => navigate(`/farm`)}
                             />
@@ -717,7 +715,7 @@ function Home() {
                                                     }}
                                                 />
                                             </Stack>
-                                            <Common_FillButton
+                                            <CommonFillButton
                                                 content={1.00 + '.00x'}
                                                 padding="10px 20px"
                                                 onClick={() => navigate(`/farm/${item.pair}`)}
@@ -741,7 +739,7 @@ function Home() {
 
                 <Box className={classes.part5}>
                     <Typography variant="h3">Lend with EZ</Typography>
-                    <Typography variant="subtitle1">Earn more than HODLing in your wallets</Typography>
+                    <Typography variant="subtitle1">Earn more than HOLDING in your wallets</Typography>
                     <Grid container spacing={4}>
                         {Object.keys(coins).map((item: any, index: any) => (
                             <Grid item xs={12} sm={12} md={6} lg={4} key={index}>
@@ -778,8 +776,8 @@ function Home() {
                             gap={2}
                             sx={{ justifyContent: { lg: 'flex-start', xs: 'center' } }}
                         >
-                            <Common_FillButton content="Partner with us" />
-                            <Common_OutlineButton content="View Integration" />
+                            <CommonFillButton content="Partner with us" />
+                            <CommonOutlineButton content="View Integration" />
                         </Stack>
                     </Box>
                     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -910,7 +908,7 @@ function Home() {
                 </Box>
             </Modal>
         </Container>
-    );
+    )
 }
 
 export default Home;

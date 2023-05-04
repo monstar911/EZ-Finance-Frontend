@@ -12,6 +12,7 @@ export const calculateDebtRatio = (supplyA: number, supplyB: number, leverage: n
     const borrowAPRA = 0.2; //20%
     const borrowAPRB = 0.1; //10%
     const collA = 8360;
+
     const collB = 9598;
     const collLP = Math.min(collA, collB);
     const borrA = 11961;
@@ -24,22 +25,15 @@ export const calculateDebtRatio = (supplyA: number, supplyB: number, leverage: n
     const debtA: number = debtAmt * borrowRatio / priceAtoB;
     const debtB: number = debtAmt * (1 - borrowRatio);
     const newPriceAtoB: number = newPriceA / newPriceB;
-    console.log("calculateDebtRatio: ", posValue, debtAmt, debtA, debtB, newPriceAtoB, liquidity);
     const newPosA: number = (Number(1) + duration * farmAPR / 365) * liquidity / Math.sqrt(newPriceAtoB);
     const newPosB: number = (1 + duration * farmAPR / 365) * liquidity * Math.sqrt(newPriceAtoB);
     const newDebtA: number = (1 + duration * borrowAPRA / 365) * debtA;
     const newDebtB: number = (1 + duration * borrowAPRB / 365) * debtB;
-    const netA: number = newPosA - newDebtA;
-    const netB: number = newPosB - newDebtB;
-    const netValue: number = netA * newPriceAtoB + Number(netB);
-    const holdValue: number = supplyA * newPriceAtoB + Number(supplyB);
-    console.log("calculateDebtRatio: ", newPosA, newPosB, newDebtA, newDebtB, netValue);
-    const pnl: number = (netValue / holdValue - 1) * 100;
+
     const posCollCredit: number = (newPosA * newPriceAtoB + Number(newPosB)) * collLP;
     const posBorrCredit: number = newDebtA * newPriceAtoB * borrA + Number(newDebtB * borrB);
     const debtRatio: number = posBorrCredit / posCollCredit * 100;
 
-    console.log("calculateDebtRatio: ", debtRatio);
 
     return trim(debtRatio, 2);
 }

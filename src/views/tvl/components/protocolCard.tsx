@@ -1,22 +1,12 @@
 import React, { useContext } from 'react';
 import { Box, Typography } from '@mui/material';
-import { styled } from '@mui/system';
 import { Web3Context } from '../../../context/Web3Context';
 import { formatValue } from '../../../helper/formatValue';
 import { pairs, protocols } from '../../../context/constant';
 
-const Back = styled(Box)({
-    position: 'absolute',
-    top: '5px',
-    left: '0',
-    width: '100%',
-    height: '100%',
-    background: 'linear-gradient(90deg,#6e42ca,#8d29c1)',
-    zIndex: '-1',
-    borderRadius: '10px',
-});
 
-export default function ProtocolModal(props: any) {
+
+export default function ProtocolCard(props: any) {
     const { dex } = props;
 
     const web3 = useContext(Web3Context)
@@ -50,11 +40,10 @@ export default function ProtocolModal(props: any) {
                 },
             }}
         >
-            <Typography variant="subtitle1">{protocols[dex].name}</Typography>
+            <Typography variant="subtitle1" sx={{whiteSpace:'nowrap'}}>{protocols[dex].name}</Typography>
             <Typography variant="h5" sx={{ marginBottom: '20px' }}>
                 ${formatValue(allPoolsTVL, 2)}
             </Typography>
-            {/* <Back /> */}
         </Box>
     );
 }

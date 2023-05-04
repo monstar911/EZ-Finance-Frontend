@@ -3,7 +3,6 @@ import { Button } from '@mui/material';
 import { styled } from '@mui/system';
 
 const StyledButton = styled(Button)({
-    // background: 'linear-gradient(93.41deg, #6452DE 0.68%, #F76CC5 53.61%, #FF6F6F 103.74%)',
     background: 'linear-gradient(90deg,#6e42ca,#8d29c1)',
     borderRadius: '100px',
     color: 'white',
@@ -22,15 +21,13 @@ const OutlineStyledButton = styled(Button)({
     lineHeight: '23px',
 });
 
-export const Common_FillButton = (props: any) => {
+export const CommonFillButton = (props: any) => {
     const { content, ...other } = props;
 
-    return <StyledButton {...other}>
-            {content}
-        </StyledButton>;
+    return <StyledButton {...other}>{content}</StyledButton>;
 };
 
-export const Common_OutlineButton = (props: any) => {
+export const CommonOutlineButton = (props: any) => {
     const { content, ...othe } = props;
 
     return <OutlineStyledButton {...othe}>{content}</OutlineStyledButton>;

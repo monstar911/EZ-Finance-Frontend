@@ -6,7 +6,6 @@ import EthIcon from '../asset/icons/crypto-ethereum.png'
 import UsdtIcon from '../asset/icons/crypto-usdt.png'
 import UsdcIcon from '../asset/icons/crypto-usdc.png'
 import CakeIcon from '../asset/icons/cake.svg'
-import DaiIcon from '../asset/icons/crypto-dai.svg'
 import SolIcon from '../asset/icons/sol.png'
 import BnbIcon from '../asset/icons/bnb.png'
 

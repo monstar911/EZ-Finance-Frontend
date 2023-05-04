@@ -2,11 +2,10 @@ import React, { useContext } from 'react';
 import { Box, Typography, Grid } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import Container from '../../components/container';
-import ProtocolModal from './components/protocol_modal';
-import PoolModal from './components/pool_modal';
-import { coins, pairs, protocols } from '../../context/constant';
-import { ITokenPrice3, IUserInfo, Web3Context } from '../../context/Web3Context';
-import { trim } from '../../helper/trim';
+import ProtocolCard from './components/protocolCard';
+import PoolCard from './components/poolCard';
+import {  pairs, protocols } from '../../context/constant';
+import { Web3Context } from '../../context/Web3Context';
 import { formatValue } from '../../helper/formatValue';
 
 const useStyles = makeStyles((theme: any) => ({
@@ -39,20 +38,13 @@ const useStyles = makeStyles((theme: any) => ({
 }));
 
 export default function TVL() {
-    const classes = useStyles();
 
+    const classes = useStyles();
     const protocolData = ['pancake', 'liquid', 'aux'];
 
     const web3 = useContext(Web3Context)
-    const userInfo = web3?.userInfo as IUserInfo
     const tokenPosition = web3?.tokenPosition
-    const pairTVLInfo = web3?.pairTVLInfo
     const tokenVolume = web3?.tokenVolume
-    const tokenPrice3 = web3?.tokenPrice3 as ITokenPrice3
-
-    console.log('Farm tokenVolume', tokenVolume);
-
-    let farmPools: any = [];
 
     var allPoolsTVL = 0;
     var allPositions = 0;
@@ -69,7 +61,6 @@ export default function TVL() {
         }
     })
 
-    // console.log('allPoolsTVL', allPoolsTVL);
     const poolData = React.useMemo(() => {
         const bump: any = [];
 
@@ -81,7 +72,6 @@ export default function TVL() {
                 let _tokenPositionInfo = tokenPosition?.[dex]?.[pair]?.['length']
                 const _position = _tokenPositionInfo ??= 0
 
-                // console.log('TVL', _tvlInfo, _tvl)
                 const obj = {
                     title: protocols[dex].name,
                     aTokenIcon: pairs[dex][pair].x.logo,
@@ -97,7 +87,7 @@ export default function TVL() {
         });
 
         return bump;
-    }, [pairTVLInfo]);
+    }, [tokenPosition, tokenVolume]);
 
     return (
         <Container>
@@ -117,7 +107,7 @@ export default function TVL() {
                         },
                     }}
                 >
-                    <Typography sx={{ fontSize: '24px', fontWeight: 600 }}>Protocol TVL</Typography>
+                    <Typography sx={{ fontSize: '24px', fontWeight: 600, display:{ xs: 'none', md:'block'} }}>Protocol TVL</Typography>
                     <Box
                         sx={{
                             display: 'flex',
@@ -144,9 +134,9 @@ export default function TVL() {
                 <Box className={classes.divide_line} />
 
 
-                <Box className={'protocol_card'}>
+                <Box className='protocol_card'>
                     {protocolData.map((item: any, index: number) => (
-                        <ProtocolModal dex={item} key={index} />
+                        <ProtocolCard dex={item} key={index} />
                     ))}
                 </Box>
 
@@ -175,12 +165,10 @@ export default function TVL() {
                         Pool TVL
                     </Typography>
                 </Box>
-
-
                 <Box className={classes.divide_line} />
                 <Grid container justifyContent="space-start" alignItems={'center'} sx={{ marginTop: '40px' }}>
                     {poolData.map((item: any, index: number) => (
-                        <PoolModal
+                        <PoolCard
                             title={item.title}
                             tvl={item.tvl}
                             imga={item.aTokenIcon}
